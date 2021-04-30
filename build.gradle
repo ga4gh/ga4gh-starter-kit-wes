@@ -6,6 +6,15 @@
  * User Manual available at https://docs.gradle.org/6.1.1/userguide/tutorial_java_projects.html
  */
 
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
+    }
+}
+
 plugins {
     // Apply the java plugin to add support for Java
     id 'java'
@@ -19,12 +28,21 @@ plugins {
 
     // Apply the plugin to add support for jacoco test coverage report
     id 'jacoco'
+
+    id 'io.codearte.nexus-staging' version '0.11.0'
 }
+
+apply plugin: 'com.bmuschko.nexus'
+
+archivesBaseName = 'ga4gh-starter-kit-wes'
+group 'org.ga4gh'
+version '0.0.1'
 
 repositories {
     // Use jcenter for resolving dependencies.
     // You can declare any Maven/Ivy/file repository here.
     jcenter()
+    mavenCentral()
 }
 
 dependencies {
@@ -64,6 +82,10 @@ application {
     mainClassName = 'org.ga4gh.starterkit.wes.App'
 }
 
+jar {
+    enabled = true
+}
+
 bootJar {
     mainClassName = 'org.ga4gh.starterkit.wes.App'
 }
@@ -86,4 +108,48 @@ jacocoTestReport {
         xml.enabled = true
         html.enabled = true
     }
+}
+
+modifyPom {
+    project {
+        name 'ga4gh-starter-kit-wes'
+        description 'Starter Kit server implementation of the GA4GH Workflow Execution Service (WES) specification'
+        url 'https://github.com/ga4gh/ga4gh-starter-kit-wes'
+        inceptionYear '2021'
+
+        scm {
+            url 'https://github.com/ga4gh/ga4gh-starter-kit-wes'
+            connection 'scm:https://github.com/ga4gh/ga4gh-starter-kit-wes.git'
+            developerConnection 'scm:git://github.com/ga4gh/ga4gh-starter-kit-wes.git'
+        }
+
+        licenses {
+            license {
+                name 'The Apache Software License, Version 2.0'
+                url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                distribution 'repo'
+            }
+        }
+
+        developers {
+            developer {
+                id 'jb-adams'
+                name 'Jeremy Adams'
+                email 'jeremy.adams@ga4gh.org'
+            }
+        }
+    }
+
+}
+
+extraArchive {
+    sources = true
+    tests = true
+    javadoc = true
+}
+
+nexus {
+    sign = true
+    repositoryUrl = 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
+    snapshotRepositoryUrl = 'https://oss.sonatype.org/content/repositories/snapshots/'
 }
