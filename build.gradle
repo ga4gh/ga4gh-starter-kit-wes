@@ -16,11 +16,8 @@ buildscript {
 }
 
 plugins {
-    // Apply the java plugin to add support for Java
-    id 'java'
-
-    // Apply the application plugin to add support for building a CLI application.
-    id 'application'
+    // Apply the java-library plugin to add support for Java Library
+    id 'java-library'
 
     // Apply the plugins to add support for building a CLI application
     id 'org.springframework.boot' version '2.0.5.RELEASE'
@@ -47,7 +44,7 @@ repositories {
 
 dependencies {
     // This dependency is used by the application.
-    implementation 'com.google.guava:guava:28.1-jre'
+    // implementation 'com.google.guava:guava:28.1-jre'
 
     // Use TestNG framework, also requires calling test.useTestNG() below
     testImplementation 'org.testng:testng:7.0.0'
@@ -75,11 +72,6 @@ dependencies {
 
     testCompile 'org.springframework.boot:spring-boot-starter-test'
     testCompile ("org.springframework.security:spring-security-test")
-}
-
-application {
-    // Define the main class for the application.
-    mainClassName = 'org.ga4gh.starterkit.wes.App'
 }
 
 jar {
