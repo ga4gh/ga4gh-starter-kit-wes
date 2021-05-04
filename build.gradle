@@ -33,7 +33,7 @@ apply plugin: 'com.bmuschko.nexus'
 
 archivesBaseName = 'ga4gh-starter-kit-wes'
 group 'org.ga4gh'
-version '0.0.1'
+version '0.0.2'
 
 repositories {
     // Use jcenter for resolving dependencies.
