@@ -1,6 +1,6 @@
 package org.ga4gh.starterkit.wes.controller;
 
-import static org.ga4gh.starterkit.wes.constant.WesServerConstants.WES_API_PREFIX;
+import static org.ga4gh.starterkit.wes.constant.WesApiConstants.WES_API_V1;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(WES_API_PREFIX + "/runs")
+@RequestMapping(WES_API_V1 + "/runs")
 public class Runs {
 
     @GetMapping
