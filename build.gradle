@@ -33,7 +33,7 @@ apply plugin: 'com.bmuschko.nexus'
 
 archivesBaseName = 'ga4gh-starter-kit-wes'
 group 'org.ga4gh'
-version '0.0.1'
+version '0.0.2'
 
 repositories {
     // Use jcenter for resolving dependencies.
@@ -68,7 +68,7 @@ dependencies {
     compile 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate4:2.4.4'
     compile 'org.springdoc:springdoc-openapi-ui:1.2.33'
     compile 'org.xerial:sqlite-jdbc:3.8.11.2'
-    compile 'org.ga4gh:ga4gh-starter-kit-common:0.3.1'
+    compile 'org.ga4gh:ga4gh-starter-kit-common:0.3.3'
 
     testCompile 'org.springframework.boot:spring-boot-starter-test'
     testCompile ("org.springframework.security:spring-security-test")
@@ -79,7 +79,7 @@ jar {
 }
 
 bootJar {
-    mainClassName = 'org.ga4gh.starterkit.wes.App'
+    mainClassName = 'org.ga4gh.starterkit.wes.app.WesStandaloneServer'
 }
 
 test {
