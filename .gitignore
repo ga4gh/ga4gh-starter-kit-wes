@@ -33,4 +33,5 @@ build
 .settings
 bin
 
+*.db
 gradle.properties
