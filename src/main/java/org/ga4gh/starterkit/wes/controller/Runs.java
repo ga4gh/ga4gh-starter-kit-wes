@@ -32,14 +32,14 @@ public class Runs {
 
     @PostMapping
     public RunId createRun(
-        @RequestParam("workflow_params") String workflowParams,
         @RequestParam("workflow_type") WorkflowType workflowType,
         @RequestParam("workflow_type_version") String workflowTypeVersion,
+        @RequestParam("workflow_url") String workflowUrl,
+        @RequestParam("workflow_params") String workflowParams,
         @RequestParam(name = "tags", required = false) String tags,
         @RequestParam(name = "workflow_engine_parameters", required = false) String workflowEngineParameters
-        // @RequestParam("workflow_url") String workflowUrl
         // @RequestParam("workflow_attachment") List<String> workflowAttachment
     ) {
-        return submitRunRequest.prepare(workflowParams, workflowType, workflowTypeVersion, tags, null, null).handleRequest();
+        return submitRunRequest.prepare(workflowType, workflowTypeVersion, workflowUrl, workflowParams, tags, null).handleRequest();
     }
 }

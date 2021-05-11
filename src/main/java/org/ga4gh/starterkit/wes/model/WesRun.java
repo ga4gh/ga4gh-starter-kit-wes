@@ -21,6 +21,12 @@ public class WesRun implements HibernateEntity<String> {
     @Column(name = "workflow_type_version")
     private String workflowTypeVersion;
 
+    @Column(name = "workflow_url")
+    private String workflowUrl;
+
+    @Column(name = "workflow_params")
+    private String workflowParams;
+
     @Column(name = "workflow_engine")
     private WorkflowEngine workflowEngine;
 
@@ -63,6 +69,22 @@ public class WesRun implements HibernateEntity<String> {
 
     public String getWorkflowTypeVersion() {
         return workflowTypeVersion;
+    }
+
+    public void setWorkflowUrl(String workflowUrl) {
+        this.workflowUrl = workflowUrl;
+    }
+
+    public String getWorkflowUrl() {
+        return workflowUrl;
+    }
+
+    public void setWorkflowParams(String workflowParams) {
+        this.workflowParams = workflowParams;
+    }
+
+    public String getWorkflowParams() {
+        return workflowParams;
     }
 
     public void setWorkflowEngine(WorkflowEngine workflowEngine) {

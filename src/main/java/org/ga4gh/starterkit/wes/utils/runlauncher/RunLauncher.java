@@ -1,13 +1,12 @@
 package org.ga4gh.starterkit.wes.utils.runlauncher;
 
+import org.ga4gh.starterkit.wes.model.WesRun;
 import org.ga4gh.starterkit.wes.utils.runlauncher.setup.engine.WorkflowEngineRunSetup;
 import org.ga4gh.starterkit.wes.utils.runlauncher.setup.type.WorkflowTypeRunSetup;
 
 public class RunLauncher {
 
-    private String id;
-    private String workflowParams;
-    private String workflowUrl;
+    private WesRun wesRun;
     private WorkflowTypeRunSetup workflowTypeRunSetup;
     private WorkflowEngineRunSetup workflowEngineRunSetup;
 
@@ -15,13 +14,11 @@ public class RunLauncher {
 
     }
 
-    public RunLauncher(String id, String workflowParams, String workflowUrl) {
-        this.id = id;
-        this.workflowParams = workflowParams;
-        this.workflowUrl = workflowUrl;
+    public RunLauncher(WesRun wesRun) {
+        this.wesRun = wesRun;
     }
 
-    public void setupAndLaunchRun() {
+    public void setupAndLaunchRun() throws Exception {
         workflowEngineRunSetup.stageWorkingArea();
         String[] command = workflowTypeRunSetup.constructCommand();
         workflowEngineRunSetup.setWorkflowCommand(command);
@@ -29,28 +26,12 @@ public class RunLauncher {
         workflowEngineRunSetup.launchWrappedWorkflowCommand();
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setWesRun(WesRun wesRun) {
+        this.wesRun = wesRun;
     }
 
-    public String getId() {
-        return id;
-    }
-
-    public void setWorkflowParams(String workflowParams) {
-        this.workflowParams = workflowParams;
-    }
-
-    public String getWorkflowParams() {
-        return workflowParams;
-    }
-
-    public void setWorkflowUrl(String workflowUrl) {
-        this.workflowUrl = workflowUrl;
-    }
-
-    public String getWorkflowUrl() {
-        return workflowUrl;
+    public WesRun getWesRun() {
+        return wesRun;
     }
 
     public void setWorkflowTypeRunSetup(WorkflowTypeRunSetup workflowTypeRunSetup) {

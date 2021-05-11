@@ -2,6 +2,8 @@ package org.ga4gh.starterkit.wes.utils.runlauncher;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
+
+import org.ga4gh.starterkit.wes.model.WesRun;
 import org.ga4gh.starterkit.wes.model.WorkflowEngine;
 import org.ga4gh.starterkit.wes.model.WorkflowType;
 import org.ga4gh.starterkit.wes.utils.runlauncher.setup.engine.NativeEngineRunSetup;
@@ -19,11 +21,13 @@ public class RunLauncherFactory {
         put(WorkflowEngine.NATIVE, NativeEngineRunSetup.class);
     }};
 
-    public RunLauncher createRunLauncher(String id, String workflowParams, String workflowUrl, WorkflowType workflowType, WorkflowEngine workflowEngine) {
+    public RunLauncher createRunLauncher(WesRun wesRun) {
         try {
-            RunLauncher runLauncher = new RunLauncher(id, workflowParams, workflowUrl);
-            WorkflowTypeRunSetup typeRunSetup = typeSetupClasses.get(workflowType).getDeclaredConstructor().newInstance();
-            WorkflowEngineRunSetup engineRunSetup = engineSetupClasses.get(workflowEngine).getDeclaredConstructor().newInstance();
+            RunLauncher runLauncher = new RunLauncher(wesRun);
+            WorkflowTypeRunSetup typeRunSetup = typeSetupClasses.get(wesRun.getWorkflowType()).getDeclaredConstructor().newInstance();
+            WorkflowEngineRunSetup engineRunSetup = engineSetupClasses.get(wesRun.getWorkflowEngine()).getDeclaredConstructor().newInstance();
+            typeRunSetup.setWesRun(wesRun);
+            engineRunSetup.setWesRun(wesRun);
             runLauncher.setWorkflowTypeRunSetup(typeRunSetup);
             runLauncher.setWorkflowEngineRunSetup(engineRunSetup);
             return runLauncher;

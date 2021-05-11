@@ -34,4 +34,6 @@ build
 bin
 
 *.db
+.nextflow*
 gradle.properties
+wes_runs

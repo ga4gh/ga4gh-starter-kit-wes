@@ -31,26 +31,26 @@ public class SubmitRunRequestHandler implements RequestHandler<RunId> {
     @Autowired
     private RunLauncherFactory runLauncherFactory;
 
-    private String workflowParams;
     private WorkflowType workflowType;
     private String workflowTypeVersion;
-    private String tags;
     private String workflowUrl;
+    private String workflowParams;
+    private String tags;
     private List<String> workflowAttachment;
 
     public SubmitRunRequestHandler() {
 
     }
 
-    public SubmitRunRequestHandler prepare(String workflowParams,
-        WorkflowType workflowType, String workflowTypeVersion,
-        String tags, String workflowUrl, List<String> workflowAttachment
+    public SubmitRunRequestHandler prepare(WorkflowType workflowType,
+        String workflowTypeVersion, String workflowUrl,
+        String workflowParams, String tags, List<String> workflowAttachment
     ) {
-        this.workflowParams = workflowParams;
         this.workflowType = workflowType;
         this.workflowTypeVersion = workflowTypeVersion;
-        this.tags = tags;
         this.workflowUrl = workflowUrl;
+        this.workflowParams = workflowParams;
+        this.tags = tags;
         this.workflowAttachment = workflowAttachment;
         return this;
     }
@@ -61,7 +61,7 @@ public class SubmitRunRequestHandler implements RequestHandler<RunId> {
             WesRun wesRun = prepareRun();
             launchRun(wesRun);
             return wesRun.toRunId();
-        } catch (EntityExistsException ex) {
+        } catch (Exception ex) {
             throw new ConflictException("Could not register new WorkflowRun");
         }
     }
@@ -112,8 +112,8 @@ public class SubmitRunRequestHandler implements RequestHandler<RunId> {
         return wesRun;
     }
 
-    private void launchRun(WesRun wesRun) throws ConflictException {
-        RunLauncher runLauncher = runLauncherFactory.createRunLauncher(wesRun.getId(), workflowParams, workflowUrl, workflowType, WorkflowEngine.NATIVE);
+    private void launchRun(WesRun wesRun) throws ConflictException, Exception {
+        RunLauncher runLauncher = runLauncherFactory.createRunLauncher(wesRun);
         if (runLauncher == null) {
             throw new ConflictException("Could not setup or launch workflow run");
         }
@@ -125,7 +125,9 @@ public class SubmitRunRequestHandler implements RequestHandler<RunId> {
         wesRun.setId(UUID.randomUUID().toString());
         wesRun.setWorkflowType(workflowType);
         wesRun.setWorkflowTypeVersion(workflowTypeVersion);
-
+        wesRun.setWorkflowUrl(workflowUrl);
+        wesRun.setWorkflowParams(workflowParams);
+        
         // TODO this is hardcoded to NATIVE workflow engine, parameterize to
         // allow other workflow engines
         wesRun.setWorkflowEngine(WorkflowEngine.NATIVE);
