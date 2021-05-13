@@ -36,7 +36,6 @@ public class NextflowTypeDetailsHandler extends AbstractRunTypeDetailsHandler {
     // for reading workflow run state
 
     public Map<String, String> requestFileContentsToDetermineRunStatus() throws Exception {
-        System.out.println("i am nextflow i need to know what's in 'work' dir");
         List<String> workDirContents = getRunEngineDetailsHandler().provideDirectoryContents("work");
         String workSubdir = workDirContents.get(0);
         List<String> workSubdirContents = getRunEngineDetailsHandler().provideDirectoryContents(Paths.get("work", workSubdir).toString());

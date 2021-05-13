@@ -29,12 +29,8 @@ public class RunManager {
     }
 
     public RunStatus getRunStatus() throws Exception {
-        System.out.println("INSIDE RUN MANAGER getRunStatus");
-        System.out.println("ABOUT TO RUN requestFileContentsToDetermineRunStatus");
         Map<String, String> requestedFilesForStatus = runTypeDetailsHandler.requestFileContentsToDetermineRunStatus();
-        System.out.println("ABOUT TO RUN getFileContentsToDetermineRunStatus");
         Map<String, String> requestedFileContentsForStatus = runEngineDetailsHandler.getFileContentsToDetermineRunStatus(requestedFilesForStatus);
-        System.out.println("ABOUT TO RUN determineRunStatus");
         return runTypeDetailsHandler.determineRunStatus(requestedFileContentsForStatus);
     }
 

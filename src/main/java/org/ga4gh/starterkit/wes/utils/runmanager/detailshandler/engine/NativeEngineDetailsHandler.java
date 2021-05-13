@@ -34,7 +34,6 @@ public class NativeEngineDetailsHandler extends AbstractRunEngineDetailsHandler 
         setJobDirectory();
         Path paramsFile = Paths.get(jobDirectory.toString(), "params.json");
         Files.createDirectories(jobDirectory);
-        System.out.println(paramsFile);
         FileUtils.writeStringToFile(paramsFile.toFile(), getWesRun().getWorkflowParams(), "utf-8");
     }
 
