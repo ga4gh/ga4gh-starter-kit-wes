@@ -27,7 +27,11 @@ public class NativeEngineDetailsHandler extends AbstractRunEngineDetailsHandler 
     }
 
     public String getRequestedFileContents(String filename) throws Exception {
-        return new String ( Files.readAllBytes( Paths.get(jobDirectory.toString(), filename)));
+        Path filePath = Path.of(filename);
+        if (!new File(filename).isAbsolute()) {
+            filePath = Paths.get(jobDirectory.toString(), filename);
+        }
+        return new String ( Files.readAllBytes(filePath));
     }
 
     public String getRequestedCommandStdout(String[] command) throws Exception {

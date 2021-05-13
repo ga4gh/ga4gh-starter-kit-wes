@@ -1,6 +1,10 @@
 package org.ga4gh.starterkit.wes.utils.runmanager.detailshandler.type;
 
 import java.net.URL;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +15,8 @@ import org.ga4gh.starterkit.wes.model.State;
 import org.ga4gh.starterkit.wes.model.WesLog;
 
 public class NextflowTypeDetailsHandler extends AbstractRunTypeDetailsHandler {
+
+    private final static DateTimeFormatter NEXTFLOW_LOG_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
 
     public NextflowTypeDetailsHandler() {
 
@@ -53,8 +59,32 @@ public class NextflowTypeDetailsHandler extends AbstractRunTypeDetailsHandler {
         return null;
     }
 
-    public List<WesLog> determineTaskLogs() {
-        return null;
+    public List<WesLog> determineTaskLogs() throws Exception {
+        List<WesLog> taskLogs = new ArrayList<>();
+        String taskLogTable = requestCommandStdoutFromEngine(new String[] {"nextflow", "log", constructNextflowRunName(), "-f", "process,start,complete,exit,workdir"});
+        String[] taskLogTableArray = taskLogTable.split("\n");
+        List<String> taskLogTableList = Arrays.asList(taskLogTableArray).subList(0, taskLogTableArray.length);
+
+        for (String taskLogRow: taskLogTableList) {
+            // unpack the task level nextflow log row, get contents of workdir
+            String[] taskLogRowArr = taskLogRow.split("\t");
+            String process = taskLogRowArr[0];
+            String start = taskLogRowArr[1];
+            String complete = taskLogRowArr[2];
+            String exit = taskLogRowArr[3];
+            String workdir = taskLogRowArr[4];
+            String cmd = requestFileContentsFromEngine(Paths.get(workdir, ".command.sh").toString());
+            
+            WesLog taskLog = new WesLog();
+            taskLog.setName(process);
+            taskLog.setStartTime(LocalDateTime.parse(start, NEXTFLOW_LOG_DATE_FORMAT));
+            taskLog.setEndTime(LocalDateTime.parse(complete, NEXTFLOW_LOG_DATE_FORMAT));
+            taskLog.setExitCode(Integer.parseInt(exit));
+            taskLog.setCmd(Arrays.asList(cmd.split("\n")));
+            taskLogs.add(taskLog);
+        }
+
+        return taskLogs;
     }
 
     public Map<String, String> determineOutputs() {
