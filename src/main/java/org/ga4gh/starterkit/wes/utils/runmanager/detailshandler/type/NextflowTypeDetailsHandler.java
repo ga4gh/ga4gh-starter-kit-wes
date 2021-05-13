@@ -1,18 +1,13 @@
 package org.ga4gh.starterkit.wes.utils.runmanager.detailshandler.type;
 
 import java.net.URL;
-import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import org.ga4gh.starterkit.wes.model.RunLog;
 import org.ga4gh.starterkit.wes.model.RunStatus;
 import org.ga4gh.starterkit.wes.model.State;
-import org.ga4gh.starterkit.wes.model.WesRun;
 
 public class NextflowTypeDetailsHandler extends AbstractRunTypeDetailsHandler {
-
-    private WesRun wesRun;
 
     public NextflowTypeDetailsHandler() {
 
@@ -29,43 +24,36 @@ public class NextflowTypeDetailsHandler extends AbstractRunTypeDetailsHandler {
             "main",
             "-params-file",
             "params.json",
+            "-name",
+            constructNextflowRunName(),
             workflowSignature
         };
     }
 
     // for reading workflow run state
 
-    public Map<String, String> requestFileContentsToDetermineRunStatus() throws Exception {
-        List<String> workDirContents = getRunEngineDetailsHandler().provideDirectoryContents("work");
-        String workSubdir = workDirContents.get(0);
-        List<String> workSubdirContents = getRunEngineDetailsHandler().provideDirectoryContents(Paths.get("work", workSubdir).toString());
-        String workSubdirSubdir = workSubdirContents.get(0);
-
-        Map<String,String> requestedFiles = new HashMap<>() {{
-            put("exitcode", Paths.get("work", workSubdir, workSubdirSubdir, ".exitcode").toString());
-        }};
-
-        return requestedFiles;
-    }
-
-    public RunStatus determineRunStatus(Map<String, String> requestedFileContentsMap) {
-        State state = State.UNKNOWN;
-        RunStatus runStatus = new RunStatus(getWesRun().getId(), state);
-
-        switch (requestedFileContentsMap.get("exitcode")) {
-            case "0":
-                runStatus.setState(State.COMPLETE);
-                break;
-            default:
-                runStatus.setState(State.EXECUTOR_ERROR);
+    public RunStatus determineRunStatus() throws Exception {
+        RunStatus runStatus = new RunStatus(getWesRun().getId(), State.UNKNOWN);
+        String runLogStdout = requestCommandStdoutFromEngine(new String[] {"nextflow", "log"});
+        String[] runLog = runLogStdout.split("\n")[1].split("\t");
+        String runLogStatus = runLog[3].strip();
+        if (runLogStatus.equals("OK")) {
+            runStatus.setState(State.COMPLETE);
+            return runStatus;
         }
         return runStatus;
+    }
+
+    // for reading workflow log
+
+    public RunLog determineRunLog() {
+        return null;
     }
 
     // private convenience methods
 
     private String getWorkflowSignature() throws Exception {
-        URL url = new URL(wesRun.getWorkflowUrl());
+        URL url = new URL(getWesRun().getWorkflowUrl());
         String urlHost = url.getHost();
         String workflowSignature = null;
         switch (urlHost) {
@@ -82,14 +70,7 @@ public class NextflowTypeDetailsHandler extends AbstractRunTypeDetailsHandler {
         return String.join("/", urlPathSplit.subList(1, 3));
     }
 
-    /* Setters and getters */
-
-    public void setWesRun(WesRun wesRun) {
-        this.wesRun = wesRun;
+    private String constructNextflowRunName() {
+        return "job" + getWesRun().getId().substring(0, 5);
     }
-
-    public WesRun getWesRun() {
-        return wesRun;
-    }
-    
 }

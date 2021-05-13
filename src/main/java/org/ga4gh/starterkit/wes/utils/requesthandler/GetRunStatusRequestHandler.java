@@ -1,6 +1,7 @@
 package org.ga4gh.starterkit.wes.utils.requesthandler;
 
-import org.ga4gh.starterkit.common.exception.ConflictException;
+import org.ga4gh.starterkit.common.exception.BadRequestException;
+import org.ga4gh.starterkit.common.exception.ResourceNotFoundException;
 import org.ga4gh.starterkit.common.requesthandler.RequestHandler;
 import org.ga4gh.starterkit.wes.model.RunStatus;
 import org.ga4gh.starterkit.wes.model.State;
@@ -30,19 +31,20 @@ public class GetRunStatusRequestHandler implements RequestHandler<RunStatus> {
     }
 
     public RunStatus handleRequest() {
-        try {
-            RunStatus runStatus = new RunStatus();
-            runStatus.setRunId(runId);
-            runStatus.setState(State.UNKNOWN);
+        
+        RunStatus runStatus = new RunStatus();
+        runStatus.setRunId(runId);
+        runStatus.setState(State.UNKNOWN);
+        WesRun wesRun = hibernateUtil.readEntityObject(WesRun.class, runId, true);
+        if (wesRun == null) {
+            throw new ResourceNotFoundException("No WES Run by the id: " + runId);
+        }
 
-            WesRun wesRun = hibernateUtil.readEntityObject(WesRun.class, runId, true);
-            if (wesRun != null) {
-                RunManager runManager = runManagerFactory.createRunLauncher(wesRun);
-                runStatus = runManager.getRunStatus();
-            }
-            return runStatus;
+        try {
+            RunManager runManager = runManagerFactory.createRunLauncher(wesRun);
+            return runManager.getRunStatus();
         } catch (Exception ex) {
-            throw new ConflictException("Could not access WorkflowRun state");
+            throw new BadRequestException("Could not load WES run status");
         }
     } 
 

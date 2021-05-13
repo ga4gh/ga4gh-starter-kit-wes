@@ -23,4 +23,12 @@ public abstract class AbstractRunTypeDetailsHandler implements RunTypeDetailsHan
     public RunEngineDetailsHandler getRunEngineDetailsHandler() {
         return runEngineDetailsHandler;
     }
+
+    public String requestFileContentsFromEngine(String filename) throws Exception {
+        return getRunEngineDetailsHandler().getRequestedFileContents(filename);
+    }
+
+    public String requestCommandStdoutFromEngine(String[] command) throws Exception {
+        return getRunEngineDetailsHandler().getRequestedCommandStdout(command);
+    }
 }

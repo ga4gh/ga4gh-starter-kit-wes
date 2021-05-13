@@ -5,9 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import org.apache.commons.io.FileUtils;
 
 public class NativeEngineDetailsHandler extends AbstractRunEngineDetailsHandler {
@@ -28,6 +26,19 @@ public class NativeEngineDetailsHandler extends AbstractRunEngineDetailsHandler 
         return Arrays.asList(dir.list());
     }
 
+    public String getRequestedFileContents(String filename) throws Exception {
+        return new String ( Files.readAllBytes( Paths.get(jobDirectory.toString(), filename)));
+    }
+
+    public String getRequestedCommandStdout(String[] command) throws Exception {
+        Process process = new ProcessBuilder()
+            .command(command)
+            .directory(getJobDirectory().toFile())
+            .start();
+        String stdout = new String (process.getInputStream().readAllBytes());
+        return stdout;
+    }
+
     // for launching workflow runs
 
     public void stageWorkingArea() throws Exception {
@@ -44,19 +55,6 @@ public class NativeEngineDetailsHandler extends AbstractRunEngineDetailsHandler 
             .start();
     }
 
-    // for reading workflow run status
-
-    public Map<String, String> getFileContentsToDetermineRunStatus(Map<String, String> requestedFileMap) throws Exception {
-        Map<String, String> requestedFileContents = new HashMap<>();
-
-        for (String key : requestedFileMap.keySet()) {
-            String content = new String ( Files.readAllBytes( Paths.get(jobDirectory.toString(), requestedFileMap.get(key))));
-            requestedFileContents.put(key, content);
-        }
-        
-        return requestedFileContents;
-    }
-
     /* Private convenience methods */
 
     private void setJobDirectory() throws Exception {
@@ -69,5 +67,12 @@ public class NativeEngineDetailsHandler extends AbstractRunEngineDetailsHandler 
             id
         );
         jobDirectory = path;
+    }
+
+    private Path getJobDirectory() throws Exception {
+        if (jobDirectory == null) {
+            setJobDirectory();
+        }
+        return jobDirectory;
     }
 }

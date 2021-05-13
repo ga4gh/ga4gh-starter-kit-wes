@@ -1,9 +1,6 @@
 package org.ga4gh.starterkit.wes.utils.runmanager;
 
-import java.util.Map;
-
 import org.ga4gh.starterkit.wes.model.RunStatus;
-import org.ga4gh.starterkit.wes.model.State;
 import org.ga4gh.starterkit.wes.model.WesRun;
 import org.ga4gh.starterkit.wes.utils.runmanager.detailshandler.engine.RunEngineDetailsHandler;
 import org.ga4gh.starterkit.wes.utils.runmanager.detailshandler.type.RunTypeDetailsHandler;
@@ -29,9 +26,7 @@ public class RunManager {
     }
 
     public RunStatus getRunStatus() throws Exception {
-        Map<String, String> requestedFilesForStatus = runTypeDetailsHandler.requestFileContentsToDetermineRunStatus();
-        Map<String, String> requestedFileContentsForStatus = runEngineDetailsHandler.getFileContentsToDetermineRunStatus(requestedFilesForStatus);
-        return runTypeDetailsHandler.determineRunStatus(requestedFileContentsForStatus);
+        return runTypeDetailsHandler.determineRunStatus();
     }
 
     public void setWesRun(WesRun wesRun) {
