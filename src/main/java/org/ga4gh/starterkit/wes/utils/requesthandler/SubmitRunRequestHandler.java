@@ -3,9 +3,7 @@ package org.ga4gh.starterkit.wes.utils.requesthandler;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.ga4gh.starterkit.common.exception.BadRequestException;
 import org.ga4gh.starterkit.common.exception.ConflictException;
 import org.ga4gh.starterkit.common.hibernate.exception.EntityExistsException;
@@ -16,8 +14,8 @@ import org.ga4gh.starterkit.wes.model.RunId;
 import org.ga4gh.starterkit.wes.model.WesRun;
 import org.ga4gh.starterkit.wes.model.WorkflowType;
 import org.ga4gh.starterkit.wes.utils.hibernate.WesHibernateUtil;
-import org.ga4gh.starterkit.wes.utils.runlauncher.RunLauncher;
-import org.ga4gh.starterkit.wes.utils.runlauncher.RunLauncherFactory;
+import org.ga4gh.starterkit.wes.utils.runmanager.RunManager;
+import org.ga4gh.starterkit.wes.utils.runmanager.RunManagerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class SubmitRunRequestHandler implements RequestHandler<RunId> {
@@ -29,7 +27,7 @@ public class SubmitRunRequestHandler implements RequestHandler<RunId> {
     private WesHibernateUtil hibernateUtil;
 
     @Autowired
-    private RunLauncherFactory runLauncherFactory;
+    private RunManagerFactory runLauncherFactory;
 
     private WorkflowType workflowType;
     private String workflowTypeVersion;
@@ -62,6 +60,7 @@ public class SubmitRunRequestHandler implements RequestHandler<RunId> {
             launchRun(wesRun);
             return wesRun.toRunId();
         } catch (Exception ex) {
+            ex.printStackTrace();
             throw new ConflictException("Could not register new WorkflowRun");
         }
     }
@@ -113,7 +112,7 @@ public class SubmitRunRequestHandler implements RequestHandler<RunId> {
     }
 
     private void launchRun(WesRun wesRun) throws ConflictException, Exception {
-        RunLauncher runLauncher = runLauncherFactory.createRunLauncher(wesRun);
+        RunManager runLauncher = runLauncherFactory.createRunLauncher(wesRun);
         if (runLauncher == null) {
             throw new ConflictException("Could not setup or launch workflow run");
         }

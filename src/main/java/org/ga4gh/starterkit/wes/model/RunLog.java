@@ -6,23 +6,8 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class RunId {
+public class RunLog {
 
     private String runId;
-
-    public RunId() {
-
-    }
-
-    public RunId(String runId) {
-        this.runId = runId;
-    }
-
-    public void setRunId(String runId) {
-        this.runId = runId;
-    }
-
-    public String getRunId() {
-        return runId;
-    }
+    private State state;
 }

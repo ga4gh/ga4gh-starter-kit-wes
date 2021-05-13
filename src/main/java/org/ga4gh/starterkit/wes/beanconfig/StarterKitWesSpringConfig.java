@@ -2,8 +2,9 @@ package org.ga4gh.starterkit.wes.beanconfig;
 
 import org.ga4gh.starterkit.common.config.DatabaseProps;
 import org.ga4gh.starterkit.wes.utils.hibernate.WesHibernateUtil;
+import org.ga4gh.starterkit.wes.utils.requesthandler.GetRunStatusRequestHandler;
 import org.ga4gh.starterkit.wes.utils.requesthandler.SubmitRunRequestHandler;
-import org.ga4gh.starterkit.wes.utils.runlauncher.RunLauncherFactory;
+import org.ga4gh.starterkit.wes.utils.runmanager.RunManagerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -30,8 +31,14 @@ public class StarterKitWesSpringConfig {
     }
 
     @Bean
-    public RunLauncherFactory runLauncherFactory() {
-        return new RunLauncherFactory();
+    @RequestScope
+    public GetRunStatusRequestHandler getRunStatusRequestHandler() {
+        return new GetRunStatusRequestHandler();
+    }
+
+    @Bean
+    public RunManagerFactory runManagerFactory() {
+        return new RunManagerFactory();
     }
     
 }

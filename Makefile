@@ -18,6 +18,11 @@ clean-sqlite:
 clean-jar:
 	@rm -f ${JAR}
 
+# remove runs in wes_runs directory
+.PHONY: clean-runs
+clean-runs:
+	@rm -r wes_runs/*
+
 # remove local dev db and jar
 .PHONY: clean-all
 clean-all: clean-sqlite clean-jar

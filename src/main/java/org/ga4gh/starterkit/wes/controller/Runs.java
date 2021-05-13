@@ -8,8 +8,10 @@ import org.ga4gh.starterkit.wes.model.RunId;
 import org.ga4gh.starterkit.wes.model.RunStatus;
 import org.ga4gh.starterkit.wes.model.State;
 import org.ga4gh.starterkit.wes.model.WorkflowType;
+import org.ga4gh.starterkit.wes.utils.requesthandler.GetRunStatusRequestHandler;
 import org.ga4gh.starterkit.wes.utils.requesthandler.SubmitRunRequestHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,6 +23,9 @@ public class Runs {
 
     @Resource
     private SubmitRunRequestHandler submitRunRequest;
+
+    @Resource
+    private GetRunStatusRequestHandler getRunStatus;
 
     @GetMapping
     public List<RunStatus> getRuns() {
@@ -41,5 +46,26 @@ public class Runs {
         // @RequestParam("workflow_attachment") List<String> workflowAttachment
     ) {
         return submitRunRequest.prepare(workflowType, workflowTypeVersion, workflowUrl, workflowParams, tags, null).handleRequest();
+    }
+
+    @GetMapping(path = "/{run_id:.+}")
+    public String getRunLog(
+        @PathVariable(name = "run_id") String runId
+    ) {
+        return runId;
+    }
+
+    @PostMapping(path = "/{run_id:.+}/cancel")
+    public String cancelRun(
+        @PathVariable(name = "run_id") String runId
+    ) {
+        return runId;
+    }
+
+    @GetMapping(path = "/{run_id:.+}/status")
+    public RunStatus runStatus(
+        @PathVariable(name = "run_id") String runId
+    ) {
+        return getRunStatus.prepare(runId).handleRequest();
     }
 }
