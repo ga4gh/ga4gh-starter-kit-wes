@@ -3,9 +3,12 @@ package org.ga4gh.starterkit.wes.utils.runmanager.detailshandler.type;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+
 import org.ga4gh.starterkit.wes.model.RunLog;
 import org.ga4gh.starterkit.wes.model.RunStatus;
 import org.ga4gh.starterkit.wes.model.State;
+import org.ga4gh.starterkit.wes.model.WesLog;
 
 public class NextflowTypeDetailsHandler extends AbstractRunTypeDetailsHandler {
 
@@ -46,7 +49,15 @@ public class NextflowTypeDetailsHandler extends AbstractRunTypeDetailsHandler {
 
     // for reading workflow log
 
-    public RunLog determineRunLog() {
+    public WesLog determineRunLog() {
+        return null;
+    }
+
+    public List<WesLog> determineTaskLogs() {
+        return null;
+    }
+
+    public Map<String, String> determineOutputs() {
         return null;
     }
 

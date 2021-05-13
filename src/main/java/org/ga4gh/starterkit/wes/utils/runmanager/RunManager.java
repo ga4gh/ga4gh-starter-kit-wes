@@ -1,5 +1,6 @@
 package org.ga4gh.starterkit.wes.utils.runmanager;
 
+import org.ga4gh.starterkit.wes.model.RunLog;
 import org.ga4gh.starterkit.wes.model.RunStatus;
 import org.ga4gh.starterkit.wes.model.WesRun;
 import org.ga4gh.starterkit.wes.utils.runmanager.detailshandler.engine.RunEngineDetailsHandler;

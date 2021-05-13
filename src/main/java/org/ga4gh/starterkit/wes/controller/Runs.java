@@ -5,9 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Resource;
 import org.ga4gh.starterkit.wes.model.RunId;
+import org.ga4gh.starterkit.wes.model.RunLog;
 import org.ga4gh.starterkit.wes.model.RunStatus;
 import org.ga4gh.starterkit.wes.model.State;
 import org.ga4gh.starterkit.wes.model.WorkflowType;
+import org.ga4gh.starterkit.wes.utils.requesthandler.GetRunLogRequestHandler;
 import org.ga4gh.starterkit.wes.utils.requesthandler.GetRunStatusRequestHandler;
 import org.ga4gh.starterkit.wes.utils.requesthandler.SubmitRunRequestHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +25,9 @@ public class Runs {
 
     @Resource
     private SubmitRunRequestHandler submitRunRequest;
+
+    @Resource
+    private GetRunLogRequestHandler getRunLog;
 
     @Resource
     private GetRunStatusRequestHandler getRunStatus;
@@ -49,10 +54,10 @@ public class Runs {
     }
 
     @GetMapping(path = "/{run_id:.+}")
-    public String getRunLog(
+    public RunLog getRunLog(
         @PathVariable(name = "run_id") String runId
     ) {
-        return runId;
+        return getRunLog.prepare(runId).handleRequest();
     }
 
     @PostMapping(path = "/{run_id:.+}/cancel")

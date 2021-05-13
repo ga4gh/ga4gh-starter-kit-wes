@@ -1,10 +1,12 @@
 package org.ga4gh.starterkit.wes.model;
 
+import java.util.Map;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.ga4gh.starterkit.common.hibernate.HibernateEntity;
 
 @Entity
@@ -43,6 +45,24 @@ public class WesRun implements HibernateEntity<String> {
 
     public RunId toRunId() {
         return new RunId(id);
+    }
+
+    public WesRequest toWesRequest() {
+        WesRequest wesRequest = new WesRequest();
+        wesRequest.setWorkflowType(getWorkflowType());
+        wesRequest.setWorkflowTypeVersion(getWorkflowTypeVersion());
+        wesRequest.setWorkflowUrl(getWorkflowUrl());
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        try {
+            Map workflowParams = mapper.readValue(getWorkflowParams(), Map.class);
+            wesRequest.setWorkflowParams(workflowParams);
+        } catch (Exception ex) {
+
+        }
+
+        return wesRequest;
     }
 
     // Setters and getters

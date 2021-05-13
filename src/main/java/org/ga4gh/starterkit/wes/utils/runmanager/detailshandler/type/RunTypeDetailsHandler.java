@@ -1,7 +1,11 @@
 package org.ga4gh.starterkit.wes.utils.runmanager.detailshandler.type;
 
+import java.util.List;
+import java.util.Map;
+
 import org.ga4gh.starterkit.wes.model.RunLog;
 import org.ga4gh.starterkit.wes.model.RunStatus;
+import org.ga4gh.starterkit.wes.model.WesLog;
 import org.ga4gh.starterkit.wes.model.WesRun;
 import org.ga4gh.starterkit.wes.utils.runmanager.detailshandler.engine.RunEngineDetailsHandler;
 
@@ -22,5 +26,7 @@ public interface RunTypeDetailsHandler {
     public RunStatus determineRunStatus() throws Exception;
 
     // for reading workflow run info
-    public RunLog determineRunLog();
+    public WesLog determineRunLog() throws Exception;
+    public List<WesLog> determineTaskLogs() throws Exception;
+    public Map<String, String> determineOutputs() throws Exception;
 }

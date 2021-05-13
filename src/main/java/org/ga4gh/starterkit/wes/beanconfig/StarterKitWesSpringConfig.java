@@ -2,6 +2,7 @@ package org.ga4gh.starterkit.wes.beanconfig;
 
 import org.ga4gh.starterkit.common.config.DatabaseProps;
 import org.ga4gh.starterkit.wes.utils.hibernate.WesHibernateUtil;
+import org.ga4gh.starterkit.wes.utils.requesthandler.GetRunLogRequestHandler;
 import org.ga4gh.starterkit.wes.utils.requesthandler.GetRunStatusRequestHandler;
 import org.ga4gh.starterkit.wes.utils.requesthandler.SubmitRunRequestHandler;
 import org.ga4gh.starterkit.wes.utils.runmanager.RunManagerFactory;
@@ -28,6 +29,12 @@ public class StarterKitWesSpringConfig {
     @RequestScope
     public SubmitRunRequestHandler submitRunRequestHandler() {
         return new SubmitRunRequestHandler();
+    }
+
+    @Bean
+    @RequestScope
+    public GetRunLogRequestHandler getRunLogRequestHandler() {
+        return new GetRunLogRequestHandler();
     }
 
     @Bean

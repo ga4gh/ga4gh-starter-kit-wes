@@ -3,15 +3,16 @@ package org.ga4gh.starterkit.wes.utils.requesthandler;
 import org.ga4gh.starterkit.common.exception.BadRequestException;
 import org.ga4gh.starterkit.common.exception.ResourceNotFoundException;
 import org.ga4gh.starterkit.common.requesthandler.RequestHandler;
-import org.ga4gh.starterkit.wes.model.RunStatus;
+import org.ga4gh.starterkit.wes.model.RunLog;
 import org.ga4gh.starterkit.wes.model.State;
 import org.ga4gh.starterkit.wes.model.WesRun;
 import org.ga4gh.starterkit.wes.utils.hibernate.WesHibernateUtil;
 import org.ga4gh.starterkit.wes.utils.runmanager.RunManager;
 import org.ga4gh.starterkit.wes.utils.runmanager.RunManagerFactory;
+import org.ga4gh.starterkit.wes.utils.runmanager.detailshandler.type.RunTypeDetailsHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class GetRunStatusRequestHandler implements RequestHandler<RunStatus> {
+public class GetRunLogRequestHandler implements RequestHandler<RunLog> {
 
     @Autowired
     private RunManagerFactory runManagerFactory;
@@ -21,32 +22,37 @@ public class GetRunStatusRequestHandler implements RequestHandler<RunStatus> {
 
     private String runId;
 
-    public GetRunStatusRequestHandler() {
+    public GetRunLogRequestHandler() {
 
     }
 
-    public GetRunStatusRequestHandler prepare(String runId) {
+    public GetRunLogRequestHandler prepare(String runId) {
         this.runId = runId;
         return this;
     }
 
-    public RunStatus handleRequest() {
-        
-        RunStatus runStatus = new RunStatus();
-        runStatus.setRunId(runId);
-        runStatus.setState(State.UNKNOWN);
+    public RunLog handleRequest() {
+        RunLog runLog = new RunLog();
+        runLog.setRunId(runId);
+        runLog.setState(State.UNKNOWN);
         WesRun wesRun = hibernateUtil.readEntityObject(WesRun.class, runId, true);
         if (wesRun == null) {
             throw new ResourceNotFoundException("No WES Run by the id: " + runId);
         }
+        runLog.setRequest(wesRun.toWesRequest());
 
         try {
             RunManager runManager = runManagerFactory.createRunLauncher(wesRun);
-            return runManager.getRunStatus();
+            RunTypeDetailsHandler runTypeDetailsHandler = runManager.getRunTypeDetailsHandler();
+            // runLog.setState(runTypeDetailsHandler.determineRunStatus().getState());
+            runLog.setRunLog(runTypeDetailsHandler.determineRunLog());
+            runLog.setTaskLogs(runTypeDetailsHandler.determineTaskLogs());
+            runLog.setOutputs(runTypeDetailsHandler.determineOutputs());
         } catch (Exception ex) {
-            throw new BadRequestException("Could not load WES run status");
+            throw new BadRequestException("Could not load WES run log");
         }
-    } 
+        return runLog;
+    }
 
     /* Setters and getters */
 
