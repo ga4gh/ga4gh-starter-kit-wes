@@ -6,10 +6,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.ga4gh.starterkit.wes.model.RunLog;
 import org.ga4gh.starterkit.wes.model.RunStatus;
 import org.ga4gh.starterkit.wes.model.State;
 import org.ga4gh.starterkit.wes.model.WesLog;
@@ -17,6 +16,8 @@ import org.ga4gh.starterkit.wes.model.WesLog;
 public class NextflowTypeDetailsHandler extends AbstractRunTypeDetailsHandler {
 
     private final static DateTimeFormatter NEXTFLOW_LOG_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+
+    private List<String> taskLogTableList;
 
     public NextflowTypeDetailsHandler() {
 
@@ -64,6 +65,7 @@ public class NextflowTypeDetailsHandler extends AbstractRunTypeDetailsHandler {
         String taskLogTable = requestCommandStdoutFromEngine(new String[] {"nextflow", "log", constructNextflowRunName(), "-f", "process,start,complete,exit,workdir"});
         String[] taskLogTableArray = taskLogTable.split("\n");
         List<String> taskLogTableList = Arrays.asList(taskLogTableArray).subList(0, taskLogTableArray.length);
+        this.taskLogTableList = taskLogTableList;
 
         for (String taskLogRow: taskLogTableList) {
             // unpack the task level nextflow log row, get contents of workdir
@@ -87,8 +89,25 @@ public class NextflowTypeDetailsHandler extends AbstractRunTypeDetailsHandler {
         return taskLogs;
     }
 
-    public Map<String, String> determineOutputs() {
-        return null;
+    public Map<String, String> determineOutputs() throws Exception {
+        HashMap<String, String> outputs = new HashMap<>();
+
+        for (String taskLogRow: taskLogTableList) {
+            // unpack the task level nextflow log row, get contents of workdir
+            String[] taskLogRowArr = taskLogRow.split("\t");
+            String workdir = taskLogRowArr[4];
+            List<String> workDirFiles = getRunEngineDetailsHandler().provideDirectoryContents(workdir);
+            for (String workDirFile : workDirFiles) {
+                if (!workDirFile.startsWith(".")) {
+                    if (!outputs.containsKey(workDirFile)) {
+                        String outputLocation = "file://" + Paths.get(workdir, workDirFile).toString();
+                        outputs.put(workDirFile, outputLocation);
+                    }
+                }
+            }
+        }
+
+        return outputs;
     }
 
     // private convenience methods

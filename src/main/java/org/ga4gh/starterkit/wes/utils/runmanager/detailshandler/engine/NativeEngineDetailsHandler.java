@@ -21,9 +21,12 @@ public class NativeEngineDetailsHandler extends AbstractRunEngineDetailsHandler 
     // common operations
 
     public List<String> provideDirectoryContents(String directory) throws Exception {
-        setJobDirectory();
-        File dir = Paths.get(jobDirectory.toString(), directory).toFile();
-        return Arrays.asList(dir.list());
+        Path jobDirectory = getJobDirectory();
+        Path dirPath = Path.of(directory);
+        if (!new File(directory).isAbsolute()) {
+            dirPath = Paths.get(jobDirectory.toString(), directory);
+        }
+        return Arrays.asList(dirPath.toFile().list());
     }
 
     public String getRequestedFileContents(String filename) throws Exception {
