@@ -2,6 +2,7 @@ package org.ga4gh.starterkit.wes.utils.requesthandler;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.ga4gh.starterkit.common.exception.BadRequestException;
@@ -13,6 +14,7 @@ import org.ga4gh.starterkit.wes.model.WorkflowEngine;
 import org.ga4gh.starterkit.wes.model.RunId;
 import org.ga4gh.starterkit.wes.model.WesRun;
 import org.ga4gh.starterkit.wes.model.WorkflowType;
+import org.ga4gh.starterkit.wes.utils.DrsUrlResolver;
 import org.ga4gh.starterkit.wes.utils.hibernate.WesHibernateUtil;
 import org.ga4gh.starterkit.wes.utils.runmanager.RunManager;
 import org.ga4gh.starterkit.wes.utils.runmanager.RunManagerFactory;
@@ -56,6 +58,7 @@ public class SubmitRunRequestHandler implements RequestHandler<RunId> {
     public RunId handleRequest() {
         try {
             validateRunRequest();
+            String resolvedWorkflowParams = resolveWorkflowParams();
             WesRun wesRun = prepareRun();
             launchRun(wesRun);
             return wesRun.toRunId();
@@ -132,5 +135,21 @@ public class SubmitRunRequestHandler implements RequestHandler<RunId> {
         wesRun.setWorkflowEngineVersion(null);
 
         return wesRun;
+    }
+
+    private String resolveWorkflowParams() {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            Map workflowParamsMap = mapper.readValue(workflowParams, Map.class);
+            for (Object key : workflowParamsMap.keySet()) {
+                String resolvedPathOrUrl = DrsUrlResolver.resolveAccessPathOrUrl(workflowParamsMap.get(key));
+                if (resolvedPathOrUrl != null) {
+                    workflowParamsMap.put(key, resolvedPathOrUrl);
+                }
+            }
+        } catch (IOException ex) {
+            throw new BadRequestException("Supplied workflow_params not valid JSON");
+        }
+        return null;
     }
 }

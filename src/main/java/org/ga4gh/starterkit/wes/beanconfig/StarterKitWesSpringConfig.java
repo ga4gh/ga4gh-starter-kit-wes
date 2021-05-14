@@ -47,5 +47,4 @@ public class StarterKitWesSpringConfig {
     public RunManagerFactory runManagerFactory() {
         return new RunManagerFactory();
     }
-    
 }
