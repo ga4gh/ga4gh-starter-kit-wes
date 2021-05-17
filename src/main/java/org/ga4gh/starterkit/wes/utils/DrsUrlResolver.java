@@ -2,9 +2,7 @@ package org.ga4gh.starterkit.wes.utils;
 
 import java.io.IOException;
 import java.net.URI;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
