@@ -58,8 +58,11 @@ public class SubmitRunRequestHandler implements RequestHandler<RunId> {
     public RunId handleRequest() {
         try {
             validateRunRequest();
-            String resolvedWorkflowParams = resolveWorkflowParams();
             WesRun wesRun = prepareRun();
+            String resolvedWorkflowParams = resolveWorkflowParams();
+            if (resolvedWorkflowParams != null) {
+                wesRun.setWorkflowParams(resolvedWorkflowParams);
+            }
             launchRun(wesRun);
             return wesRun.toRunId();
         } catch (Exception ex) {
@@ -138,6 +141,7 @@ public class SubmitRunRequestHandler implements RequestHandler<RunId> {
     }
 
     private String resolveWorkflowParams() {
+        
         try {
             ObjectMapper mapper = new ObjectMapper();
             Map workflowParamsMap = mapper.readValue(workflowParams, Map.class);
@@ -147,9 +151,9 @@ public class SubmitRunRequestHandler implements RequestHandler<RunId> {
                     workflowParamsMap.put(key, resolvedPathOrUrl);
                 }
             }
+            return mapper.writeValueAsString(workflowParamsMap);
         } catch (IOException ex) {
             throw new BadRequestException("Supplied workflow_params not valid JSON");
         }
-        return null;
     }
 }
