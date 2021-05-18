@@ -116,20 +116,37 @@ public class NextflowTypeDetailsHandler extends AbstractRunTypeDetailsHandler {
         workflowLog.setName(getWorkflowSignature());
 
         // set log URLs for stdout and stderr
-        String logURLPrefix = serverProps.getScheme() + "://" + serverProps.getHostname() + WesApiConstants.WES_API_V1 + "/logs/nextflow";
-        String logURLSuffix = "/" + getWesRun().getId();
+        
         List<String> workdirs = new ArrayList<>();
+        List<String> cmds = new ArrayList<>();
 
         for (String taskLogRow: taskLogTableList) {
             // unpack the task level nextflow log row, get contents of workdir
             String[] taskLogRowArr = taskLogRow.split("\t");
             String workdir = taskLogRowArr[4];
+            String cmd = requestFileContentsFromEngine(Paths.get(workdir, ".command.sh").toString());
+            for (String c : cmd.split("\n")) {
+                cmds.add(c);
+            }
+
             List<String> workdirSplit = Arrays.asList(workdir.split("/"));
             List<String> subdirsSplit = workdirSplit.subList(workdirSplit.size() - 2, workdirSplit.size());
             String subdirs = Strings.join(subdirsSplit, '/');
             workdirs.add(subdirs);
         }
+
+        workflowLog.setCmd(cmds);
+
+        String firstStartTime = taskLogTableList.get(0).split("\t")[1];
+        String finalEndTime = taskLogTableList.get(taskLogTableList.size() - 1).split("\t")[2];
+        workflowLog.setStartTime(LocalDateTime.parse(firstStartTime, NEXTFLOW_LOG_DATE_FORMAT));
+        workflowLog.setEndTime(LocalDateTime.parse(finalEndTime, NEXTFLOW_LOG_DATE_FORMAT));
+
+        String finalExitCode = taskLogTableList.get(taskLogTableList.size() - 1).split("\t")[3];
+        workflowLog.setExitCode(Integer.parseInt(finalExitCode));
         
+        String logURLPrefix = serverProps.getScheme() + "://" + serverProps.getHostname() + WesApiConstants.WES_API_V1 + "/logs/nextflow";
+        String logURLSuffix = "/" + getWesRun().getId();
         String logURLQuery = "?workdirs=" + URLEncoder.encode(Strings.join(workdirs, ','), "UTF-8");
         workflowLog.setStdout(logURLPrefix + "/stdout" + logURLSuffix + logURLQuery);
         workflowLog.setStderr(logURLPrefix + "/stderr" + logURLSuffix + logURLQuery);

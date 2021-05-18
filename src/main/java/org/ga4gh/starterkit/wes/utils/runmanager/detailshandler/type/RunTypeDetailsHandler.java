@@ -1,11 +1,7 @@
 package org.ga4gh.starterkit.wes.utils.runmanager.detailshandler.type;
 
-import java.util.List;
-import java.util.Map;
-
 import org.ga4gh.starterkit.wes.model.RunLog;
 import org.ga4gh.starterkit.wes.model.RunStatus;
-import org.ga4gh.starterkit.wes.model.WesLog;
 import org.ga4gh.starterkit.wes.model.WesRun;
 import org.ga4gh.starterkit.wes.utils.runmanager.detailshandler.engine.RunEngineDetailsHandler;
 
