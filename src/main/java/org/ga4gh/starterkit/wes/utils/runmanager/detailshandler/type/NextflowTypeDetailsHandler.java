@@ -9,11 +9,20 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.math3.stat.descriptive.SynchronizedSummaryStatistics;
+import org.apache.logging.log4j.util.Strings;
+import org.ga4gh.starterkit.common.config.ServerProps;
+import org.ga4gh.starterkit.wes.constant.WesApiConstants;
 import org.ga4gh.starterkit.wes.model.RunStatus;
 import org.ga4gh.starterkit.wes.model.State;
 import org.ga4gh.starterkit.wes.model.WesLog;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class NextflowTypeDetailsHandler extends AbstractRunTypeDetailsHandler {
+
+    @Autowired
+    private ServerProps serverProps;
 
     private final static DateTimeFormatter NEXTFLOW_LOG_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
 
@@ -76,11 +85,19 @@ public class NextflowTypeDetailsHandler extends AbstractRunTypeDetailsHandler {
             String exit = taskLogRowArr[3];
             String workdir = taskLogRowArr[4];
             String cmd = requestFileContentsFromEngine(Paths.get(workdir, ".command.sh").toString());
-            
-            WesLog taskLog = new WesLog();
+
+            List<String> workdirSplit = Arrays.asList(workdir.split("/"));
+            List<String> subdirsSplit = workdirSplit.subList(workdirSplit.size() - 2, workdirSplit.size());
+            String subdirs = Strings.join(subdirsSplit, '/');
+            String logURLPrefix = serverProps.getScheme() + "://" + serverProps.getHostname() + WesApiConstants.WES_API_V1 + "/logs/nextflow";
+            String logURLSuffix = "/" + getWesRun().getId() + "/" + subdirs;
+
+            WesLog taskLog = new WesLog();            
             taskLog.setName(process);
             taskLog.setStartTime(LocalDateTime.parse(start, NEXTFLOW_LOG_DATE_FORMAT));
             taskLog.setEndTime(LocalDateTime.parse(complete, NEXTFLOW_LOG_DATE_FORMAT));
+            taskLog.setStdout(logURLPrefix + "/stdout" + logURLSuffix);
+            taskLog.setStderr(logURLPrefix + "/stderr" + logURLSuffix);
             taskLog.setExitCode(Integer.parseInt(exit));
             taskLog.setCmd(Arrays.asList(cmd.split("\n")));
             taskLogs.add(taskLog);

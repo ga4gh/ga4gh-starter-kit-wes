@@ -30,6 +30,7 @@ public class NativeEngineDetailsHandler extends AbstractRunEngineDetailsHandler 
     }
 
     public String getRequestedFileContents(String filename) throws Exception {
+        Path jobDirectory = getJobDirectory();
         Path filePath = Path.of(filename);
         if (!new File(filename).isAbsolute()) {
             filePath = Paths.get(jobDirectory.toString(), filename);

@@ -10,8 +10,12 @@ import org.ga4gh.starterkit.wes.utils.runmanager.detailshandler.engine.NativeEng
 import org.ga4gh.starterkit.wes.utils.runmanager.detailshandler.engine.RunEngineDetailsHandler;
 import org.ga4gh.starterkit.wes.utils.runmanager.detailshandler.type.NextflowTypeDetailsHandler;
 import org.ga4gh.starterkit.wes.utils.runmanager.detailshandler.type.RunTypeDetailsHandler;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
-public class RunManagerFactory {
+public class RunManagerFactory implements ApplicationContextAware {
+
+    private ApplicationContext applicationContext;
 
     private static HashMap<WorkflowType, Class<? extends RunTypeDetailsHandler>> typeSetupClasses = new HashMap<>(){{
         put(WorkflowType.NEXTFLOW, NextflowTypeDetailsHandler.class);
@@ -22,20 +26,20 @@ public class RunManagerFactory {
     }};
 
     public RunManager createRunLauncher(WesRun wesRun) {
-        try {
-            RunManager runLauncher = new RunManager(wesRun);
-            RunTypeDetailsHandler runTypeDetailsHandler = typeSetupClasses.get(wesRun.getWorkflowType()).getDeclaredConstructor().newInstance();
-            RunEngineDetailsHandler runEngineDetailsHandler = engineSetupClasses.get(wesRun.getWorkflowEngine()).getDeclaredConstructor().newInstance();
-            runTypeDetailsHandler.setWesRun(wesRun);
-            runTypeDetailsHandler.setRunEngineDetailsHandler(runEngineDetailsHandler);
-            runEngineDetailsHandler.setWesRun(wesRun);
-            runEngineDetailsHandler.setRunTypeDetailsHandler(runTypeDetailsHandler);
-            runLauncher.setRunTypeDetailsHandler(runTypeDetailsHandler);
-            runLauncher.setRunEngineDetailsHandler(runEngineDetailsHandler);
-            return runLauncher;
-        } catch (NoSuchMethodException | InvocationTargetException |
-            InstantiationException | IllegalAccessException ex) {
-            return null;
-        }
+        
+        RunManager runManager = applicationContext.getBean(RunManager.class);
+        RunTypeDetailsHandler runTypeDetailsHandler = applicationContext.getBean(typeSetupClasses.get(wesRun.getWorkflowType()));
+        RunEngineDetailsHandler runEngineDetailsHandler = applicationContext.getBean(engineSetupClasses.get(wesRun.getWorkflowEngine()));
+        runTypeDetailsHandler.setWesRun(wesRun);
+        runTypeDetailsHandler.setRunEngineDetailsHandler(runEngineDetailsHandler);
+        runEngineDetailsHandler.setWesRun(wesRun);
+        runEngineDetailsHandler.setRunTypeDetailsHandler(runTypeDetailsHandler);
+        runManager.setRunTypeDetailsHandler(runTypeDetailsHandler);
+        runManager.setRunEngineDetailsHandler(runEngineDetailsHandler);
+        return runManager;
+    }
+
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
     }
 }
