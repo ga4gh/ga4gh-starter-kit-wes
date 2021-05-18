@@ -39,4 +39,6 @@ public class WesServiceInfoDefaults {
 
     public static final String SERVICE_TYPE_VERSION = "1.0.1";
 
+    public static final String NEXTFLOW_VERSION = "21.04.0";
+
 }

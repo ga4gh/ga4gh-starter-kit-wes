@@ -6,19 +6,16 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class RunStatus {
+public class RunId {
 
     private String runId;
 
-    private State state;
-
-    public RunStatus() {
+    public RunId() {
 
     }
 
-    public RunStatus(String runId, State state) {
+    public RunId(String runId) {
         this.runId = runId;
-        this.state = state;
     }
 
     public void setRunId(String runId) {
@@ -27,13 +24,5 @@ public class RunStatus {
 
     public String getRunId() {
         return runId;
-    }
-
-    public void setState(State state) {
-        this.state = state;
-    }
-
-    public State getState() {
-        return state;
     }
 }
