@@ -21,7 +21,7 @@ public class WesStandaloneYamlConfigContainer {
 
     /**
      * Instantiates a new WesStandaloneYamlConfigContainer while assigning an existing WesStandaloneYamlConfig object
-     * @param wes
+     * @param wes WesStandaloneYamlConfig object
      */
     public WesStandaloneYamlConfigContainer(WesStandaloneYamlConfig wes) {
         this.wes = wes;
