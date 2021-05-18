@@ -6,6 +6,7 @@ import org.ga4gh.starterkit.wes.utils.requesthandler.GetRunLogRequestHandler;
 import org.ga4gh.starterkit.wes.utils.requesthandler.GetRunStatusRequestHandler;
 import org.ga4gh.starterkit.wes.utils.requesthandler.SubmitRunRequestHandler;
 import org.ga4gh.starterkit.wes.utils.requesthandler.logs.NextflowTaskLogsRequestHandler;
+import org.ga4gh.starterkit.wes.utils.requesthandler.logs.NextflowWorkflowLogsRequestHandler;
 import org.ga4gh.starterkit.wes.utils.runmanager.RunManager;
 import org.ga4gh.starterkit.wes.utils.runmanager.RunManagerFactory;
 import org.ga4gh.starterkit.wes.utils.runmanager.detailshandler.engine.NativeEngineDetailsHandler;
@@ -52,6 +53,12 @@ public class StarterKitWesSpringConfig {
     @RequestScope
     public NextflowTaskLogsRequestHandler nextflowTaskLogsRequestHandler() {
         return new NextflowTaskLogsRequestHandler();
+    }
+
+    @Bean
+    @RequestScope
+    public NextflowWorkflowLogsRequestHandler nextflowWorkflowLogsRequestHandler() {
+        return new NextflowWorkflowLogsRequestHandler();
     }
 
     @Bean

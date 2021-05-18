@@ -26,7 +26,5 @@ public interface RunTypeDetailsHandler {
     public RunStatus determineRunStatus() throws Exception;
 
     // for reading workflow run info
-    public WesLog determineRunLog() throws Exception;
-    public List<WesLog> determineTaskLogs() throws Exception;
-    public Map<String, String> determineOutputs() throws Exception;
+    public void completeRunLog(RunLog runLog) throws Exception;
 }

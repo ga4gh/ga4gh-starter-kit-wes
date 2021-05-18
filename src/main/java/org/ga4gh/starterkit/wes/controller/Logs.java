@@ -5,9 +5,11 @@ import static org.ga4gh.starterkit.wes.constant.WesApiConstants.WES_API_V1;
 import javax.annotation.Resource;
 
 import org.ga4gh.starterkit.wes.utils.requesthandler.logs.NextflowTaskLogsRequestHandler;
+import org.ga4gh.starterkit.wes.utils.requesthandler.logs.NextflowWorkflowLogsRequestHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -16,6 +18,9 @@ public class Logs {
 
     @Resource
     private NextflowTaskLogsRequestHandler nextflowTaskLogs;
+
+    @Resource
+    private NextflowWorkflowLogsRequestHandler nextflowWorkflowLogs;
 
     /* NEXTFLOW LOGS */
 
@@ -32,8 +37,9 @@ public class Logs {
     @GetMapping(path = "/nextflow/{channel:.+}/{run_id:.+}")
     public String getNextflowWorkflowLogs(
         @PathVariable(name = "channel") String channel,
-        @PathVariable(name = "run_id") String runId
+        @PathVariable(name = "run_id") String runId,
+        @RequestParam(name = "workdirs") String workdirs
     ) {
-        return null;
+        return nextflowWorkflowLogs.prepare(channel, runId, workdirs).handleRequest();
     }
 }

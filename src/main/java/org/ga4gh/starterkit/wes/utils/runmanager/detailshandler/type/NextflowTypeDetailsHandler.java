@@ -1,6 +1,7 @@
 package org.ga4gh.starterkit.wes.utils.runmanager.detailshandler.type;
 
 import java.net.URL;
+import java.net.URLEncoder;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -9,11 +10,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.math3.stat.descriptive.SynchronizedSummaryStatistics;
 import org.apache.logging.log4j.util.Strings;
 import org.ga4gh.starterkit.common.config.ServerProps;
 import org.ga4gh.starterkit.wes.constant.WesApiConstants;
+import org.ga4gh.starterkit.wes.model.RunLog;
 import org.ga4gh.starterkit.wes.model.RunStatus;
 import org.ga4gh.starterkit.wes.model.State;
 import org.ga4gh.starterkit.wes.model.WesLog;
@@ -65,11 +65,16 @@ public class NextflowTypeDetailsHandler extends AbstractRunTypeDetailsHandler {
 
     // for reading workflow log
 
-    public WesLog determineRunLog() {
-        return null;
+    public void completeRunLog(RunLog runLog) throws Exception {
+        List<WesLog> taskLogs = determineTaskLogs();
+        WesLog workflowLog = determineWorkflowLog();
+        Map<String, String> outputs = determineOutputs();
+        runLog.setTaskLogs(taskLogs);
+        runLog.setRunLog(workflowLog);
+        runLog.setOutputs(outputs);
     }
 
-    public List<WesLog> determineTaskLogs() throws Exception {
+    private List<WesLog> determineTaskLogs() throws Exception {
         List<WesLog> taskLogs = new ArrayList<>();
         String taskLogTable = requestCommandStdoutFromEngine(new String[] {"nextflow", "log", constructNextflowRunName(), "-f", "process,start,complete,exit,workdir"});
         String[] taskLogTableArray = taskLogTable.split("\n");
@@ -106,7 +111,32 @@ public class NextflowTypeDetailsHandler extends AbstractRunTypeDetailsHandler {
         return taskLogs;
     }
 
-    public Map<String, String> determineOutputs() throws Exception {
+    private WesLog determineWorkflowLog() throws Exception {
+        WesLog workflowLog = new WesLog();
+        workflowLog.setName(getWorkflowSignature());
+
+        // set log URLs for stdout and stderr
+        String logURLPrefix = serverProps.getScheme() + "://" + serverProps.getHostname() + WesApiConstants.WES_API_V1 + "/logs/nextflow";
+        String logURLSuffix = "/" + getWesRun().getId();
+        List<String> workdirs = new ArrayList<>();
+
+        for (String taskLogRow: taskLogTableList) {
+            // unpack the task level nextflow log row, get contents of workdir
+            String[] taskLogRowArr = taskLogRow.split("\t");
+            String workdir = taskLogRowArr[4];
+            List<String> workdirSplit = Arrays.asList(workdir.split("/"));
+            List<String> subdirsSplit = workdirSplit.subList(workdirSplit.size() - 2, workdirSplit.size());
+            String subdirs = Strings.join(subdirsSplit, '/');
+            workdirs.add(subdirs);
+        }
+        
+        String logURLQuery = "?workdirs=" + URLEncoder.encode(Strings.join(workdirs, ','), "UTF-8");
+        workflowLog.setStdout(logURLPrefix + "/stdout" + logURLSuffix + logURLQuery);
+        workflowLog.setStderr(logURLPrefix + "/stderr" + logURLSuffix + logURLQuery);
+        return workflowLog;
+    }
+
+    private Map<String, String> determineOutputs() throws Exception {
         HashMap<String, String> outputs = new HashMap<>();
 
         for (String taskLogRow: taskLogTableList) {
