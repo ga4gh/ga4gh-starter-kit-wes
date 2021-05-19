@@ -50,7 +50,7 @@ public class Runs {
     /**
      * Launch a new workflow run
      * @param workflowType workflow language specification
-     * @param workflowTypeVersion workflow language specification language
+     * @param workflowTypeVersion workflow language specification version
      * @param workflowUrl URL to workflow source
      * @param workflowParams raw JSON string of workflow run input parameters
      * @param tags raw JSON string indicating key:value tags

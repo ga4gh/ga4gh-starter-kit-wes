@@ -12,6 +12,12 @@ import org.ga4gh.starterkit.wes.utils.runmanager.RunManagerFactory;
 import org.ga4gh.starterkit.wes.utils.runmanager.detailshandler.type.RunTypeDetailsHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 
+/**
+ * Request handling logic for getting full log information (according to the WES spec)
+ * from a requested workflow run
+ * 
+ * @see org.ga4gh.starterkit.wes.controller.Runs#getRunLog getRunLog
+ */
 public class GetRunLogRequestHandler implements RequestHandler<RunLog> {
 
     @Autowired
@@ -22,16 +28,29 @@ public class GetRunLogRequestHandler implements RequestHandler<RunLog> {
 
     private String runId;
 
+    /**
+     * Instantiates a new GetRunLogRequestHandler
+     */
     public GetRunLogRequestHandler() {
 
     }
 
+    /**
+     * Prepares the request handler with input params from the controller function
+     * @param runId run identifier
+     * @return the prepared request handler
+     */
     public GetRunLogRequestHandler prepare(String runId) {
         this.runId = runId;
         return this;
     }
 
+    /**
+     * Obtains full log information for the requested workflow run
+     */
     public RunLog handleRequest() {
+        // load the persisten WesRun by its id to obtain workflow language,
+        // engine associated with the run
         RunLog runLog = new RunLog();
         runLog.setRunId(runId);
         runLog.setState(State.UNKNOWN);
@@ -41,6 +60,8 @@ public class GetRunLogRequestHandler implements RequestHandler<RunLog> {
         }
         runLog.setRequest(wesRun.toWesRequest());
 
+        // allow the low-level RunManager to perform language/engine-dependent
+        // methods to obtain run status
         try {
             RunManager runManager = runManagerFactory.createRunLauncher(wesRun);
             RunTypeDetailsHandler runTypeDetailsHandler = runManager.getRunTypeDetailsHandler();
@@ -50,15 +71,5 @@ public class GetRunLogRequestHandler implements RequestHandler<RunLog> {
             throw new BadRequestException("Could not load WES run log");
         }
         return runLog;
-    }
-
-    /* Setters and getters */
-
-    public void setRunId(String runId) {
-        this.runId = runId;
-    }
-
-    public String getRunId() {
-        return runId;
     }
 }

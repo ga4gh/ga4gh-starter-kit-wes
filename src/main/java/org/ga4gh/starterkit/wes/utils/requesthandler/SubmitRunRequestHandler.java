@@ -20,6 +20,11 @@ import org.ga4gh.starterkit.wes.utils.runmanager.RunManager;
 import org.ga4gh.starterkit.wes.utils.runmanager.RunManagerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+/**
+ * Request handling logic for submitting a new run request
+ * 
+ * @see org.ga4gh.starterkit.wes.controller.Runs#createRun createRun
+ */
 public class SubmitRunRequestHandler implements RequestHandler<RunId> {
 
     @Autowired
@@ -38,10 +43,23 @@ public class SubmitRunRequestHandler implements RequestHandler<RunId> {
     private String tags;
     private List<String> workflowAttachment;
 
+    /**
+     * Instantiates a new SubmitRunRequestHandler object
+     */
     public SubmitRunRequestHandler() {
 
     }
 
+    /**
+     * Prepares the request handler with input params from the controller function
+     * @param workflowType workflow language specification
+     * @param workflowTypeVersion workflow language specification version
+     * @param workflowUrl URL to workflow source
+     * @param workflowParams raw JSON string of workflow run input parameters
+     * @param tags raw JSON string indicating key:value tags
+     * @param workflowAttachment string array indicating files to upload
+     * @return the prepared request handler
+     */
     public SubmitRunRequestHandler prepare(WorkflowType workflowType,
         String workflowTypeVersion, String workflowUrl,
         String workflowParams, String tags, List<String> workflowAttachment
@@ -55,6 +73,9 @@ public class SubmitRunRequestHandler implements RequestHandler<RunId> {
         return this;
     }
 
+    /**
+     * submits a new workflow run request and returns the id
+     */
     public RunId handleRequest() {
         try {
             validateRunRequest();
@@ -70,6 +91,10 @@ public class SubmitRunRequestHandler implements RequestHandler<RunId> {
         }
     }
 
+    /**
+     * validates that run request parameters are valid
+     * @throws BadRequestException an unsupported or malformed parameter was provided
+     */
     private void validateRunRequest() throws BadRequestException {
         // Validate workflowType
         // - assert requested workflowType is supported according to ServiceInfo
@@ -105,18 +130,35 @@ public class SubmitRunRequestHandler implements RequestHandler<RunId> {
         // 'tags' not evaluated, not supported
     }
 
+    /**
+     * Performs initial preparation when request is valid
+     * @return a persistent WesRun entity to track the workflow run job
+     * @throws EntityExistsException a new WesRun instance could not be created
+     */
     private WesRun prepareRun() throws EntityExistsException {
+        // create the WesRun, and check if a WesRun by the same id already exists
+        // in the database. if so, regenerate the WesRun
         WesRun wesRun = createWesRun();
         boolean exists = hibernateUtil.readEntityObject(WesRun.class, wesRun.getId(), false) != null;
         while (exists) {
             wesRun = createWesRun();
             exists = hibernateUtil.readEntityObject(WesRun.class, wesRun.getId(), false) != null;
         }
+        // persist the WesRun and return the persistent instance
         hibernateUtil.createEntityObject(WesRun.class, wesRun);
         return wesRun;
     }
 
+    /**
+     * Launches the prepared workflow run
+     * @param wesRun persistent WesRun entity tracking the workflow run job
+     * @throws ConflictException an exception was encountered
+     * @throws Exception an exception was encountered
+     */
     private void launchRun(WesRun wesRun) throws ConflictException, Exception {
+        // create a low-level RunManager instance from the factory, allow
+        // the RunManager that has knowledge of the requested workflow type and
+        // engine to handle the submission
         RunManager runLauncher = runLauncherFactory.createRunLauncher(wesRun);
         if (runLauncher == null) {
             throw new ConflictException("Could not setup or launch workflow run");
@@ -124,6 +166,10 @@ public class SubmitRunRequestHandler implements RequestHandler<RunId> {
         runLauncher.setupAndLaunchRun();
     }
 
+    /**
+     * Creates a new, non-persistent WesRun object based on input parameters
+     * @return non-persistent WesRun object
+     */
     private WesRun createWesRun() {
         WesRun wesRun = new WesRun();
         wesRun.setId(UUID.randomUUID().toString());
@@ -140,12 +186,20 @@ public class SubmitRunRequestHandler implements RequestHandler<RunId> {
         return wesRun;
     }
 
+    /**
+     * Resolve any DRS URLs in the input parameters to URLs or file paths, leaving any
+     * non-DRS URLs untouched 
+     * @return raw JSON string of modified input parameters
+     */
     private String resolveWorkflowParams() {
         
         try {
+            // read the input params JSON into a map
             ObjectMapper mapper = new ObjectMapper();
             Map workflowParamsMap = mapper.readValue(workflowParams, Map.class);
             for (Object key : workflowParamsMap.keySet()) {
+                // if the value is found to have been a DRS URL, then resolve it
+                // and override the DRS URL with the raw path
                 String resolvedPathOrUrl = DrsUrlResolver.resolveAccessPathOrUrl(workflowParamsMap.get(key));
                 if (resolvedPathOrUrl != null) {
                     workflowParamsMap.put(key, resolvedPathOrUrl);
