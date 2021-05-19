@@ -11,6 +11,10 @@ import org.ga4gh.starterkit.wes.utils.runmanager.detailshandler.type.RunTypeDeta
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
+/**
+ * Spring context-aware singleton that creates and configures RunManagers
+ * via the application context
+ */
 public class RunManagerFactory implements ApplicationContextAware {
 
     private ApplicationContext applicationContext;
@@ -23,8 +27,16 @@ public class RunManagerFactory implements ApplicationContextAware {
         put(WorkflowEngine.NATIVE, NativeEngineDetailsHandler.class);
     }};
 
-    public RunManager createRunLauncher(WesRun wesRun) {
-        
+    /**
+     * Instantiates a new RunManager instance with the correct workflow type
+     * and workflow engine handlers according to the WesRun of interest
+     * @param wesRun WesRun entity for a particular workflow run
+     * @return configured RunManager instance
+     */
+    public RunManager createRunManager(WesRun wesRun) {
+        // load the RunManager, the correct RunTypeDetailsHandler child class
+        // according to workflowType, and the correct RunEngineDetailsHandler
+        // according to workflowEngine
         RunManager runManager = applicationContext.getBean(RunManager.class);
         RunTypeDetailsHandler runTypeDetailsHandler = applicationContext.getBean(typeSetupClasses.get(wesRun.getWorkflowType()));
         RunEngineDetailsHandler runEngineDetailsHandler = applicationContext.getBean(engineSetupClasses.get(wesRun.getWorkflowEngine()));
@@ -37,6 +49,10 @@ public class RunManagerFactory implements ApplicationContextAware {
         return runManager;
     }
 
+    /**
+     * Assigns applicationContext
+     * @param applicationContext Spring application context
+     */
     public void setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
     }

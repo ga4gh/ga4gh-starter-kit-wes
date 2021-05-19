@@ -63,7 +63,7 @@ public class GetRunLogRequestHandler implements RequestHandler<RunLog> {
         // allow the low-level RunManager to perform language/engine-dependent
         // methods to obtain run status
         try {
-            RunManager runManager = runManagerFactory.createRunLauncher(wesRun);
+            RunManager runManager = runManagerFactory.createRunManager(wesRun);
             RunTypeDetailsHandler runTypeDetailsHandler = runManager.getRunTypeDetailsHandler();
             runLog.setState(runTypeDetailsHandler.determineRunStatus().getState());
             runTypeDetailsHandler.completeRunLog(runLog);

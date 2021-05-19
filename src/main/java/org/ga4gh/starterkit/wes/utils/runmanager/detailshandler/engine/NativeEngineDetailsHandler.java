@@ -8,12 +8,20 @@ import java.util.Arrays;
 import java.util.List;
 import org.apache.commons.io.FileUtils;
 
+/**
+ * Facilitates access to data/information for workflow runs launched via the 
+ * 'Native' engine, that is, launched on the host machine without leveraging any
+ * HPC or Cloud batch scheduling resources
+ */
 public class NativeEngineDetailsHandler extends AbstractRunEngineDetailsHandler {
 
     private static final Path wesRunDir = Paths.get("wes_runs");
 
     private Path jobDirectory;
 
+    /**
+     * Instantiates a new NativeEngineDetailsHandler instance
+     */
     public NativeEngineDetailsHandler() {
         
     }
@@ -65,6 +73,10 @@ public class NativeEngineDetailsHandler extends AbstractRunEngineDetailsHandler 
 
     /* Private convenience methods */
 
+    /**
+     * Constructs an isolated directory for the workflow run, based on its id
+     * @throws Exception a server-side error occurred
+     */
     private void setJobDirectory() throws Exception {
         String id = getWesRun().getId();
         Path path = Paths.get(
@@ -77,6 +89,12 @@ public class NativeEngineDetailsHandler extends AbstractRunEngineDetailsHandler 
         jobDirectory = path;
     }
 
+    /**
+     * Retrieves the path to the job directory, loading it if it hasn't already
+     * been set
+     * @return the job directory for the workflow run
+     * @throws Exception a server-side error occurred
+     */
     private Path getJobDirectory() throws Exception {
         if (jobDirectory == null) {
             setJobDirectory();

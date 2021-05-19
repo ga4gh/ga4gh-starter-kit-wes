@@ -53,7 +53,7 @@ public class NextflowTaskLogsRequestHandler implements RequestHandler<String> {
         if (wesRun == null) {
             throw new ResourceNotFoundException("No WES Run by the id: " + runId);
         }
-        RunManager runManager = runManagerFactory.createRunLauncher(wesRun);
+        RunManager runManager = runManagerFactory.createRunManager(wesRun);
 
         // construct task log file path based on the task subdirs. Stdout/stderr
         // files are located under the 'work' directory 

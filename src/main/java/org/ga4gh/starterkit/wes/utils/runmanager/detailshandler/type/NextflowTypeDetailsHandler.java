@@ -19,6 +19,9 @@ import org.ga4gh.starterkit.wes.model.State;
 import org.ga4gh.starterkit.wes.model.WesLog;
 import org.springframework.beans.factory.annotation.Autowired;
 
+/**
+ * Faciliates access to data/information for nextflow workflow runs
+ */
 public class NextflowTypeDetailsHandler extends AbstractRunTypeDetailsHandler {
 
     @Autowired
@@ -28,6 +31,9 @@ public class NextflowTypeDetailsHandler extends AbstractRunTypeDetailsHandler {
 
     private List<String> taskLogTableList;
 
+    /**
+     * Instantiate a new NextflowTypeDetailsHandler instance
+     */
     public NextflowTypeDetailsHandler() {
 
     }
@@ -176,6 +182,12 @@ public class NextflowTypeDetailsHandler extends AbstractRunTypeDetailsHandler {
 
     // private convenience methods
 
+    /**
+     * Get the nextflow workflow signature from the workflowURL, to be used
+     * in 'nextflow run' to indicate what workflow to run
+     * @return 'nextflow run' signature indicating workflow to run
+     * @throws Exception a server-side error occurred
+     */
     private String getWorkflowSignature() throws Exception {
         URL url = new URL(getWesRun().getWorkflowUrl());
         String urlHost = url.getHost();
@@ -188,12 +200,22 @@ public class NextflowTypeDetailsHandler extends AbstractRunTypeDetailsHandler {
         return workflowSignature;
     }
 
+    /**
+     * Obtain the workflow signature from a "github.com" URL referencing a
+     * nextflow workflow repo 
+     * @param url github.com URL
+     * @return 'nextflow run' signature indicating workflow to run
+     */
     private String githubWorkflowSignature(URL url) {
         String urlPath = url.getPath();
         List<String> urlPathSplit = Arrays.asList(urlPath.split("/"));
         return String.join("/", urlPathSplit.subList(1, 3));
     }
 
+    /**
+     * Sets the nextflow run job name according to the run's id
+     * @return short job name
+     */
     private String constructNextflowRunName() {
         return "job" + getWesRun().getId().substring(0, 5);
     }

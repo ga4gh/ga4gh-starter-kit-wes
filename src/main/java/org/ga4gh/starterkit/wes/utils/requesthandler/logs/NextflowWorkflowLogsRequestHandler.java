@@ -53,7 +53,7 @@ public class NextflowWorkflowLogsRequestHandler implements RequestHandler<String
         if (wesRun == null) {
             throw new ResourceNotFoundException("No WES Run by the id: " + runId);
         }
-        RunManager runManager = runManagerFactory.createRunLauncher(wesRun);
+        RunManager runManager = runManagerFactory.createRunManager(wesRun);
         String channelFileSuffix = channel.equals("stdout") ? "out" : "err";
 
         // for each workdir (task) in the comma delimited list, load the stdout

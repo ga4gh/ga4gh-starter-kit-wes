@@ -61,7 +61,7 @@ public class GetRunStatusRequestHandler implements RequestHandler<RunStatus> {
         // allow the low-level RunManager to perform language/engine-dependent
         // methods to obtain run status
         try {
-            RunManager runManager = runManagerFactory.createRunLauncher(wesRun);
+            RunManager runManager = runManagerFactory.createRunManager(wesRun);
             return runManager.getRunStatus();
         } catch (Exception ex) {
             throw new BadRequestException("Could not load WES run status");

@@ -159,7 +159,7 @@ public class SubmitRunRequestHandler implements RequestHandler<RunId> {
         // create a low-level RunManager instance from the factory, allow
         // the RunManager that has knowledge of the requested workflow type and
         // engine to handle the submission
-        RunManager runLauncher = runLauncherFactory.createRunLauncher(wesRun);
+        RunManager runLauncher = runLauncherFactory.createRunManager(wesRun);
         if (runLauncher == null) {
             throw new ConflictException("Could not setup or launch workflow run");
         }
