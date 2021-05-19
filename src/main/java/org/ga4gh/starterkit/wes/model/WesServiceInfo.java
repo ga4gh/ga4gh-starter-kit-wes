@@ -117,10 +117,21 @@ public class WesServiceInfo extends ServiceInfo {
 
     // Convenience API methods for workflowEngineVersions
 
+    /**
+     * Determine if a workflow engine is supported by the service
+     * @param workflowEngine workflow engine
+     * @return true if engine is supported, false if not
+     */
     public boolean isWorkflowEngineSupported(WorkflowEngine workflowEngine) {
         return workflowEngineVersions.get(workflowEngine) != null;
     }
 
+    /**
+     * Determine if a particular version of a workflow engine is supported by the service
+     * @param workflowEngine workflow engine
+     * @param version workflow engine version
+     * @return true if version is supported, false if not
+     */
     public boolean isWorkflowEngineVersionSupported(WorkflowEngine workflowEngine, String version) {
         if (isWorkflowEngineSupported(workflowEngine)) {
             return workflowEngineVersions.get(workflowEngine).contains(version);
@@ -128,24 +139,45 @@ public class WesServiceInfo extends ServiceInfo {
         return false;
     }
 
+    /**
+     * Adds a new workflow engine version to the list of supported versions for that engine
+     * @param workflowEngine workflow engine
+     * @param version workflow engine version to be supported
+     */
     public void addWorkflowEngineVersion(WorkflowEngine workflowEngine, String version) {
         workflowEngineVersions.put(workflowEngine, version);
     }
 
     /* Setters and getters */
 
+    /**
+     * Assign workflowTypeVersions
+     * @param workflowTypeVersions supported workflow languages and versions
+     */
     public void setWorkflowTypeVersions(HashMap<WorkflowType, Set<String>> workflowTypeVersions) {
         this.workflowTypeVersions = workflowTypeVersions;
     }
 
+    /**
+     * Retrieve workflowTypeVersions
+     * @return supported workflow languages and versions
+     */
     public HashMap<WorkflowType, Set<String>> getWorkflowTypeVersions() {
         return workflowTypeVersions;
     }
 
+    /**
+     * Assign workflowEngineVersions
+     * @param workflowEngineVersions supported workflow engines and versions
+     */
     public void setWorkflowEngineVersions(HashMap<WorkflowEngine, String> workflowEngineVersions) {
         this.workflowEngineVersions = workflowEngineVersions;
     }
 
+    /**
+     * Retrieve workflowEngineVersions
+     * @return supported workflow engines and versions
+     */
     public HashMap<WorkflowEngine, String> getWorkflowEngineVersions() {
         return workflowEngineVersions;
     }
