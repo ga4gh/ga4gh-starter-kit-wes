@@ -19,6 +19,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Controller functions for launching, monitoring, and canceling workflow runs
+ */
 @RestController
 @RequestMapping(WES_API_V1 + "/runs")
 public class Runs {
@@ -32,6 +35,10 @@ public class Runs {
     @Resource
     private GetRunStatusRequestHandler getRunStatus;
 
+    /**
+     * Display run list
+     * @return run list
+     */
     @GetMapping
     public List<RunStatus> getRuns() {
         List<RunStatus> runs = new ArrayList<>() {{
@@ -40,6 +47,16 @@ public class Runs {
         return runs;
     }
 
+    /**
+     * Launch a new workflow run
+     * @param workflowType workflow language specification
+     * @param workflowTypeVersion workflow language specification version
+     * @param workflowUrl URL to workflow source
+     * @param workflowParams raw JSON string of workflow run input parameters
+     * @param tags raw JSON string indicating key:value tags
+     * @param workflowEngineParameters raw JSON string indicating key:value engine parameters
+     * @return run identifier for the newly submitted run
+     */
     @PostMapping
     public RunId createRun(
         @RequestParam("workflow_type") WorkflowType workflowType,
@@ -53,6 +70,11 @@ public class Runs {
         return submitRunRequest.prepare(workflowType, workflowTypeVersion, workflowUrl, workflowParams, tags, null).handleRequest();
     }
 
+    /**
+     * Get log information for a requested run 
+     * @param runId run identifier
+     * @return run log information
+     */
     @GetMapping(path = "/{run_id:.+}")
     public RunLog getRunLog(
         @PathVariable(name = "run_id") String runId
@@ -60,13 +82,23 @@ public class Runs {
         return getRunLog.prepare(runId).handleRequest();
     }
 
+    /**
+     * Cancel a run
+     * @param runId run identifier to cancel
+     * @return run identifier
+     */
     @PostMapping(path = "/{run_id:.+}/cancel")
-    public String cancelRun(
+    public RunId cancelRun(
         @PathVariable(name = "run_id") String runId
     ) {
-        return runId;
+        return null;
     }
 
+    /**
+     * Get run state/status for a requested run
+     * @param runId run identifier
+     * @return run status
+     */
     @GetMapping(path = "/{run_id:.+}/status")
     public RunStatus runStatus(
         @PathVariable(name = "run_id") String runId

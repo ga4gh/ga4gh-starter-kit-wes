@@ -13,6 +13,10 @@ import org.ga4gh.starterkit.wes.utils.runmanager.RunManager;
 import org.ga4gh.starterkit.wes.utils.runmanager.RunManagerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+/**
+ * Request handling logic for getting run-level logs from all tasks of a
+ * nextflow workflow run 
+ */
 public class NextflowWorkflowLogsRequestHandler implements RequestHandler<String> {
 
     @Autowired
@@ -25,6 +29,13 @@ public class NextflowWorkflowLogsRequestHandler implements RequestHandler<String
     private String runId;
     private String workdirs;
 
+    /**
+     * Prepares the request handler with input params from the controller function
+     * @param channel 'stdout' or 'stderr'
+     * @param runId run identifier
+     * @param workdirs comma-delimited list of all task-level working directories
+     * @return the prepared request handler
+     */
     public NextflowWorkflowLogsRequestHandler prepare(String channel, String runId, String workdirs) {
         this.channel = channel;
         this.runId = runId;
@@ -32,6 +43,9 @@ public class NextflowWorkflowLogsRequestHandler implements RequestHandler<String
         return this;
     }
 
+    /**
+     * Obtains a raw stdout/stderr log output for the request workflow run
+     */
     public String handleRequest() {
         List<String> workflowLogs = new ArrayList<>();
 
@@ -39,10 +53,13 @@ public class NextflowWorkflowLogsRequestHandler implements RequestHandler<String
         if (wesRun == null) {
             throw new ResourceNotFoundException("No WES Run by the id: " + runId);
         }
-        RunManager runManager = runManagerFactory.createRunLauncher(wesRun);
+        RunManager runManager = runManagerFactory.createRunManager(wesRun);
         String channelFileSuffix = channel.equals("stdout") ? "out" : "err";
-        String[] workdirsSplit = workdirs.split(",");
 
+        // for each workdir (task) in the comma delimited list, load the stdout
+        // or stderr output. the final result is the concatenated output of all
+        // tasks
+        String[] workdirsSplit = workdirs.split(",");
         try {
             for (String workdir : workdirsSplit) {
                 Path filePath = Paths.get("work", workdir, ".command." + channelFileSuffix);
@@ -54,31 +71,5 @@ public class NextflowWorkflowLogsRequestHandler implements RequestHandler<String
         }
         
         return Strings.join(workflowLogs, '\n');
-    }
-
-    /* Setters and getters */
-
-    public void setChannel(String channel) {
-        this.channel = channel;
-    }
-
-    public String getChannel() {
-        return channel;
-    }
-
-    public void setRunId(String runId) {
-        this.runId = runId;
-    }
-
-    public String getRunId() {
-        return runId;
-    }
-
-    public void setWorkdirs(String workdirs) {
-        this.workdirs = workdirs;
-    }
-
-    public String getWorkdirs() {
-        return workdirs;
     }
 }

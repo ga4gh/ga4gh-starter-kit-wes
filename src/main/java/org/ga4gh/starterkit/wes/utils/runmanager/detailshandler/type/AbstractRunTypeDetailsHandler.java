@@ -3,6 +3,9 @@ package org.ga4gh.starterkit.wes.utils.runmanager.detailshandler.type;
 import org.ga4gh.starterkit.wes.model.WesRun;
 import org.ga4gh.starterkit.wes.utils.runmanager.detailshandler.engine.RunEngineDetailsHandler;
 
+/**
+ * Abstract class containing default implementations for simple setters, getters, etc.
+ */
 public abstract class AbstractRunTypeDetailsHandler implements RunTypeDetailsHandler {
 
     private WesRun wesRun;

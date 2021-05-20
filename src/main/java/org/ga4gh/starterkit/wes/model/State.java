@@ -1,5 +1,9 @@
 package org.ga4gh.starterkit.wes.model;
 
+/**
+ * Directly from WES specification, enumeration of all possible states of a 
+ * workflow run
+ */
 public enum State {
     UNKNOWN,
     QUEUED,
