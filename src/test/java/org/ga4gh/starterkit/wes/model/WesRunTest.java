@@ -2,7 +2,6 @@ package org.ga4gh.starterkit.wes.model;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
