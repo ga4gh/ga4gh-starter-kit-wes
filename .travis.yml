@@ -13,15 +13,20 @@ git:
 language: java
 jdk: oraclejdk11
 before_script:
+  # INSTALL SQLITE AND SETUP DEV DATABASE
   - sqlite3 -version
   - make -version
   - make clean-all
   - make sqlite-db-build
+  # INSTALL NEXTFLOW
+  - export WORKING_DIR=`pwd`
+  - mkdir -p /install/nextflow
+  - cd /install/nextflow
   - curl -fsSL https://get.nextflow.io | bash
-  - echo $PATH
-  - export PATH=`pwd`:$PATH
-  - echo $PATH
+  - export PATH=/install/nextflow:$PATH
+  - cd $WORKING_DIR
   - nextflow -h
+  - ls
 script: "./gradlew test"
 after_success:
     - "./gradlew jacocoTestReport"
