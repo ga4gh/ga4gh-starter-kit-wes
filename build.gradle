@@ -76,7 +76,7 @@ bootJar {
 
 test {
     testLogging {
-        showStandardStreams = false // make true for log output to console
+        showStandardStreams = true // make true for log output to console
     }
     // Use TestNG for unit tests
     useTestNG()

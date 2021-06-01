@@ -12,6 +12,9 @@ git:
   depth: false
 language: java
 jdk: oraclejdk11
+before_install:
+  # INSTALL DOCKER IMAGES FOR NEXTFLOW WORKFLOWS
+  - docker pull jbadams/echo-nf:0.1.0
 before_script:
   # INSTALL SQLITE AND SETUP DEV DATABASE
   - sqlite3 -version

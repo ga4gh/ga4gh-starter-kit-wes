@@ -102,7 +102,7 @@ public class EchoNextflowTest extends WesE2ERunAndMonitorWorkflow {
     public void test(String workflowParams,
         ExpectedLogValues expRunLog, List<ExpectedLogValues> expTaskLogs,
         HashMap<String, String> outputMd5Map
-    ) throws Exception {    
+    ) throws Exception {
         runEndToEndTest(WORKFLOW_TYPE, WORKFLOW_TYPE_VERSION, WORKFLOW_URL, workflowParams, expRunLog, expTaskLogs, outputMd5Map);
     }
 }
