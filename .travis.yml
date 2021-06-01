@@ -20,10 +20,10 @@ before_script:
   - make sqlite-db-build
   # INSTALL NEXTFLOW
   - export WORKING_DIR=`pwd`
-  - mkdir -p /install/nextflow
-  - cd /install/nextflow
+  - mkdir -p ~/install/nextflow
+  - cd ~/install/nextflow
   - curl -fsSL https://get.nextflow.io | bash
-  - export PATH=/install/nextflow:$PATH
+  - export PATH=~/install/nextflow:$PATH
   - cd $WORKING_DIR
   - nextflow -h
   - ls
