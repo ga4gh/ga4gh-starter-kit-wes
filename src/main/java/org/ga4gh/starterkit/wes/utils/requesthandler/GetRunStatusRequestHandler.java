@@ -47,7 +47,6 @@ public class GetRunStatusRequestHandler implements RequestHandler<RunStatus> {
      * obtains the status of the requested workflow run
      */
     public RunStatus handleRequest() {
-        
         // load the persistent WesRun by it's id to obtain details (workflow
         //language, engine used)
         RunStatus runStatus = new RunStatus();

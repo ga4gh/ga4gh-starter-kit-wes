@@ -62,8 +62,14 @@ public class NextflowTypeDetailsHandler extends AbstractRunTypeDetailsHandler {
         String runLogStdout = requestCommandStdoutFromEngine(new String[] {"nextflow", "log"});
         String[] runLog = runLogStdout.split("\n")[1].split("\t");
         String runLogStatus = runLog[3].strip();
+        // complete
         if (runLogStatus.equals("OK")) {
             runStatus.setState(State.COMPLETE);
+            return runStatus;
+        }
+        // executor error
+        if (runLogStatus.equals("ERR")) {
+            runStatus.setState(State.EXECUTOR_ERROR);
             return runStatus;
         }
         return runStatus;

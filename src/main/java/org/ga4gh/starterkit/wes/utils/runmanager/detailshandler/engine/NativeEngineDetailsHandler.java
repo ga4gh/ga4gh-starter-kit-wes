@@ -34,7 +34,8 @@ public class NativeEngineDetailsHandler extends AbstractRunEngineDetailsHandler 
         if (!new File(directory).isAbsolute()) {
             dirPath = Paths.get(jobDirectory.toString(), directory);
         }
-        return Arrays.asList(dirPath.toFile().list());
+        List<String> filesList = Arrays.asList(dirPath.toFile().list());
+        return filesList;
     }
 
     public String getRequestedFileContents(String filename) throws Exception {
