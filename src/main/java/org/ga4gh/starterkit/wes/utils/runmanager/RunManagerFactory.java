@@ -46,6 +46,7 @@ public class RunManagerFactory implements ApplicationContextAware {
         runEngineDetailsHandler.setRunTypeDetailsHandler(runTypeDetailsHandler);
         runManager.setRunTypeDetailsHandler(runTypeDetailsHandler);
         runManager.setRunEngineDetailsHandler(runEngineDetailsHandler);
+        runTypeDetailsHandler.setup();
         return runManager;
     }
 

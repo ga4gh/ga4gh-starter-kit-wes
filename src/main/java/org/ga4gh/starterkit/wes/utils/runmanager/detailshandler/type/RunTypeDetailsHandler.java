@@ -13,6 +13,8 @@ public interface RunTypeDetailsHandler {
 
     // common operations
 
+    public void setup();
+
     /**
      * Assign wesRun
      * @param wesRun entity representing the workflow run 
