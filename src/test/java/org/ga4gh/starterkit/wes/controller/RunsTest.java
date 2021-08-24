@@ -1,7 +1,7 @@
 package org.ga4gh.starterkit.wes.controller;
 
-import org.ga4gh.starterkit.wes.app.WesStandaloneServer;
-import org.ga4gh.starterkit.wes.app.WesStandaloneSpringConfig;
+import org.ga4gh.starterkit.wes.app.WesServer;
+import org.ga4gh.starterkit.wes.app.WesServerSpringConfig;
 import org.ga4gh.starterkit.wes.beanconfig.StarterKitWesSpringConfig;
 import org.ga4gh.starterkit.wes.model.RunId;
 import org.ga4gh.starterkit.wes.model.WorkflowType;
@@ -30,8 +30,8 @@ import org.apache.http.util.EntityUtils;
 
 @SpringBootTest
 @ContextConfiguration(classes = {
-    WesStandaloneServer.class,
-    WesStandaloneSpringConfig.class,
+    WesServer.class,
+    WesServerSpringConfig.class,
     StarterKitWesSpringConfig.class,
     Runs.class
 })

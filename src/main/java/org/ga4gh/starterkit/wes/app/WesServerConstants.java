@@ -6,7 +6,7 @@ package org.ga4gh.starterkit.wes.app;
  * @since 0.0.3
  * @version 0.0.3
  */
-public class WesStandaloneConstants {
+public class WesServerConstants {
 
     /* Spring bean names - WES config container */
 

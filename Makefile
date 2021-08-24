@@ -4,6 +4,8 @@ TAG := $(shell cat build.gradle | grep "^version" | cut -f 2 -d ' ' | sed "s/'//
 IMG := ${ORG}/${REPO}:${TAG}
 DEVDB := ga4gh-starter-kit.dev.db
 JAR := ga4gh-starter-kit-wes.jar
+DOCKER_ORG := ga4gh
+DOCKER_REPO := ga4gh-starter-kit-wes
 
 Nothing:
 	@echo "No target provided. Stop"
@@ -49,3 +51,15 @@ jar-build:
 .PHONY: jar-run
 jar-run:
 	java -jar ${JAR}
+
+.PHONY: docker-wesbuilder-build
+docker-wesbuilder-build:
+	docker build -t ${DOCKER_ORG}/ga4gh-starter-kit-wesbuilder .
+
+.PHONY: docker-nextflow-build
+docker-nextflow-build:
+	docker build -t ${DOCKER_ORG}/${DOCKER_REPO}:${TAG}-nextflow --build-arg VERSION=${TAG} dockerfiles/nextflow
+
+.PHONY: docker-nextflow-publish
+docker-nextflow-publish:
+	echo "toPublish"

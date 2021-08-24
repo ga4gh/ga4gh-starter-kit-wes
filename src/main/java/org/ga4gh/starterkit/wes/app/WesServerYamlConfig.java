@@ -9,7 +9,7 @@ import org.ga4gh.starterkit.wes.model.WesServiceInfo;
  * To be deserialized/loaded as part of a YAML config file specified on the
  * command line
  */
-public class WesStandaloneYamlConfig {
+public class WesServerYamlConfig {
 
     /**
      * Server runtime properties
@@ -29,7 +29,7 @@ public class WesStandaloneYamlConfig {
     /**
      * Instantiates a new WesStandaloneYamlConfig object with default properties
      */
-    public WesStandaloneYamlConfig() {
+    public WesServerYamlConfig() {
         serverProps = new ServerProps();
         databaseProps = new DatabaseProps();
         serviceInfo = new WesServiceInfo();

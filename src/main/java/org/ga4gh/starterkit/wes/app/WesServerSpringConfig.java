@@ -23,7 +23,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  */
 @Configuration
 @ConfigurationProperties
-public class WesStandaloneSpringConfig implements WebMvcConfigurer {
+public class WesServerSpringConfig implements WebMvcConfigurer {
 
     /* ******************************
      * WES SERVER CONFIG BEANS
@@ -46,9 +46,9 @@ public class WesStandaloneSpringConfig implements WebMvcConfigurer {
      */
     @Bean
     @Scope("prototype")
-    @Qualifier(WesStandaloneConstants.EMPTY_WES_CONFIG_CONTAINER)
-    public WesStandaloneYamlConfigContainer emptyWesConfigContainer() {
-        return new WesStandaloneYamlConfigContainer(new WesStandaloneYamlConfig());
+    @Qualifier(WesServerConstants.EMPTY_WES_CONFIG_CONTAINER)
+    public WesServerYamlConfigContainer emptyWesConfigContainer() {
+        return new WesServerYamlConfigContainer(new WesServerYamlConfig());
     }
 
     /**
@@ -56,9 +56,9 @@ public class WesStandaloneSpringConfig implements WebMvcConfigurer {
      * @return WES config container containing defaults
      */
     @Bean
-    @Qualifier(WesStandaloneConstants.DEFAULT_WES_CONFIG_CONTAINER)
-    public WesStandaloneYamlConfigContainer defaultWesConfigContainer() {
-        return new WesStandaloneYamlConfigContainer(new WesStandaloneYamlConfig());
+    @Qualifier(WesServerConstants.DEFAULT_WES_CONFIG_CONTAINER)
+    public WesServerYamlConfigContainer defaultWesConfigContainer() {
+        return new WesServerYamlConfigContainer(new WesServerYamlConfig());
     }
 
     /**
@@ -69,13 +69,13 @@ public class WesStandaloneSpringConfig implements WebMvcConfigurer {
      * @return WES config container singleton containing user-specified properties
      */
     @Bean
-    @Qualifier(WesStandaloneConstants.USER_WES_CONFIG_CONTAINER)
-    public WesStandaloneYamlConfigContainer runtimeWesConfigContainer(
+    @Qualifier(WesServerConstants.USER_WES_CONFIG_CONTAINER)
+    public WesServerYamlConfigContainer runtimeWesConfigContainer(
         @Autowired ApplicationArguments args,
         @Autowired() Options options,
-        @Qualifier(WesStandaloneConstants.EMPTY_WES_CONFIG_CONTAINER) WesStandaloneYamlConfigContainer wesConfigContainer
+        @Qualifier(WesServerConstants.EMPTY_WES_CONFIG_CONTAINER) WesServerYamlConfigContainer wesConfigContainer
     ) {
-        WesStandaloneYamlConfigContainer userConfigContainer = CliYamlConfigLoader.load(WesStandaloneYamlConfigContainer.class, args, options, "config");
+        WesServerYamlConfigContainer userConfigContainer = CliYamlConfigLoader.load(WesServerYamlConfigContainer.class, args, options, "config");
         if (userConfigContainer != null) {
             return userConfigContainer;
         }
@@ -89,10 +89,10 @@ public class WesStandaloneSpringConfig implements WebMvcConfigurer {
      * @return contains merged properties
      */
     @Bean
-    @Qualifier(WesStandaloneConstants.FINAL_WES_CONFIG_CONTAINER)
-    public WesStandaloneYamlConfigContainer mergedWesConfigContainer(
-        @Qualifier(WesStandaloneConstants.DEFAULT_WES_CONFIG_CONTAINER) WesStandaloneYamlConfigContainer defaultContainer,
-        @Qualifier(WesStandaloneConstants.USER_WES_CONFIG_CONTAINER) WesStandaloneYamlConfigContainer userContainer
+    @Qualifier(WesServerConstants.FINAL_WES_CONFIG_CONTAINER)
+    public WesServerYamlConfigContainer mergedWesConfigContainer(
+        @Qualifier(WesServerConstants.DEFAULT_WES_CONFIG_CONTAINER) WesServerYamlConfigContainer defaultContainer,
+        @Qualifier(WesServerConstants.USER_WES_CONFIG_CONTAINER) WesServerYamlConfigContainer userContainer
     ) {
         DeepObjectMerger.merge(userContainer, defaultContainer);
         return defaultContainer;
@@ -105,7 +105,7 @@ public class WesStandaloneSpringConfig implements WebMvcConfigurer {
      */
     @Bean
     public ServerProps getServerProps(
-        @Qualifier(WesStandaloneConstants.FINAL_WES_CONFIG_CONTAINER) WesStandaloneYamlConfigContainer wesConfigContainer
+        @Qualifier(WesServerConstants.FINAL_WES_CONFIG_CONTAINER) WesServerYamlConfigContainer wesConfigContainer
     ) {
         return wesConfigContainer.getWes().getServerProps();
     }
@@ -117,7 +117,7 @@ public class WesStandaloneSpringConfig implements WebMvcConfigurer {
      */
     @Bean
     public DatabaseProps getDatabaseProps(
-        @Qualifier(WesStandaloneConstants.FINAL_WES_CONFIG_CONTAINER) WesStandaloneYamlConfigContainer wesConfigContainer
+        @Qualifier(WesServerConstants.FINAL_WES_CONFIG_CONTAINER) WesServerYamlConfigContainer wesConfigContainer
     ) {
         return wesConfigContainer.getWes().getDatabaseProps();
     }
@@ -129,7 +129,7 @@ public class WesStandaloneSpringConfig implements WebMvcConfigurer {
      */
     @Bean
     public WesServiceInfo getServiceInfo(
-        @Qualifier(WesStandaloneConstants.FINAL_WES_CONFIG_CONTAINER) WesStandaloneYamlConfigContainer wesConfigContainer
+        @Qualifier(WesServerConstants.FINAL_WES_CONFIG_CONTAINER) WesServerYamlConfigContainer wesConfigContainer
     ) {
         return wesConfigContainer.getWes().getServiceInfo();
     }
