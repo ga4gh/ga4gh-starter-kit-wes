@@ -13,6 +13,9 @@ import static org.ga4gh.starterkit.wes.constant.WesServiceInfoDefaults.VERSION;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import static org.ga4gh.starterkit.wes.constant.WesServiceInfoDefaults.ORGANIZATION_NAME;
 import static org.ga4gh.starterkit.wes.constant.WesServiceInfoDefaults.ORGANIZATION_URL;
 import static org.ga4gh.starterkit.wes.constant.WesServiceInfoDefaults.SERVICE_TYPE_GROUP;
@@ -24,6 +27,8 @@ import static org.ga4gh.starterkit.wes.constant.WesServiceInfoDefaults.NEXTFLOW_
  * Extension of the GA4GH base service info specification to include WES-specific
  * properties
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonNaming(PropertyNamingStrategies.LowerCamelCaseStrategy.class)
 public class WesServiceInfo extends ServiceInfo {
 
     /**

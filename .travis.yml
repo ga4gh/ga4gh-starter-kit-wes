@@ -32,5 +32,7 @@ before_script:
   - ls
 script: "./gradlew test"
 after_success:
-    - "./gradlew jacocoTestReport"
-    - bash <(curl -s https://codecov.io/bash)
+  - "./gradlew jacocoTestReport"
+  - bash <(curl -s https://codecov.io/bash)
+after_failure:
+  - cat ./build/reports/tests/test/classes/e2e.EchoNextflowTest.html
