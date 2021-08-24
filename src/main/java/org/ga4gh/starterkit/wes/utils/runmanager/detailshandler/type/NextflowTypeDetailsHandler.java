@@ -27,6 +27,10 @@ public class NextflowTypeDetailsHandler extends AbstractRunTypeDetailsHandler {
     @Autowired
     private ServerProps serverProps;
 
+    private String workflowSignature;
+
+    private String workflowRevision;
+
     private final static DateTimeFormatter NEXTFLOW_LOG_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
 
     private List<String> taskLogTableList;
@@ -35,18 +39,29 @@ public class NextflowTypeDetailsHandler extends AbstractRunTypeDetailsHandler {
      * Instantiate a new NextflowTypeDetailsHandler instance
      */
     public NextflowTypeDetailsHandler() {
+        workflowSignature = null;
+        workflowRevision = null;
+    }
 
+    public void setup() {
+        try {
+            determineWorkflowSignatureAndRevision();
+        } catch (Exception ex) {
+
+        }
     }
 
     // for submission of workflows
 
     public String[] constructWorkflowRunCommand() throws Exception {
-        String workflowSignature = getWorkflowSignature();
+        if (!validWorkflowFound()) {
+            throw new Exception("A valid workflow could not be determined from the workflow URL");
+        }
         return new String[] {
             "nextflow",
             "run",
             "-r",
-            "main",
+            workflowRevision,
             "-params-file",
             "params.json",
             "-name",
@@ -125,7 +140,7 @@ public class NextflowTypeDetailsHandler extends AbstractRunTypeDetailsHandler {
 
     private WesLog determineWorkflowLog() throws Exception {
         WesLog workflowLog = new WesLog();
-        workflowLog.setName(getWorkflowSignature());
+        workflowLog.setName(workflowSignature);
 
         // set log URLs for stdout and stderr
         
@@ -194,16 +209,14 @@ public class NextflowTypeDetailsHandler extends AbstractRunTypeDetailsHandler {
      * @return 'nextflow run' signature indicating workflow to run
      * @throws Exception a server-side error occurred
      */
-    private String getWorkflowSignature() throws Exception {
+    private void determineWorkflowSignatureAndRevision() throws Exception {
         URL url = new URL(getWesRun().getWorkflowUrl());
         String urlHost = url.getHost();
-        String workflowSignature = null;
         switch (urlHost) {
             case "github.com":
-                workflowSignature = githubWorkflowSignature(url);
+                githubWorkflowSignatureAndRevision(url);
                 break;
         }
-        return workflowSignature;
     }
 
     /**
@@ -212,10 +225,20 @@ public class NextflowTypeDetailsHandler extends AbstractRunTypeDetailsHandler {
      * @param url github.com URL
      * @return 'nextflow run' signature indicating workflow to run
      */
-    private String githubWorkflowSignature(URL url) {
+    private void githubWorkflowSignatureAndRevision(URL url) {
         String urlPath = url.getPath();
         List<String> urlPathSplit = Arrays.asList(urlPath.split("/"));
-        return String.join("/", urlPathSplit.subList(1, 3));
+
+        // nextflow workflow signature is {org}/{repo}
+        workflowSignature = String.join("/", urlPathSplit.subList(1, 3));
+
+        // nextflow revision is 'main' if no branch specified
+        workflowRevision = "main"; 
+        
+        // nextflow revision is branch name if one is provided is workflow URL
+        if (urlPathSplit.size() > 3 && urlPathSplit.get(3).equals("tree")) {
+            workflowRevision = String.join("/", urlPathSplit.subList(4, urlPathSplit.size()));
+        }
     }
 
     /**
@@ -224,5 +247,12 @@ public class NextflowTypeDetailsHandler extends AbstractRunTypeDetailsHandler {
      */
     private String constructNextflowRunName() {
         return "job" + getWesRun().getId().substring(0, 5);
+    }
+
+    private boolean validWorkflowFound() {
+        if (workflowSignature == null || workflowRevision == null) {
+            return false;
+        }
+        return true;
     }
 }
