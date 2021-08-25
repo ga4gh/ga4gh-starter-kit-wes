@@ -52,14 +52,14 @@ jar-build:
 jar-run:
 	java -jar ${JAR}
 
-.PHONY: docker-wesbuilder-build
-docker-wesbuilder-build:
+.PHONY: docker-wes-builder-build
+docker-wes-builder-build:
 	docker build -t ${DOCKER_ORG}/ga4gh-starter-kit-wesbuilder .
 
-.PHONY: docker-nextflow-build
-docker-nextflow-build:
+.PHONY: docker-wes-nextflow-build
+docker-wes-nextflow-build:
 	docker build -t ${DOCKER_ORG}/${DOCKER_REPO}:${TAG}-nextflow --build-arg VERSION=${TAG} dockerfiles/nextflow
 
-.PHONY: docker-nextflow-publish
-docker-nextflow-publish:
+.PHONY: docker-wes-nextflow-publish
+docker-wes-nextflow-publish:
 	echo "toPublish"

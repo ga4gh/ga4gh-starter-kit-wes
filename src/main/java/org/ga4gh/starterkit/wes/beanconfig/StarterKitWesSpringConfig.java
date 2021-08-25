@@ -1,6 +1,10 @@
 package org.ga4gh.starterkit.wes.beanconfig;
 
+import org.apache.catalina.connector.Connector;
 import org.ga4gh.starterkit.common.config.DatabaseProps;
+import org.ga4gh.starterkit.common.util.webserver.AdminEndpointsConnector;
+import org.ga4gh.starterkit.common.util.webserver.TomcatMultiConnectorServletWebServerFactoryCustomizer;
+import org.ga4gh.starterkit.wes.exception.WesCustomExceptionHandling;
 import org.ga4gh.starterkit.wes.utils.hibernate.WesHibernateUtil;
 import org.ga4gh.starterkit.wes.utils.requesthandler.GetRunLogRequestHandler;
 import org.ga4gh.starterkit.wes.utils.requesthandler.GetRunStatusRequestHandler;
@@ -12,21 +16,60 @@ import org.ga4gh.starterkit.wes.utils.runmanager.RunManagerFactory;
 import org.ga4gh.starterkit.wes.utils.runmanager.detailshandler.engine.NativeEngineDetailsHandler;
 import org.ga4gh.starterkit.wes.utils.runmanager.detailshandler.type.NextflowTypeDetailsHandler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.web.context.annotation.RequestScope;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.ga4gh.starterkit.common.util.webserver.AdminEndpointsFilter;
+import org.springframework.web.filter.CorsFilter;
+import org.ga4gh.starterkit.common.config.ServerProps;
+import org.ga4gh.starterkit.common.util.webserver.CorsFilterBuilder;
 
 /**
  * Contains Spring bean definitions that are to be loaded for the WES service under
  * all deployment contexts (i.e. as part of both standalone and GA4GH multi-API service deployments)
  * 
- * @see org.ga4gh.starterkit.wes.app.WesStandaloneSpringConfig Spring config beans used only during standalone deployments
+ * @see org.ga4gh.starterkit.wes.app.WesServerSpringConfig Spring config beans used only during standalone deployments
  */
 @Configuration
 @ConfigurationProperties
 public class StarterKitWesSpringConfig {
+
+    /* ******************************
+     * TOMCAT SERVER
+     * ****************************** */
+
+    @Value("${server.admin.port:4501}")
+    private String serverAdminPort;
+
+    @Bean
+    public WebServerFactoryCustomizer servletContainer() {
+        Connector[] additionalConnectors = AdminEndpointsConnector.additionalConnector(serverAdminPort);
+        ServerProperties serverProperties = new ServerProperties();
+        return new TomcatMultiConnectorServletWebServerFactoryCustomizer(serverProperties, additionalConnectors);
+    }
+
+    @Bean
+    public FilterRegistrationBean<AdminEndpointsFilter> adminEndpointsFilter() {
+        return new FilterRegistrationBean<AdminEndpointsFilter>(new AdminEndpointsFilter(Integer.valueOf(serverAdminPort)));
+    }
+    
+    @Bean
+    public WesCustomExceptionHandling customExceptionHandling() {
+        return new WesCustomExceptionHandling();
+    }
+
+    @Bean
+    public FilterRegistrationBean<CorsFilter> corsFilter(
+        @Autowired ServerProps serverProps
+    ) {
+        return new CorsFilterBuilder(serverProps).buildFilter();
+    }
 
     /**
      * Loads/retrieves hibernate util singleton providing access to WES-related database tables

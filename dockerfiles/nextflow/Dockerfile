@@ -1,17 +1,23 @@
 FROM ga4gh/ga4gh-starter-kit-wesbuilder as wesbuilder
+FROM docker:20.10.8-dind-alpine3.13 as dockerbuilder
 
 FROM adoptopenjdk/openjdk12:jre-12.0.2_10-debian
 
 ARG VERSION
 
-# INSTALL NEXTFLOW
-WORKDIR /usr/src/dependencies/nextflow
-RUN curl -s https://get.nextflow.io | bash
-RUN chmod +x nextflow
-ENV PATH="/usr/src/dependencies/nextflow:${PATH}"
+#INSTALL DOCKER
+COPY --from=dockerbuilder /usr/local/bin/docker /usr/local/bin/docker
 
-WORKDIR /usr/src/app
-COPY --from=wesbuilder /usr/src/db/ga4gh-starter-kit.dev.db ga4gh-starter-kit.dev.db
+# INSTALL NEXTFLOW
+WORKDIR /home/user/nextflow
+RUN curl -s https://get.nextflow.io | bash
+RUN chmod -R 777 .
+ENV PATH="/home/user/nextflow:${PATH}"
+
+WORKDIR /home/user/app
 COPY --from=wesbuilder /usr/src/app/build/libs/ga4gh-starter-kit-wes-${VERSION}.jar ga4gh-starter-kit-wes.jar
 
-ENTRYPOINT [ "java", "-jar", "ga4gh-starter-kit-wes.jar" ]
+WORKDIR /home/user/db
+COPY --from=wesbuilder /usr/src/db/ga4gh-starter-kit.dev.db ga4gh-starter-kit.dev.db
+
+ENTRYPOINT [ "java", "-jar", "/home/user/app/ga4gh-starter-kit-wes.jar" ]

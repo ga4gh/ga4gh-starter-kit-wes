@@ -74,7 +74,7 @@ jar {
 }
 
 bootJar {
-    mainClassName = 'org.ga4gh.starterkit.wes.app.WesStandaloneServer'
+    mainClassName = 'org.ga4gh.starterkit.wes.app.WesServer'
 }
 
 test {
