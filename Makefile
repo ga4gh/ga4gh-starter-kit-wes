@@ -32,12 +32,12 @@ clean-all: clean-sqlite clean-jar
 # create the sqlite database
 .PHONY: sqlite-db-build
 sqlite-db-build: clean-sqlite
-	@sqlite3 ${DEVDB} < database/sqlite/create-schema.migrations.sql
+	@sqlite3 ${DEVDB} < database/sqlite/create-tables.sql
 
 # populate the sqlite database with test data
 .PHONY: sqlite-db-populate-dev-dataset
 sqlite-db-populate-dev-dataset:
-	@sqlite3 ${DEVDB} < database/sqlite/populate-dev-dataset.migrations.sql
+	@sqlite3 ${DEVDB} < database/sqlite/add-dev-dataset.sql
 
 .PHONY: sqlite-db-refresh
 sqlite-db-refresh: clean-sqlite sqlite-db-build # sqlite-db-populate-dev-dataset
