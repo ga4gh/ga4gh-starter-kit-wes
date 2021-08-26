@@ -62,4 +62,4 @@ docker-wes-nextflow-build:
 
 .PHONY: docker-wes-nextflow-publish
 docker-wes-nextflow-publish:
-	echo "toPublish"
+	docker image push ${DOCKER_ORG}/${DOCKER_REPO}:${TAG}-nextflow
