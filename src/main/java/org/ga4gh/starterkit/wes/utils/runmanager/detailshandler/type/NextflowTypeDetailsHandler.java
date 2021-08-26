@@ -101,6 +101,19 @@ public class NextflowTypeDetailsHandler extends AbstractRunTypeDetailsHandler {
         runLog.setOutputs(outputs);
     }
 
+    private String getLogURLPrefix() {
+        StringBuffer sb = new StringBuffer();
+        sb.append(serverProps.getScheme());
+        sb.append("://");
+        sb.append(serverProps.getHostname());
+        if (!serverProps.getPublicApiPort().equals("80")) {
+            sb.append(":" + serverProps.getPublicApiPort());
+        }
+        sb.append(WesApiConstants.WES_API_V1);
+        sb.append("/logs/nextflow");
+        return sb.toString();
+    }
+
     private List<WesLog> determineTaskLogs() throws Exception {
         List<WesLog> taskLogs = new ArrayList<>();
         String taskLogTable = requestCommandStdoutFromEngine(new String[] {"nextflow", "log", constructNextflowRunName(), "-f", "process,start,complete,exit,workdir"});
@@ -121,7 +134,7 @@ public class NextflowTypeDetailsHandler extends AbstractRunTypeDetailsHandler {
             List<String> workdirSplit = Arrays.asList(workdir.split("/"));
             List<String> subdirsSplit = workdirSplit.subList(workdirSplit.size() - 2, workdirSplit.size());
             String subdirs = Strings.join(subdirsSplit, '/');
-            String logURLPrefix = serverProps.getScheme() + "://" + serverProps.getHostname() + WesApiConstants.WES_API_V1 + "/logs/nextflow";
+            String logURLPrefix = getLogURLPrefix();
             String logURLSuffix = "/" + getWesRun().getId() + "/" + subdirs;
 
             WesLog taskLog = new WesLog();            
@@ -172,7 +185,7 @@ public class NextflowTypeDetailsHandler extends AbstractRunTypeDetailsHandler {
         String finalExitCode = taskLogTableList.get(taskLogTableList.size() - 1).split("\t")[3];
         workflowLog.setExitCode(Integer.parseInt(finalExitCode));
         
-        String logURLPrefix = serverProps.getScheme() + "://" + serverProps.getHostname() + WesApiConstants.WES_API_V1 + "/logs/nextflow";
+        String logURLPrefix = getLogURLPrefix();
         String logURLSuffix = "/" + getWesRun().getId();
         String logURLQuery = "?workdirs=" + URLEncoder.encode(Strings.join(workdirs, ','), "UTF-8");
         workflowLog.setStdout(logURLPrefix + "/stdout" + logURLSuffix + logURLQuery);

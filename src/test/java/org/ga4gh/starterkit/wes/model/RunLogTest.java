@@ -31,8 +31,8 @@ public class RunLogTest {
                     }});
                     setStartTime(LocalDateTime.now());
                     setEndTime(LocalDateTime.now());
-                    setStdout("http://localhost:8080/ga4gh/wes/v1/logs/nextflow/stdout/2baa89d5-3ebc-4b5d-9453-e4cbf6aa4ca4");
-                    setStderr("http://localhost:8080/ga4gh/wes/v1/logs/nextflow/stderr/2baa89d5-3ebc-4b5d-9453-e4cbf6aa4ca4");
+                    setStdout("http://localhost:4500/ga4gh/wes/v1/logs/nextflow/stdout/2baa89d5-3ebc-4b5d-9453-e4cbf6aa4ca4");
+                    setStderr("http://localhost:4500/ga4gh/wes/v1/logs/nextflow/stderr/2baa89d5-3ebc-4b5d-9453-e4cbf6aa4ca4");
                     setExitCode(0);
                 }},
                 new ArrayList<WesLog>() {{
@@ -43,8 +43,8 @@ public class RunLogTest {
                         }});
                         setStartTime(LocalDateTime.now());
                         setEndTime(LocalDateTime.now());
-                        setStdout("http://localhost:8080/ga4gh/wes/v1/logs/nextflow/stdout/2baa89d5-3ebc-4b5d-9453-e4cbf6aa4ca4/ab/cdef");
-                        setStderr("http://localhost:8080/ga4gh/wes/v1/logs/nextflow/stderr/2baa89d5-3ebc-4b5d-9453-e4cbf6aa4ca4/gh/ijkl");
+                        setStdout("http://localhost:4500/ga4gh/wes/v1/logs/nextflow/stdout/2baa89d5-3ebc-4b5d-9453-e4cbf6aa4ca4/ab/cdef");
+                        setStderr("http://localhost:4500/ga4gh/wes/v1/logs/nextflow/stderr/2baa89d5-3ebc-4b5d-9453-e4cbf6aa4ca4/gh/ijkl");
                         setExitCode(0);
                     }});
                 }},

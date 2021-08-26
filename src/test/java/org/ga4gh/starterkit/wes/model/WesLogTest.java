@@ -23,8 +23,8 @@ public class WesLogTest {
                 }},
                 LocalDateTime.now(),
                 LocalDateTime.now(),
-                "http://localhost:8080/ga4gh/wes/v1/logs/nextflow/stdout/2baa89d5-3ebc-4b5d-9453-e4cbf6aa4ca4",
-                "http://localhost:8080/ga4gh/wes/v1/logs/nextflow/stderr/2baa89d5-3ebc-4b5d-9453-e4cbf6aa4ca4",
+                "http://localhost:4500/ga4gh/wes/v1/logs/nextflow/stdout/2baa89d5-3ebc-4b5d-9453-e4cbf6aa4ca4",
+                "http://localhost:4500/ga4gh/wes/v1/logs/nextflow/stderr/2baa89d5-3ebc-4b5d-9453-e4cbf6aa4ca4",
                 0
             }
         };
