@@ -1,0 +1,38 @@
+dist: xenial
+addons:
+  apt:
+    sources:
+      - travis-ci/sqlite3
+    packages:
+      - sqlite3
+    update: true
+services:
+  - docker
+git:
+  depth: false
+language: java
+jdk: oraclejdk11
+before_install:
+  # INSTALL DOCKER IMAGES FOR NEXTFLOW WORKFLOWS
+  - docker pull jbadams/echo-nf:0.1.0
+before_script:
+  # INSTALL SQLITE AND SETUP DEV DATABASE
+  - sqlite3 -version
+  - make -version
+  - make clean-all
+  - make sqlite-db-build
+  # INSTALL NEXTFLOW
+  - export WORKING_DIR=`pwd`
+  - mkdir -p ~/install/nextflow
+  - cd ~/install/nextflow
+  - curl -fsSL https://get.nextflow.io | bash
+  - export PATH=~/install/nextflow:$PATH
+  - cd $WORKING_DIR
+  - nextflow -h
+  - ls
+script: "./gradlew test"
+after_success:
+  - "./gradlew jacocoTestReport"
+  - bash <(curl -s https://codecov.io/bash)
+after_failure:
+  - cat ./build/reports/tests/test/classes/e2e.EchoNextflowTest.html
