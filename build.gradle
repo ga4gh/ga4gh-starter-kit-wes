@@ -28,7 +28,7 @@ plugins {
 
 archivesBaseName = 'ga4gh-starter-kit-wes'
 group 'org.ga4gh'
-version '0.0.3'
+version '0.1.0'
 
 repositories {
     // Use jcenter for resolving dependencies.
