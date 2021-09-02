@@ -114,11 +114,31 @@ public class DrsUrlResolver {
         for (AccessMethod accessMethod: drsObject.getAccessMethods()) {
             AccessURL accessURL = accessMethod.getAccessUrl();
             URI url = accessURL.getUrl();
-            if (url.getScheme().equals("file")) {
-                return url.getRawPath();
-            };
-            return url.toString();
+            String scheme = url.getScheme();
+
+            switch(scheme) {
+                case "file":
+                    return url.getRawPath();
+                case "s3":
+                    return renderS3URL(accessMethod);
+            }
         }
         return null;
+    }
+
+    private static String renderS3URL(AccessMethod accessMethod) {
+        StringBuffer httpURL = new StringBuffer();
+        httpURL.append("https://s3");
+        
+        if (accessMethod.getRegion() != null) {
+            httpURL.append("." + accessMethod.getRegion());
+        }
+        httpURL.append(".amazonaws.com");
+        
+        URI s3URL = accessMethod.getAccessUrl().getUrl();
+        httpURL.append("/" + s3URL.getHost()); // s3 bucket
+        httpURL.append(s3URL.getPath()); // s3 key
+        
+        return httpURL.toString();
     }
 }
