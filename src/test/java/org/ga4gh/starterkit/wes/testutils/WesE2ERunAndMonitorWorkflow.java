@@ -2,7 +2,6 @@ package org.ga4gh.starterkit.wes.testutils;
 
 import org.ga4gh.starterkit.wes.app.WesServer;
 import org.ga4gh.starterkit.wes.app.WesServerSpringConfig;
-import org.ga4gh.starterkit.wes.beanconfig.StarterKitWesSpringConfig;
 import org.ga4gh.starterkit.wes.controller.Logs;
 import org.ga4gh.starterkit.wes.controller.Runs;
 import org.ga4gh.starterkit.wes.model.RunId;
@@ -55,7 +54,6 @@ import org.apache.http.util.EntityUtils;
 @ContextConfiguration(classes = {
     WesServer.class,
     WesServerSpringConfig.class,
-    StarterKitWesSpringConfig.class,
     Runs.class,
     Logs.class
 })
@@ -91,10 +89,13 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
         int attempt = 0; 
         RunStatus runStatus = getRunStatus(runId.getRunId());
         while (runIncomplete && attempt < 12) {
+            System.out.println("Run ID: " + runId.getRunId());
+            System.out.println("Run incomplete check, attempt: " + attempt);
             runStatus = getRunStatus(runId.getRunId());
             if (runStatus.getState().equals(State.COMPLETE)) {
                 runIncomplete = false;
             } else if (runStatus.getState().equals(State.EXECUTOR_ERROR)) {
+                System.out.println("Executor Error block");
                 throw new Exception("workflow run errored unexpectedly");
             }
             Thread.sleep(5000);
