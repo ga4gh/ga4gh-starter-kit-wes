@@ -64,7 +64,7 @@ public class GetRunLogRequestHandler implements RequestHandler<RunLog> {
         // methods to obtain run status
         try {
             RunManager runManager = runManagerFactory.createRunManager(wesRun);
-            LanguageHandler runTypeDetailsHandler = runManager.getRunTypeDetailsHandler();
+            LanguageHandler runTypeDetailsHandler = runManager.getLanguageHandler();
             runLog.setState(runTypeDetailsHandler.determineRunStatus().getState());
             runTypeDetailsHandler.completeRunLog(runLog);
         } catch (Exception ex) {

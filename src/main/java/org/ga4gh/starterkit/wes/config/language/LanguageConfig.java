@@ -1,12 +1,12 @@
 package org.ga4gh.starterkit.wes.config.language;
 
-import org.ga4gh.starterkit.wes.config.engine.WorkflowEngineConfig;
+import org.ga4gh.starterkit.wes.config.engine.EngineConfig;
 
 public class LanguageConfig {
 
     private boolean enabled;
 
-    private WorkflowEngineConfig workflowEngine;
+    private EngineConfig engineConfig;
 
     public LanguageConfig() {
 
@@ -20,11 +20,11 @@ public class LanguageConfig {
         return enabled;
     }
 
-    public void setWorkflowEngine(WorkflowEngineConfig workflowEngine) {
-        this.workflowEngine = workflowEngine;
+    public void setEngineConfig(EngineConfig engineConfig) {
+        this.engineConfig = engineConfig;
     }
 
-    public WorkflowEngineConfig getWorkflowEngine() {
-        return workflowEngine;
+    public EngineConfig getEngineConfig() {
+        return engineConfig;
     }
 }

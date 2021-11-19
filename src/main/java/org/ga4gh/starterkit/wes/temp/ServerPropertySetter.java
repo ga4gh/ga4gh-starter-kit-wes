@@ -62,8 +62,6 @@ public class ServerPropertySetter {
             }
             return true;
         } catch (Exception ex) {
-            System.out.println("Exception Caught!");
-            System.out.println(ex);
             return false;
         }
     }

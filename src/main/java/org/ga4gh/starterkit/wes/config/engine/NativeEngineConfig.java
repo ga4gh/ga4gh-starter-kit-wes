@@ -1,9 +1,8 @@
 package org.ga4gh.starterkit.wes.config.engine;
 
-import org.ga4gh.starterkit.wes.config.compatibility.CanRunNextflow;
 import org.ga4gh.starterkit.wes.model.WorkflowEngine;
 
-public class NativeEngineConfig extends WorkflowEngineConfig implements CanRunNextflow {
+public class NativeEngineConfig extends EngineConfig {
 
     private String rundir;
 

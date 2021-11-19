@@ -1,9 +1,8 @@
 package org.ga4gh.starterkit.wes.app;
 
 import java.util.HashSet;
-
 import org.apache.commons.cli.Options;
-import org.ga4gh.starterkit.wes.config.engine.WorkflowEngineConfig;
+import org.ga4gh.starterkit.wes.config.engine.EngineConfig;
 import org.ga4gh.starterkit.wes.model.WorkflowEngine;
 import org.ga4gh.starterkit.wes.temp.ServerPropertySetter;
 import org.springframework.boot.SpringApplication;
@@ -34,7 +33,7 @@ public class WesServer {
         Options options = new WesServerSpringConfig().getCommandLineOptions();
         HashSet<Class<?>> classesToSet = new HashSet<>();
         classesToSet.add(WorkflowEngine.class);
-        classesToSet.add(WorkflowEngineConfig.class);
+        classesToSet.add(EngineConfig.class);
         ServerPropertySetter setter = new ServerPropertySetter(true, classesToSet);
         return setter.setServerProperties(WesServerYamlConfigContainer.class, args, options, "config");
     }

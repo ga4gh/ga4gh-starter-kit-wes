@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 import org.apache.logging.log4j.util.Strings;
 import org.ga4gh.starterkit.common.config.ServerProps;
+import org.ga4gh.starterkit.wes.config.language.LanguageConfig;
+import org.ga4gh.starterkit.wes.config.language.NextflowLanguageConfig;
 import org.ga4gh.starterkit.wes.constant.WesApiConstants;
 import org.ga4gh.starterkit.wes.model.RunLog;
 import org.ga4gh.starterkit.wes.model.RunStatus;
@@ -27,9 +29,10 @@ public class NextflowLanguageHandler extends AbstractLanguageHandler {
     @Autowired
     private ServerProps serverProps;
 
+    private NextflowLanguageConfig languageConfig;
     private String workflowSignature;
-
     private String workflowRevision;
+    
 
     private final static DateTimeFormatter NEXTFLOW_LOG_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
 
@@ -49,6 +52,16 @@ public class NextflowLanguageHandler extends AbstractLanguageHandler {
         } catch (Exception ex) {
 
         }
+    }
+
+    @Override
+    public void setLanguageConfig(LanguageConfig languageConfig) {
+        this.languageConfig = (NextflowLanguageConfig) languageConfig;
+    }
+
+    @Override
+    public NextflowLanguageConfig getLanguageConfig() {
+        return languageConfig;
     }
 
     // for submission of workflows
@@ -200,7 +213,7 @@ public class NextflowLanguageHandler extends AbstractLanguageHandler {
             // unpack the task level nextflow log row, get contents of workdir
             String[] taskLogRowArr = taskLogRow.split("\t");
             String workdir = taskLogRowArr[4];
-            List<String> workDirFiles = getRunEngineDetailsHandler().provideDirectoryContents(workdir);
+            List<String> workDirFiles = getEngineHandler().provideDirectoryContents(workdir);
             for (String workDirFile : workDirFiles) {
                 if (!workDirFile.startsWith(".")) {
                     if (!outputs.containsKey(workDirFile)) {

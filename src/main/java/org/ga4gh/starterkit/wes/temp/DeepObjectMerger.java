@@ -38,7 +38,6 @@ public class DeepObjectMerger {
     }
 
     public void merge(Object source, Object target) {
-        System.out.println("MERGING!!!");
         // Through reflection, get all fields associated with object to be merged
         Class<?> objectClass = source.getClass();
         List<Field> fields = new ArrayList<>(Arrays.asList(objectClass.getDeclaredFields()));
@@ -57,10 +56,6 @@ public class DeepObjectMerger {
             Class<?> fieldClass = field.getType();
             field.setAccessible(true);
 
-            System.out.println(field);
-            System.out.println(fieldClass);
-            System.out.println("-");
-
             try {
                 Object sourceProperty = field.get(source);
                 Object targetProperty = field.get(target);
@@ -69,7 +64,6 @@ public class DeepObjectMerger {
                 // can be set with the source field value (provided source
                 // field value is not null)
                 if (getClassesToSet().contains(fieldClass)) {
-                    System.out.println("Set directly");
                     if (sourceProperty != null) {
                         field.set(target, sourceProperty);
                     }
@@ -77,7 +71,6 @@ public class DeepObjectMerger {
                     // If the field is a complex class (i.e. non-primitive),
                     // and both source and target are non-null, then
                     // this method is recursively called on the field value
-                    System.out.println("recurse");
                     if (sourceProperty != null && targetProperty != null) {
                         merge(sourceProperty, targetProperty);
                     }

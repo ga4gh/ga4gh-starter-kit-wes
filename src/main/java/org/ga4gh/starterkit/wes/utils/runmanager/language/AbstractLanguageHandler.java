@@ -1,5 +1,6 @@
 package org.ga4gh.starterkit.wes.utils.runmanager.language;
 
+import org.ga4gh.starterkit.wes.config.language.LanguageConfig;
 import org.ga4gh.starterkit.wes.model.WesRun;
 import org.ga4gh.starterkit.wes.utils.runmanager.engine.EngineHandler;
 
@@ -9,7 +10,8 @@ import org.ga4gh.starterkit.wes.utils.runmanager.engine.EngineHandler;
 public abstract class AbstractLanguageHandler implements LanguageHandler {
 
     private WesRun wesRun;
-    private EngineHandler runEngineDetailsHandler;
+    private LanguageConfig languageConfig;
+    private EngineHandler engineHandler;
 
     public void setWesRun(WesRun wesRun) {
         this.wesRun = wesRun;
@@ -19,19 +21,27 @@ public abstract class AbstractLanguageHandler implements LanguageHandler {
         return wesRun;
     }
 
-    public void setRunEngineDetailsHandler(EngineHandler runEngineDetailsHandler)  {
-        this.runEngineDetailsHandler = runEngineDetailsHandler;
+    public void setLanguageConfig(LanguageConfig languageConfig) {
+        this.languageConfig = languageConfig;
     }
 
-    public EngineHandler getRunEngineDetailsHandler() {
-        return runEngineDetailsHandler;
+    public LanguageConfig getLanguageConfig() {
+        return languageConfig;
+    }
+
+    public void setEngineHandler(EngineHandler engineHandler)  {
+        this.engineHandler = engineHandler;
+    }
+
+    public EngineHandler getEngineHandler() {
+        return engineHandler;
     }
 
     public String requestFileContentsFromEngine(String filename) throws Exception {
-        return getRunEngineDetailsHandler().getRequestedFileContents(filename);
+        return getEngineHandler().getRequestedFileContents(filename);
     }
 
     public String requestCommandStdoutFromEngine(String[] command) throws Exception {
-        return getRunEngineDetailsHandler().getRequestedCommandStdout(command);
+        return getEngineHandler().getRequestedCommandStdout(command);
     }
 }

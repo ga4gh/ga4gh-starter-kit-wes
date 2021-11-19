@@ -8,19 +8,14 @@ import java.util.Arrays;
 import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.ga4gh.starterkit.wes.config.engine.EngineConfig;
-import org.ga4gh.starterkit.wes.config.engine.NativeEngineConfig;
+import org.ga4gh.starterkit.wes.config.engine.SlurmEngineConfig;
 
-/**
- * Facilitates access to data/information for workflow runs launched via the 
- * 'Native' engine, that is, launched on the host machine without leveraging any
- * HPC or Cloud batch scheduling resources
- */
-public class NativeEngineHandler extends AbstractEngineHandler {
+public class SlurmEngineHandler extends AbstractEngineHandler {
 
-    private NativeEngineConfig engineConfig;
+    private SlurmEngineConfig engineConfig;
     private Path jobDirectory;
 
-    public NativeEngineHandler() {
+    public SlurmEngineHandler() {
         
     }
 
@@ -127,11 +122,11 @@ public class NativeEngineHandler extends AbstractEngineHandler {
 
     @Override
     public void setEngineConfig(EngineConfig engineConfig) {
-        this.engineConfig = (NativeEngineConfig) engineConfig;
+        this.engineConfig = (SlurmEngineConfig) engineConfig;
     }
 
     @Override
-    public NativeEngineConfig getEngineConfig() {
+    public SlurmEngineConfig getEngineConfig() {
         return engineConfig;
     }
 

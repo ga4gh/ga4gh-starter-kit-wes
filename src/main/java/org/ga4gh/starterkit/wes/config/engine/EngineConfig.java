@@ -18,7 +18,7 @@ import org.ga4gh.starterkit.wes.model.WorkflowEngine;
     @JsonSubTypes.Type(value = NativeEngineConfig.class, name = "NATIVE"),
     @JsonSubTypes.Type(value = SlurmEngineConfig.class, name = "SLURM")
 })
-public abstract class WorkflowEngineConfig {
+public abstract class EngineConfig {
 
     private WorkflowEngine type;
 

@@ -3,20 +3,20 @@ package org.ga4gh.starterkit.wes.config.engine;
 import org.ga4gh.starterkit.wes.config.compatibility.CanRunNextflow;
 import org.ga4gh.starterkit.wes.model.WorkflowEngine;
 
-public class SlurmEngineConfig extends WorkflowEngineConfig implements CanRunNextflow {
+public class SlurmEngineConfig extends EngineConfig implements CanRunNextflow {
 
-    private String foo;
+    private String rundir;
 
     public SlurmEngineConfig() {
         setType(WorkflowEngine.SLURM);
-        setFoo("foo");
+        setRundir("wes_runs");
     }
 
-    public void setFoo(String foo) {
-        this.foo = foo;
+    public void setRundir(String rundir) {
+        this.rundir = rundir;
     }
 
-    public String getFoo() {
-        return foo;
+    public String getRundir() {
+        return rundir;
     }
 }

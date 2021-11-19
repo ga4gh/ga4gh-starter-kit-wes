@@ -19,7 +19,6 @@ public class TempController {
 
     @GetMapping(path = "/inspect/wes-service-props")
     public WesServiceProps inspectWesServiceProps() {
-        System.out.println("you are in the inspect method");
         return configContainer.getWes().getWesServiceProps();
     }
 }

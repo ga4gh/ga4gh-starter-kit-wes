@@ -6,6 +6,6 @@ public class NextflowLanguageConfig extends LanguageConfig {
 
     public NextflowLanguageConfig() {
         setEnabled(true);
-        setWorkflowEngine(new NativeEngineConfig());
+        setEngineConfig(new NativeEngineConfig());
     }
 }

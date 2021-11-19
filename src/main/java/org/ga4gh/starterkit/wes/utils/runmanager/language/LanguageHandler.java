@@ -1,5 +1,6 @@
 package org.ga4gh.starterkit.wes.utils.runmanager.language;
 
+import org.ga4gh.starterkit.wes.config.language.LanguageConfig;
 import org.ga4gh.starterkit.wes.model.RunLog;
 import org.ga4gh.starterkit.wes.model.RunStatus;
 import org.ga4gh.starterkit.wes.model.WesRun;
@@ -12,32 +13,13 @@ import org.ga4gh.starterkit.wes.utils.runmanager.engine.EngineHandler;
 public interface LanguageHandler {
 
     // common operations
-
     public void setup();
-
-    /**
-     * Assign wesRun
-     * @param wesRun entity representing the workflow run 
-     */
     public void setWesRun(WesRun wesRun);
-
-    /**
-     * Retrieve wesRun
-     * @return entity representing the workflow run
-     */
     public WesRun getWesRun();
-
-    /**
-     * Assign the RunEngineDetailsHandler instance belonging to the same run manager as this instance
-     * @param runEngineDetailsHandler manages data access for a particular workflow engine
-     */
-    public void setRunEngineDetailsHandler(EngineHandler runEngineDetailsHandler);
-
-    /**
-     * Retrieve runEngineDetailsHandler
-     * @return runEngineDetailsHandler
-     */
-    public EngineHandler getRunEngineDetailsHandler();
+    public void setLanguageConfig(LanguageConfig languageConfig);
+    public LanguageConfig getLanguageConfig();
+    public void setEngineHandler(EngineHandler engineHandler);
+    public EngineHandler getEngineHandler();
 
     /**
      * Request the contents of a file that should be in the working directory
