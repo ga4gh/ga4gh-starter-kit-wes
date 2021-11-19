@@ -1,4 +1,4 @@
-package org.ga4gh.starterkit.wes.utils.runmanager.detailshandler.engine;
+package org.ga4gh.starterkit.wes.utils.runmanager.engine;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -13,7 +13,7 @@ import org.apache.commons.io.FileUtils;
  * 'Native' engine, that is, launched on the host machine without leveraging any
  * HPC or Cloud batch scheduling resources
  */
-public class NativeEngineDetailsHandler extends AbstractRunEngineDetailsHandler {
+public class NativeEngineHandler extends AbstractEngineHandler {
 
     private static final Path wesRunDir = Paths.get("wes_runs");
 
@@ -22,7 +22,7 @@ public class NativeEngineDetailsHandler extends AbstractRunEngineDetailsHandler 
     /**
      * Instantiates a new NativeEngineDetailsHandler instance
      */
-    public NativeEngineDetailsHandler() {
+    public NativeEngineHandler() {
         
     }
 

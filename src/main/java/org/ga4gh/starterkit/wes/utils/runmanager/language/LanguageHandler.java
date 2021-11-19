@@ -1,15 +1,15 @@
-package org.ga4gh.starterkit.wes.utils.runmanager.detailshandler.type;
+package org.ga4gh.starterkit.wes.utils.runmanager.language;
 
 import org.ga4gh.starterkit.wes.model.RunLog;
 import org.ga4gh.starterkit.wes.model.RunStatus;
 import org.ga4gh.starterkit.wes.model.WesRun;
-import org.ga4gh.starterkit.wes.utils.runmanager.detailshandler.engine.RunEngineDetailsHandler;
+import org.ga4gh.starterkit.wes.utils.runmanager.engine.EngineHandler;
 
 /**
  * Generic interface for classes facilitating data access under a particular
  * workflow language.
  */
-public interface RunTypeDetailsHandler {
+public interface LanguageHandler {
 
     // common operations
 
@@ -31,13 +31,13 @@ public interface RunTypeDetailsHandler {
      * Assign the RunEngineDetailsHandler instance belonging to the same run manager as this instance
      * @param runEngineDetailsHandler manages data access for a particular workflow engine
      */
-    public void setRunEngineDetailsHandler(RunEngineDetailsHandler runEngineDetailsHandler);
+    public void setRunEngineDetailsHandler(EngineHandler runEngineDetailsHandler);
 
     /**
      * Retrieve runEngineDetailsHandler
      * @return runEngineDetailsHandler
      */
-    public RunEngineDetailsHandler getRunEngineDetailsHandler();
+    public EngineHandler getRunEngineDetailsHandler();
 
     /**
      * Request the contents of a file that should be in the working directory

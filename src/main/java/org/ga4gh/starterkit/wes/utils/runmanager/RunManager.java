@@ -2,8 +2,8 @@ package org.ga4gh.starterkit.wes.utils.runmanager;
 
 import org.ga4gh.starterkit.wes.model.RunStatus;
 import org.ga4gh.starterkit.wes.model.WesRun;
-import org.ga4gh.starterkit.wes.utils.runmanager.detailshandler.engine.RunEngineDetailsHandler;
-import org.ga4gh.starterkit.wes.utils.runmanager.detailshandler.type.RunTypeDetailsHandler;
+import org.ga4gh.starterkit.wes.utils.runmanager.engine.EngineHandler;
+import org.ga4gh.starterkit.wes.utils.runmanager.language.LanguageHandler;
 
 /**
  * Container for performing low-level inspections/detail management of a 
@@ -15,8 +15,8 @@ import org.ga4gh.starterkit.wes.utils.runmanager.detailshandler.type.RunTypeDeta
 public class RunManager {
 
     private WesRun wesRun;
-    private RunTypeDetailsHandler runTypeDetailsHandler;
-    private RunEngineDetailsHandler runEngineDetailsHandler;
+    private LanguageHandler runTypeDetailsHandler;
+    private EngineHandler runEngineDetailsHandler;
 
     /**
      * Instantiates a new RunManager instance
@@ -77,7 +77,7 @@ public class RunManager {
      * Assign runTypeDetailsHandler
      * @param runTypeDetailsHandler handles data access according to workflow language used
      */
-    public void setRunTypeDetailsHandler(RunTypeDetailsHandler runTypeDetailsHandler) {
+    public void setRunTypeDetailsHandler(LanguageHandler runTypeDetailsHandler) {
         this.runTypeDetailsHandler = runTypeDetailsHandler;
     }
 
@@ -85,7 +85,7 @@ public class RunManager {
      * Retrieve runTypeDetailsHandler
      * @return handles data access according to workflow language used
      */
-    public RunTypeDetailsHandler getRunTypeDetailsHandler() {
+    public LanguageHandler getRunTypeDetailsHandler() {
         return runTypeDetailsHandler;
     }
 
@@ -93,7 +93,7 @@ public class RunManager {
      * Assign runEngineDetailsHandler
      * @param runEngineDetailsHandler handles data access according to workflow engine used
      */
-    public void setRunEngineDetailsHandler(RunEngineDetailsHandler runEngineDetailsHandler) {
+    public void setRunEngineDetailsHandler(EngineHandler runEngineDetailsHandler) {
         this.runEngineDetailsHandler = runEngineDetailsHandler;
     }
 
@@ -101,7 +101,7 @@ public class RunManager {
      * Retrieve runEngineDetailsHandler
      * @return handles data access according to workflow engine used
      */
-    public RunEngineDetailsHandler getRunEngineDetailsHandler() {
+    public EngineHandler getRunEngineDetailsHandler() {
         return runEngineDetailsHandler;
     }
 }

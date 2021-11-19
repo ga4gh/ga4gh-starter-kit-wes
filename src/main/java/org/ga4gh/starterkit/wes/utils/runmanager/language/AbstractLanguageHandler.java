@@ -1,15 +1,15 @@
-package org.ga4gh.starterkit.wes.utils.runmanager.detailshandler.type;
+package org.ga4gh.starterkit.wes.utils.runmanager.language;
 
 import org.ga4gh.starterkit.wes.model.WesRun;
-import org.ga4gh.starterkit.wes.utils.runmanager.detailshandler.engine.RunEngineDetailsHandler;
+import org.ga4gh.starterkit.wes.utils.runmanager.engine.EngineHandler;
 
 /**
  * Abstract class containing default implementations for simple setters, getters, etc.
  */
-public abstract class AbstractRunTypeDetailsHandler implements RunTypeDetailsHandler {
+public abstract class AbstractLanguageHandler implements LanguageHandler {
 
     private WesRun wesRun;
-    private RunEngineDetailsHandler runEngineDetailsHandler;
+    private EngineHandler runEngineDetailsHandler;
 
     public void setWesRun(WesRun wesRun) {
         this.wesRun = wesRun;
@@ -19,11 +19,11 @@ public abstract class AbstractRunTypeDetailsHandler implements RunTypeDetailsHan
         return wesRun;
     }
 
-    public void setRunEngineDetailsHandler(RunEngineDetailsHandler runEngineDetailsHandler)  {
+    public void setRunEngineDetailsHandler(EngineHandler runEngineDetailsHandler)  {
         this.runEngineDetailsHandler = runEngineDetailsHandler;
     }
 
-    public RunEngineDetailsHandler getRunEngineDetailsHandler() {
+    public EngineHandler getRunEngineDetailsHandler() {
         return runEngineDetailsHandler;
     }
 

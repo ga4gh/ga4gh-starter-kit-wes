@@ -9,7 +9,7 @@ import org.ga4gh.starterkit.wes.model.WesRun;
 import org.ga4gh.starterkit.wes.utils.hibernate.WesHibernateUtil;
 import org.ga4gh.starterkit.wes.utils.runmanager.RunManager;
 import org.ga4gh.starterkit.wes.utils.runmanager.RunManagerFactory;
-import org.ga4gh.starterkit.wes.utils.runmanager.detailshandler.type.RunTypeDetailsHandler;
+import org.ga4gh.starterkit.wes.utils.runmanager.language.LanguageHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -64,7 +64,7 @@ public class GetRunLogRequestHandler implements RequestHandler<RunLog> {
         // methods to obtain run status
         try {
             RunManager runManager = runManagerFactory.createRunManager(wesRun);
-            RunTypeDetailsHandler runTypeDetailsHandler = runManager.getRunTypeDetailsHandler();
+            LanguageHandler runTypeDetailsHandler = runManager.getRunTypeDetailsHandler();
             runLog.setState(runTypeDetailsHandler.determineRunStatus().getState());
             runTypeDetailsHandler.completeRunLog(runLog);
         } catch (Exception ex) {

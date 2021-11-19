@@ -1,7 +1,11 @@
 package org.ga4gh.starterkit.wes.app;
 
+import java.util.HashSet;
+
 import org.apache.commons.cli.Options;
-import org.ga4gh.starterkit.common.util.webserver.ServerPropertySetter;
+import org.ga4gh.starterkit.wes.config.engine.WorkflowEngineConfig;
+import org.ga4gh.starterkit.wes.model.WorkflowEngine;
+import org.ga4gh.starterkit.wes.temp.ServerPropertySetter;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
@@ -28,6 +32,10 @@ public class WesServer {
 
     private static boolean setup(String[] args) {
         Options options = new WesServerSpringConfig().getCommandLineOptions();
-        return ServerPropertySetter.setServerProperties(WesServerYamlConfigContainer.class, args, options, "config");
+        HashSet<Class<?>> classesToSet = new HashSet<>();
+        classesToSet.add(WorkflowEngine.class);
+        classesToSet.add(WorkflowEngineConfig.class);
+        ServerPropertySetter setter = new ServerPropertySetter(true, classesToSet);
+        return setter.setServerProperties(WesServerYamlConfigContainer.class, args, options, "config");
     }
 }

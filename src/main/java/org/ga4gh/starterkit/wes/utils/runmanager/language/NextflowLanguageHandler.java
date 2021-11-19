@@ -1,4 +1,4 @@
-package org.ga4gh.starterkit.wes.utils.runmanager.detailshandler.type;
+package org.ga4gh.starterkit.wes.utils.runmanager.language;
 
 import java.net.URL;
 import java.net.URLEncoder;
@@ -22,7 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 /**
  * Faciliates access to data/information for nextflow workflow runs
  */
-public class NextflowTypeDetailsHandler extends AbstractRunTypeDetailsHandler {
+public class NextflowLanguageHandler extends AbstractLanguageHandler {
 
     @Autowired
     private ServerProps serverProps;
@@ -38,7 +38,7 @@ public class NextflowTypeDetailsHandler extends AbstractRunTypeDetailsHandler {
     /**
      * Instantiate a new NextflowTypeDetailsHandler instance
      */
-    public NextflowTypeDetailsHandler() {
+    public NextflowLanguageHandler() {
         workflowSignature = null;
         workflowRevision = null;
     }

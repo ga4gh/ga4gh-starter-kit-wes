@@ -5,14 +5,16 @@ import org.apache.commons.cli.Options;
 import org.ga4gh.starterkit.common.config.DatabaseProps;
 import org.ga4gh.starterkit.common.config.ServerProps;
 import org.ga4gh.starterkit.common.util.CliYamlConfigLoader;
-import org.ga4gh.starterkit.common.util.DeepObjectMerger;
+import org.ga4gh.starterkit.wes.temp.DeepObjectMerger;
 import org.ga4gh.starterkit.common.util.logging.LoggingUtil;
 import org.ga4gh.starterkit.common.util.webserver.AdminEndpointsConnector;
 import org.ga4gh.starterkit.common.util.webserver.AdminEndpointsFilter;
 import org.ga4gh.starterkit.common.util.webserver.CorsFilterBuilder;
 import org.ga4gh.starterkit.common.util.webserver.TomcatMultiConnectorServletWebServerFactoryCustomizer;
+import org.ga4gh.starterkit.wes.config.engine.WorkflowEngineConfig;
 import org.ga4gh.starterkit.wes.exception.WesCustomExceptionHandling;
 import org.ga4gh.starterkit.wes.model.WesServiceInfo;
+import org.ga4gh.starterkit.wes.model.WorkflowEngine;
 import org.ga4gh.starterkit.wes.utils.hibernate.WesHibernateUtil;
 import org.ga4gh.starterkit.wes.utils.requesthandler.GetRunLogRequestHandler;
 import org.ga4gh.starterkit.wes.utils.requesthandler.GetRunStatusRequestHandler;
@@ -21,8 +23,8 @@ import org.ga4gh.starterkit.wes.utils.requesthandler.logs.NextflowTaskLogsReques
 import org.ga4gh.starterkit.wes.utils.requesthandler.logs.NextflowWorkflowLogsRequestHandler;
 import org.ga4gh.starterkit.wes.utils.runmanager.RunManager;
 import org.ga4gh.starterkit.wes.utils.runmanager.RunManagerFactory;
-import org.ga4gh.starterkit.wes.utils.runmanager.detailshandler.engine.NativeEngineDetailsHandler;
-import org.ga4gh.starterkit.wes.utils.runmanager.detailshandler.type.NextflowTypeDetailsHandler;
+import org.ga4gh.starterkit.wes.utils.runmanager.engine.NativeEngineHandler;
+import org.ga4gh.starterkit.wes.utils.runmanager.language.NextflowLanguageHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -148,7 +150,11 @@ public class WesServerSpringConfig implements WebMvcConfigurer {
         @Qualifier(WesServerConstants.DEFAULT_WES_CONFIG_CONTAINER) WesServerYamlConfigContainer defaultContainer,
         @Qualifier(WesServerConstants.USER_WES_CONFIG_CONTAINER) WesServerYamlConfigContainer userContainer
     ) {
-        DeepObjectMerger.merge(userContainer, defaultContainer);
+        System.out.println("Deep Object Merger method...");
+        DeepObjectMerger merger = new DeepObjectMerger();
+        merger.addClassToSet(WorkflowEngine.class);
+        merger.addClassToSet(WorkflowEngineConfig.class);
+        merger.merge(userContainer, defaultContainer);
         return defaultContainer;
     }
 
@@ -298,8 +304,8 @@ public class WesServerSpringConfig implements WebMvcConfigurer {
      */
     @Bean
     @Scope("prototype")
-    public NextflowTypeDetailsHandler nextflowTypeDetailsHandler() {
-        return new NextflowTypeDetailsHandler();
+    public NextflowLanguageHandler nextflowTypeDetailsHandler() {
+        return new NextflowLanguageHandler();
     }
 
     /**
@@ -308,7 +314,7 @@ public class WesServerSpringConfig implements WebMvcConfigurer {
      */
     @Bean
     @Scope("prototype")
-    public NativeEngineDetailsHandler nativeEngineDetailsHandler() {
-        return new NativeEngineDetailsHandler();
+    public NativeEngineHandler nativeEngineDetailsHandler() {
+        return new NativeEngineHandler();
     }
 }
