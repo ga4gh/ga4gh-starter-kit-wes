@@ -2,7 +2,7 @@ package org.ga4gh.starterkit.wes.config.language;
 
 import java.util.List;
 
-import org.ga4gh.starterkit.wes.config.engine.EngineConfig;
+import org.ga4gh.starterkit.wes.model.WorkflowEngine;
 
 public abstract class AbstractLanguageConfig implements LanguageConfig {
 
@@ -10,7 +10,7 @@ public abstract class AbstractLanguageConfig implements LanguageConfig {
 
     private List<String> versions;
 
-    private EngineConfig engineConfig;
+    private WorkflowEngine engine;
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
@@ -28,11 +28,11 @@ public abstract class AbstractLanguageConfig implements LanguageConfig {
         return versions;
     }
 
-    public void setEngineConfig(EngineConfig engineConfig) {
-        this.engineConfig = engineConfig;
+    public void setEngine(WorkflowEngine engine) {
+        this.engine = engine;
     }
 
-    public EngineConfig getEngineConfig() {
-        return engineConfig;
+    public WorkflowEngine getEngine() {
+        return engine;
     }
 }

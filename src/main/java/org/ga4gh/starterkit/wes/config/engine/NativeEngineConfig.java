@@ -7,9 +7,12 @@ public class NativeEngineConfig extends AbstractEngineConfig {
     private String rundir;
 
     public NativeEngineConfig() {
-        setType(WorkflowEngine.NATIVE);
         setRundir("wes_runs");
-        // setVersion("0.1.0");
+        setVersion("1.0.0");
+    }
+
+    public WorkflowEngine getType() {
+        return WorkflowEngine.NATIVE;
     }
 
     public void setRundir(String rundir) {

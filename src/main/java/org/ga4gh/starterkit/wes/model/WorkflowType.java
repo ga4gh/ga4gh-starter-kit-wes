@@ -10,7 +10,7 @@ package org.ga4gh.starterkit.wes.model;
  * </ul>
  */
 public enum WorkflowType {
-    // CWL,
+    CWL,
     WDL,
     NEXTFLOW
 }

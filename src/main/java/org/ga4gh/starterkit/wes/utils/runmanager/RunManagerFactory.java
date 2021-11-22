@@ -49,7 +49,7 @@ public class RunManagerFactory implements ApplicationContextAware {
         // according to workflowType, and the correct RunEngineDetailsHandler
         // according to workflowEngine
         LanguageConfig languageConfig = getWesServiceProps().getLanguageConfig(wesRun.getWorkflowType());
-        EngineConfig engineConfig = languageConfig.getEngineConfig();
+        EngineConfig engineConfig = getWesServiceProps().getEngineConfigForLanguage(wesRun.getWorkflowType());
 
         RunManager runManager = applicationContext.getBean(RunManager.class);
         

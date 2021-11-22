@@ -1,22 +1,26 @@
 package org.ga4gh.starterkit.wes.config;
 
+
+import org.ga4gh.starterkit.wes.config.engine.EngineConfig;
 import org.ga4gh.starterkit.wes.config.language.LanguageConfig;
-import org.ga4gh.starterkit.wes.config.language.NextflowLanguageConfig;
+import org.ga4gh.starterkit.wes.model.WorkflowEngine;
 import org.ga4gh.starterkit.wes.model.WorkflowType;
 
 public class WesServiceProps {
 
-    private NextflowLanguageConfig nextflow;
+    private WesServicePropsLanguages languages;
+    private WesServicePropsEngines engines;
 
     public WesServiceProps() {
-        nextflow = new NextflowLanguageConfig();
+        languages = new WesServicePropsLanguages();
+        engines = new WesServicePropsEngines();
     }
 
     public LanguageConfig getLanguageConfig(WorkflowType workflowType) {
         LanguageConfig languageConfig = null;
         switch (workflowType) {
             case NEXTFLOW:
-                languageConfig = getNextflow();
+                languageConfig = getLanguages().getNextflow();
                 break;
             default:
                 languageConfig = null;
@@ -25,11 +29,37 @@ public class WesServiceProps {
         return languageConfig;
     }
 
-    public void setNextflow(NextflowLanguageConfig nextflow) {
-        this.nextflow = nextflow;
+    public EngineConfig getEngineConfigForLanguage(WorkflowType workflowType) {
+        EngineConfig engineConfig = null;
+        LanguageConfig languageConfig = getLanguageConfig(workflowType);
+        WorkflowEngine workflowEngine = languageConfig.getEngine();
+        switch (workflowEngine) {
+            case NATIVE:
+                engineConfig = getEngines().getNativeConfig();
+                break;
+            case SLURM:
+                engineConfig = getEngines().getSlurm();
+                break;
+            default:
+                engineConfig = null;
+                break;
+        }
+        return engineConfig;
     }
 
-    public NextflowLanguageConfig getNextflow() {
-        return nextflow;
+    public void setLanguages(WesServicePropsLanguages languages) {
+        this.languages = languages;
+    }
+
+    public WesServicePropsLanguages getLanguages() {
+        return languages;
+    }
+
+    public void setEngines(WesServicePropsEngines engines) {
+        this.engines = engines;
+    }
+
+    public WesServicePropsEngines getEngines() {
+        return engines;
     }
 }

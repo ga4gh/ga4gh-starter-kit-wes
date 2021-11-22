@@ -1,9 +1,7 @@
 package org.ga4gh.starterkit.wes.temp;
 
-import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
-
 import org.apache.commons.cli.Options;
 import org.ga4gh.starterkit.common.config.ContainsServerProps;
 import org.ga4gh.starterkit.common.config.ServerProps;

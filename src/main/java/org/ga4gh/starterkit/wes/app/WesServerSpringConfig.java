@@ -13,6 +13,9 @@ import org.ga4gh.starterkit.common.util.webserver.CorsFilterBuilder;
 import org.ga4gh.starterkit.common.util.webserver.TomcatMultiConnectorServletWebServerFactoryCustomizer;
 import org.ga4gh.starterkit.wes.config.WesServiceProps;
 import org.ga4gh.starterkit.wes.config.engine.AbstractEngineConfig;
+import org.ga4gh.starterkit.wes.config.engine.NativeEngineConfig;
+import org.ga4gh.starterkit.wes.config.engine.SlurmEngineConfig;
+import org.ga4gh.starterkit.wes.config.language.NextflowLanguageConfig;
 import org.ga4gh.starterkit.wes.exception.WesCustomExceptionHandling;
 import org.ga4gh.starterkit.wes.model.WesServiceInfo;
 import org.ga4gh.starterkit.wes.model.WorkflowEngine;
@@ -156,7 +159,9 @@ public class WesServerSpringConfig implements WebMvcConfigurer {
         DeepObjectMerger merger = new DeepObjectMerger();
         merger.addClassToSet(WorkflowType.class);
         merger.addClassToSet(WorkflowEngine.class);
-        merger.addClassToSet(AbstractEngineConfig.class);
+        merger.addClassToSet(NextflowLanguageConfig.class);
+        merger.addClassToSet(NativeEngineConfig.class);
+        merger.addClassToSet(SlurmEngineConfig.class);
         merger.merge(userContainer, defaultContainer);
         return defaultContainer;
     }

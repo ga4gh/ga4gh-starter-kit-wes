@@ -4,7 +4,10 @@ import java.util.HashSet;
 import org.apache.commons.cli.Options;
 import org.ga4gh.starterkit.wes.config.engine.AbstractEngineConfig;
 import org.ga4gh.starterkit.wes.config.engine.EngineConfig;
+import org.ga4gh.starterkit.wes.config.engine.NativeEngineConfig;
+import org.ga4gh.starterkit.wes.config.engine.SlurmEngineConfig;
 import org.ga4gh.starterkit.wes.config.language.LanguageConfig;
+import org.ga4gh.starterkit.wes.config.language.NextflowLanguageConfig;
 import org.ga4gh.starterkit.wes.model.WorkflowEngine;
 import org.ga4gh.starterkit.wes.model.WorkflowType;
 import org.ga4gh.starterkit.wes.temp.ServerPropertySetter;
@@ -37,7 +40,10 @@ public class WesServer {
         HashSet<Class<?>> classesToSet = new HashSet<>();
         classesToSet.add(WorkflowType.class);
         classesToSet.add(WorkflowEngine.class);
-        classesToSet.add(EngineConfig.class);
+        classesToSet.add(NextflowLanguageConfig.class);
+        classesToSet.add(NativeEngineConfig.class);
+        classesToSet.add(SlurmEngineConfig.class);
+
         ServerPropertySetter setter = new ServerPropertySetter(true, classesToSet);
         boolean success = setter.setServerProperties(WesServerYamlConfigContainer.class, args, options, "config");
         return success;
