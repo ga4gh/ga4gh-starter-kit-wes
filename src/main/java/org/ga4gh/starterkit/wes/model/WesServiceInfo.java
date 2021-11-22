@@ -1,6 +1,9 @@
 package org.ga4gh.starterkit.wes.model;
 
 import org.ga4gh.starterkit.common.model.ServiceInfo;
+import org.ga4gh.starterkit.wes.config.WesServiceProps;
+import org.ga4gh.starterkit.wes.config.language.AbstractLanguageConfig;
+
 import static org.ga4gh.starterkit.wes.constant.WesServiceInfoDefaults.ID;
 import static org.ga4gh.starterkit.wes.constant.WesServiceInfoDefaults.NAME;
 import static org.ga4gh.starterkit.wes.constant.WesServiceInfoDefaults.DESCRIPTION;
@@ -69,9 +72,29 @@ public class WesServiceInfo extends ServiceInfo {
         getType().setGroup(SERVICE_TYPE_GROUP);
         getType().setArtifact(SERVICE_TYPE_ARTIFACT);
         getType().setVersion(SERVICE_TYPE_VERSION);
-        addWorkflowType(WorkflowType.NEXTFLOW);
-        addWorkflowTypeVersion(WorkflowType.NEXTFLOW, NEXTFLOW_VERSION);
-        addWorkflowEngineVersion(WorkflowEngine.NATIVE, "");
+    }
+
+    public void updateServiceInfoFromWesServiceProps(WesServiceProps wesServiceProps) {
+        updateServiceInfoFromLanguageConfig(wesServiceProps.getNextflow());
+    }
+
+    private void updateServiceInfoFromLanguageConfig(AbstractLanguageConfig languageConfig) {
+        // add workflow type
+        if (languageConfig.getEnabled()) {
+            addWorkflowType(languageConfig.getType());
+        }
+        // add all versions of workflow type
+        for (String version : languageConfig.getVersions()) {
+            addWorkflowTypeVersion(languageConfig.getType(), version);
+        }
+
+        // add engine type
+        /*
+        WorkflowEngine workflowEngine = languageConfig.getEngineConfig().getType();
+        if (workflowEngine != WorkflowEngine.NATIVE) {
+            addWorkflowEngineVersion(workflowEngine, languageConfig.getEngineConfig().getVersion());
+        }
+        */
     }
 
     // Convenience API methods for workflowTypeVersions

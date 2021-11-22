@@ -1,5 +1,6 @@
 package org.ga4gh.starterkit.wes.utils.runmanager.engine;
 
+import org.ga4gh.starterkit.wes.config.engine.AbstractEngineConfig;
 import org.ga4gh.starterkit.wes.config.engine.EngineConfig;
 import org.ga4gh.starterkit.wes.model.WesRun;
 import org.ga4gh.starterkit.wes.utils.runmanager.language.LanguageHandler;

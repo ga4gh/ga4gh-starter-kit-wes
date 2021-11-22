@@ -40,7 +40,7 @@ public class WesServiceInfoTest {
             {
                 new HashMap<WorkflowEngine, String>() {{
                     put(WorkflowEngine.NATIVE, "");
-                    put(WorkflowEngine.LSF, "1.2.3");
+                    put(WorkflowEngine.SLURM, "1.2.3");
                 }}
             }
         };
@@ -57,10 +57,10 @@ public class WesServiceInfoTest {
         Assert.assertEquals(si.isWorkflowTypeVersionSupported(WorkflowType.CWL, "1.0.0"), false);
 
         Assert.assertEquals(si.isWorkflowEngineSupported(WorkflowEngine.NATIVE), true);
-        Assert.assertEquals(si.isWorkflowEngineSupported(WorkflowEngine.LSF), false);
+        Assert.assertEquals(si.isWorkflowEngineSupported(WorkflowEngine.SLURM), false);
         Assert.assertEquals(si.isWorkflowEngineVersionSupported(WorkflowEngine.NATIVE, ""), true);
         Assert.assertEquals(si.isWorkflowEngineVersionSupported(WorkflowEngine.NATIVE, "1.0.0"), false);
-        Assert.assertEquals(si.isWorkflowEngineVersionSupported(WorkflowEngine.LSF, "1.0.0"), false);
+        Assert.assertEquals(si.isWorkflowEngineVersionSupported(WorkflowEngine.SLURM, "1.0.0"), false);
     }
 
     @Test(dataProvider = "workflowTypeVersions")

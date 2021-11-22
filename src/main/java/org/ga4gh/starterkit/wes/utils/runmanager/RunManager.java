@@ -1,7 +1,7 @@
 package org.ga4gh.starterkit.wes.utils.runmanager;
 
-import org.ga4gh.starterkit.wes.config.engine.EngineConfig;
-import org.ga4gh.starterkit.wes.config.language.LanguageConfig;
+import org.ga4gh.starterkit.wes.config.engine.AbstractEngineConfig;
+import org.ga4gh.starterkit.wes.config.language.AbstractLanguageConfig;
 import org.ga4gh.starterkit.wes.model.RunStatus;
 import org.ga4gh.starterkit.wes.model.WesRun;
 import org.ga4gh.starterkit.wes.utils.runmanager.engine.EngineHandler;
@@ -17,8 +17,8 @@ import org.ga4gh.starterkit.wes.utils.runmanager.language.LanguageHandler;
 public class RunManager {
 
     private WesRun wesRun;
-    private LanguageConfig languageConfig;
-    private EngineConfig engineConfig;
+    private AbstractLanguageConfig languageConfig;
+    private AbstractEngineConfig engineConfig;
     private LanguageHandler languageHandler;
     private EngineHandler engineHandler;
 
@@ -72,19 +72,19 @@ public class RunManager {
         return wesRun;
     }
 
-    public void setLanguageConfig(LanguageConfig languageConfig) {
+    public void setLanguageConfig(AbstractLanguageConfig languageConfig) {
         this.languageConfig = languageConfig;
     }
 
-    public LanguageConfig getLanguageConfig() {
+    public AbstractLanguageConfig getLanguageConfig() {
         return languageConfig;
     }
 
-    public void setEngineConfig(EngineConfig engineConfig) {
+    public void setEngineConfig(AbstractEngineConfig engineConfig) {
         this.engineConfig = engineConfig;
     }
 
-    public EngineConfig getEngineConfig() {
+    public AbstractEngineConfig getEngineConfig() {
         return engineConfig;
     }
 

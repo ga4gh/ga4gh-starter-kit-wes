@@ -1,30 +1,17 @@
 package org.ga4gh.starterkit.wes.config.language;
 
+import java.util.List;
+
 import org.ga4gh.starterkit.wes.config.engine.EngineConfig;
+import org.ga4gh.starterkit.wes.model.WorkflowType;
 
-public class LanguageConfig {
+public interface LanguageConfig {
 
-    private boolean enabled;
-
-    private EngineConfig engineConfig;
-
-    public LanguageConfig() {
-
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public boolean getEnabled() {
-        return enabled;
-    }
-
-    public void setEngineConfig(EngineConfig engineConfig) {
-        this.engineConfig = engineConfig;
-    }
-
-    public EngineConfig getEngineConfig() {
-        return engineConfig;
-    }
+    public WorkflowType getType();
+    public void setEnabled(boolean enabled);
+    public boolean getEnabled();
+    public void setVersions(List<String> versions);
+    public List<String> getVersions();
+    public void setEngineConfig(EngineConfig engineConfig);
+    public EngineConfig getEngineConfig();
 }

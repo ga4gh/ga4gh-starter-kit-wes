@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import org.apache.logging.log4j.util.Strings;
 import org.ga4gh.starterkit.common.config.ServerProps;
+import org.ga4gh.starterkit.wes.config.language.AbstractLanguageConfig;
 import org.ga4gh.starterkit.wes.config.language.LanguageConfig;
 import org.ga4gh.starterkit.wes.config.language.NextflowLanguageConfig;
 import org.ga4gh.starterkit.wes.constant.WesApiConstants;

@@ -12,10 +12,11 @@ import org.ga4gh.starterkit.common.util.webserver.AdminEndpointsFilter;
 import org.ga4gh.starterkit.common.util.webserver.CorsFilterBuilder;
 import org.ga4gh.starterkit.common.util.webserver.TomcatMultiConnectorServletWebServerFactoryCustomizer;
 import org.ga4gh.starterkit.wes.config.WesServiceProps;
-import org.ga4gh.starterkit.wes.config.engine.EngineConfig;
+import org.ga4gh.starterkit.wes.config.engine.AbstractEngineConfig;
 import org.ga4gh.starterkit.wes.exception.WesCustomExceptionHandling;
 import org.ga4gh.starterkit.wes.model.WesServiceInfo;
 import org.ga4gh.starterkit.wes.model.WorkflowEngine;
+import org.ga4gh.starterkit.wes.model.WorkflowType;
 import org.ga4gh.starterkit.wes.utils.hibernate.WesHibernateUtil;
 import org.ga4gh.starterkit.wes.utils.requesthandler.GetRunLogRequestHandler;
 import org.ga4gh.starterkit.wes.utils.requesthandler.GetRunStatusRequestHandler;
@@ -153,8 +154,9 @@ public class WesServerSpringConfig implements WebMvcConfigurer {
         @Qualifier(WesServerConstants.USER_WES_CONFIG_CONTAINER) WesServerYamlConfigContainer userContainer
     ) {
         DeepObjectMerger merger = new DeepObjectMerger();
+        merger.addClassToSet(WorkflowType.class);
         merger.addClassToSet(WorkflowEngine.class);
-        merger.addClassToSet(EngineConfig.class);
+        merger.addClassToSet(AbstractEngineConfig.class);
         merger.merge(userContainer, defaultContainer);
         return defaultContainer;
     }
@@ -183,6 +185,13 @@ public class WesServerSpringConfig implements WebMvcConfigurer {
         return wesConfigContainer.getWes().getDatabaseProps();
     }
 
+    @Bean
+    public WesServiceProps getWesServiceProps(
+        @Qualifier(WesServerConstants.FINAL_WES_CONFIG_CONTAINER) WesServerYamlConfigContainer wesConfigContainer
+    ) {
+        return wesConfigContainer.getWes().getWesServiceProps();
+    }
+
     /**
      * Retrieve service info object from merged WES config container
      * @param wesConfigContainer merged WES config container
@@ -190,16 +199,12 @@ public class WesServerSpringConfig implements WebMvcConfigurer {
      */
     @Bean
     public WesServiceInfo getServiceInfo(
-        @Qualifier(WesServerConstants.FINAL_WES_CONFIG_CONTAINER) WesServerYamlConfigContainer wesConfigContainer
+        @Qualifier(WesServerConstants.FINAL_WES_CONFIG_CONTAINER) WesServerYamlConfigContainer wesConfigContainer,
+        @Autowired WesServiceProps wesServiceProps
     ) {
-        return wesConfigContainer.getWes().getServiceInfo();
-    }
-
-    @Bean
-    public WesServiceProps getWesServiceProps(
-        @Qualifier(WesServerConstants.FINAL_WES_CONFIG_CONTAINER) WesServerYamlConfigContainer wesConfigContainer
-    ) {
-        return wesConfigContainer.getWes().getWesServiceProps();
+        WesServiceInfo serviceInfo = wesConfigContainer.getWes().getServiceInfo();
+        serviceInfo.updateServiceInfoFromWesServiceProps(wesServiceProps);
+        return serviceInfo;
     }
 
     /* ******************************

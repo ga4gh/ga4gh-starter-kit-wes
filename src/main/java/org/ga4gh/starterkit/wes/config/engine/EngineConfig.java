@@ -1,10 +1,9 @@
 package org.ga4gh.starterkit.wes.config.engine;
 
+import org.ga4gh.starterkit.wes.model.WorkflowEngine;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-
-import org.ga4gh.starterkit.wes.model.WorkflowEngine;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonTypeInfo(
@@ -18,15 +17,9 @@ import org.ga4gh.starterkit.wes.model.WorkflowEngine;
     @JsonSubTypes.Type(value = NativeEngineConfig.class, name = "NATIVE"),
     @JsonSubTypes.Type(value = SlurmEngineConfig.class, name = "SLURM")
 })
-public abstract class EngineConfig {
+public interface EngineConfig {
 
-    private WorkflowEngine type;
-
-    public void setType(WorkflowEngine type) {
-        this.type = type;
-    }
-
-    public WorkflowEngine getType() {
-        return type;
-    }
+    public void setType(WorkflowEngine type);
+    public WorkflowEngine getType();
+    
 }
