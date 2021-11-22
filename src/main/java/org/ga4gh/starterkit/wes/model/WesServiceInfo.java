@@ -3,9 +3,7 @@ package org.ga4gh.starterkit.wes.model;
 import org.ga4gh.starterkit.common.model.ServiceInfo;
 import org.ga4gh.starterkit.wes.config.WesServiceProps;
 import org.ga4gh.starterkit.wes.config.engine.EngineConfig;
-import org.ga4gh.starterkit.wes.config.language.AbstractLanguageConfig;
 import org.ga4gh.starterkit.wes.config.language.LanguageConfig;
-
 import static org.ga4gh.starterkit.wes.constant.WesServiceInfoDefaults.ID;
 import static org.ga4gh.starterkit.wes.constant.WesServiceInfoDefaults.NAME;
 import static org.ga4gh.starterkit.wes.constant.WesServiceInfoDefaults.DESCRIPTION;

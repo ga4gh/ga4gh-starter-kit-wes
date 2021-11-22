@@ -12,7 +12,6 @@ import org.ga4gh.starterkit.common.util.webserver.AdminEndpointsFilter;
 import org.ga4gh.starterkit.common.util.webserver.CorsFilterBuilder;
 import org.ga4gh.starterkit.common.util.webserver.TomcatMultiConnectorServletWebServerFactoryCustomizer;
 import org.ga4gh.starterkit.wes.config.WesServiceProps;
-import org.ga4gh.starterkit.wes.config.engine.AbstractEngineConfig;
 import org.ga4gh.starterkit.wes.config.engine.NativeEngineConfig;
 import org.ga4gh.starterkit.wes.config.engine.SlurmEngineConfig;
 import org.ga4gh.starterkit.wes.config.language.NextflowLanguageConfig;

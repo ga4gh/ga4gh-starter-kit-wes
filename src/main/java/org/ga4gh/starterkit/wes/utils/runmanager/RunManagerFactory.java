@@ -2,9 +2,7 @@ package org.ga4gh.starterkit.wes.utils.runmanager;
 
 import java.util.HashMap;
 import org.ga4gh.starterkit.wes.config.WesServiceProps;
-import org.ga4gh.starterkit.wes.config.engine.AbstractEngineConfig;
 import org.ga4gh.starterkit.wes.config.engine.EngineConfig;
-import org.ga4gh.starterkit.wes.config.language.AbstractLanguageConfig;
 import org.ga4gh.starterkit.wes.config.language.LanguageConfig;
 import org.ga4gh.starterkit.wes.model.WesRun;
 import org.ga4gh.starterkit.wes.model.WorkflowEngine;

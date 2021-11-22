@@ -2,7 +2,7 @@ package org.ga4gh.starterkit.wes.model;
 
 import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
 /**
@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
  * a workflow run request. Known as 'RunRequest' in WES spec.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class WesRequest {
 
     /**

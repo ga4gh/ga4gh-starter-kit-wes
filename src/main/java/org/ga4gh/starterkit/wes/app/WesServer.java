@@ -2,11 +2,8 @@ package org.ga4gh.starterkit.wes.app;
 
 import java.util.HashSet;
 import org.apache.commons.cli.Options;
-import org.ga4gh.starterkit.wes.config.engine.AbstractEngineConfig;
-import org.ga4gh.starterkit.wes.config.engine.EngineConfig;
 import org.ga4gh.starterkit.wes.config.engine.NativeEngineConfig;
 import org.ga4gh.starterkit.wes.config.engine.SlurmEngineConfig;
-import org.ga4gh.starterkit.wes.config.language.LanguageConfig;
 import org.ga4gh.starterkit.wes.config.language.NextflowLanguageConfig;
 import org.ga4gh.starterkit.wes.model.WorkflowEngine;
 import org.ga4gh.starterkit.wes.model.WorkflowType;
