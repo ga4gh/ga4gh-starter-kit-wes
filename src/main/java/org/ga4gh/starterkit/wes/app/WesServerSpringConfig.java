@@ -1,18 +1,48 @@
 package org.ga4gh.starterkit.wes.app;
 
+import org.apache.catalina.connector.Connector;
 import org.apache.commons.cli.Options;
 import org.ga4gh.starterkit.common.config.DatabaseProps;
 import org.ga4gh.starterkit.common.config.ServerProps;
 import org.ga4gh.starterkit.common.util.CliYamlConfigLoader;
 import org.ga4gh.starterkit.common.util.DeepObjectMerger;
+import org.ga4gh.starterkit.common.util.logging.LoggingUtil;
+import org.ga4gh.starterkit.common.util.webserver.AdminEndpointsConnector;
+import org.ga4gh.starterkit.common.util.webserver.AdminEndpointsFilter;
+import org.ga4gh.starterkit.common.util.webserver.CorsFilterBuilder;
+import org.ga4gh.starterkit.common.util.webserver.TomcatMultiConnectorServletWebServerFactoryCustomizer;
+import org.ga4gh.starterkit.wes.config.WesServiceProps;
+import org.ga4gh.starterkit.wes.config.engine.NativeEngineConfig;
+import org.ga4gh.starterkit.wes.config.engine.SlurmEngineConfig;
+import org.ga4gh.starterkit.wes.config.language.NextflowLanguageConfig;
+import org.ga4gh.starterkit.wes.exception.WesCustomExceptionHandling;
 import org.ga4gh.starterkit.wes.model.WesServiceInfo;
+import org.ga4gh.starterkit.wes.model.WorkflowEngine;
+import org.ga4gh.starterkit.wes.model.WorkflowType;
+import org.ga4gh.starterkit.wes.utils.hibernate.WesHibernateUtil;
+import org.ga4gh.starterkit.wes.utils.requesthandler.GetRunLogRequestHandler;
+import org.ga4gh.starterkit.wes.utils.requesthandler.GetRunStatusRequestHandler;
+import org.ga4gh.starterkit.wes.utils.requesthandler.SubmitRunRequestHandler;
+import org.ga4gh.starterkit.wes.utils.requesthandler.logs.NextflowTaskLogsRequestHandler;
+import org.ga4gh.starterkit.wes.utils.requesthandler.logs.NextflowWorkflowLogsRequestHandler;
+import org.ga4gh.starterkit.wes.utils.runmanager.RunManager;
+import org.ga4gh.starterkit.wes.utils.runmanager.RunManagerFactory;
+import org.ga4gh.starterkit.wes.utils.runmanager.engine.NativeEngineHandler;
+import org.ga4gh.starterkit.wes.utils.runmanager.engine.SlurmEngineHandler;
+import org.ga4gh.starterkit.wes.utils.runmanager.language.NextflowLanguageHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.web.server.WebServerFactoryCustomizer;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
+import org.springframework.web.context.annotation.RequestScope;
+import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
@@ -26,7 +56,38 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WesServerSpringConfig implements WebMvcConfigurer {
 
     /* ******************************
-     * WES SERVER CONFIG BEANS
+     * TOMCAT SERVER
+     * ****************************** */
+
+    @Value("${server.admin.port:4501}")
+    private String serverAdminPort;
+
+    @Bean
+    public WebServerFactoryCustomizer servletContainer() {
+        Connector[] additionalConnectors = AdminEndpointsConnector.additionalConnector(serverAdminPort);
+        ServerProperties serverProperties = new ServerProperties();
+        return new TomcatMultiConnectorServletWebServerFactoryCustomizer(serverProperties, additionalConnectors);
+    }
+
+    @Bean
+    public FilterRegistrationBean<AdminEndpointsFilter> adminEndpointsFilter() {
+        return new FilterRegistrationBean<AdminEndpointsFilter>(new AdminEndpointsFilter(Integer.valueOf(serverAdminPort)));
+    }
+    
+    @Bean
+    public WesCustomExceptionHandling customExceptionHandling() {
+        return new WesCustomExceptionHandling();
+    }
+
+    @Bean
+    public FilterRegistrationBean<CorsFilter> corsFilter(
+        @Autowired ServerProps serverProps
+    ) {
+        return new CorsFilterBuilder(serverProps).buildFilter();
+    }
+
+    /* ******************************
+     * YAML CONFIG
      * ****************************** */
 
     /**
@@ -94,7 +155,13 @@ public class WesServerSpringConfig implements WebMvcConfigurer {
         @Qualifier(WesServerConstants.DEFAULT_WES_CONFIG_CONTAINER) WesServerYamlConfigContainer defaultContainer,
         @Qualifier(WesServerConstants.USER_WES_CONFIG_CONTAINER) WesServerYamlConfigContainer userContainer
     ) {
-        DeepObjectMerger.merge(userContainer, defaultContainer);
+        DeepObjectMerger merger = new DeepObjectMerger();
+        merger.addAtomicClass(WorkflowType.class);
+        merger.addAtomicClass(WorkflowEngine.class);
+        merger.addAtomicClass(NextflowLanguageConfig.class);
+        merger.addAtomicClass(NativeEngineConfig.class);
+        merger.addAtomicClass(SlurmEngineConfig.class);
+        merger.merge(userContainer, defaultContainer);
         return defaultContainer;
     }
 
@@ -122,6 +189,13 @@ public class WesServerSpringConfig implements WebMvcConfigurer {
         return wesConfigContainer.getWes().getDatabaseProps();
     }
 
+    @Bean
+    public WesServiceProps getWesServiceProps(
+        @Qualifier(WesServerConstants.FINAL_WES_CONFIG_CONTAINER) WesServerYamlConfigContainer wesConfigContainer
+    ) {
+        return wesConfigContainer.getWes().getWesServiceProps();
+    }
+
     /**
      * Retrieve service info object from merged WES config container
      * @param wesConfigContainer merged WES config container
@@ -129,8 +203,141 @@ public class WesServerSpringConfig implements WebMvcConfigurer {
      */
     @Bean
     public WesServiceInfo getServiceInfo(
-        @Qualifier(WesServerConstants.FINAL_WES_CONFIG_CONTAINER) WesServerYamlConfigContainer wesConfigContainer
+        @Qualifier(WesServerConstants.FINAL_WES_CONFIG_CONTAINER) WesServerYamlConfigContainer wesConfigContainer,
+        @Autowired WesServiceProps wesServiceProps
     ) {
-        return wesConfigContainer.getWes().getServiceInfo();
+        WesServiceInfo serviceInfo = wesConfigContainer.getWes().getServiceInfo();
+        serviceInfo.updateServiceInfoFromWesServiceProps(wesServiceProps);
+        return serviceInfo;
+    }
+
+    /* ******************************
+     * LOGGING
+     * ****************************** */
+
+    @Bean
+    public LoggingUtil loggingUtil() {
+        return new LoggingUtil();
+    }
+
+    /* ******************************
+     * HIBERNATE CONFIG
+     * ****************************** */
+
+    /**
+     * Loads/retrieves hibernate util singleton providing access to WES-related database tables
+     * @param databaseProps database properties from configuration
+     * @return loaded hibernate util singleton
+     */
+    @Bean
+    public WesHibernateUtil wesHibernateUtil(
+        @Autowired DatabaseProps databaseProps
+    ) {
+        WesHibernateUtil hibernateUtil = new WesHibernateUtil();
+        hibernateUtil.setDatabaseProps(databaseProps);
+        return hibernateUtil;
+    }
+
+    /* ******************************
+     * REQUEST HANDLER
+     * ****************************** */
+
+    /**
+     * Get new request handler facilitating the launching of a new workflow run 
+     * @return run submission request handler
+     */
+    @Bean
+    @RequestScope
+    public SubmitRunRequestHandler submitRunRequestHandler() {
+        return new SubmitRunRequestHandler();
+    }
+
+    /**
+     * Get new request handler facilitating the retrieval of run logs
+     * @return run log retrieval request handler
+     */
+    @Bean
+    @RequestScope
+    public GetRunLogRequestHandler getRunLogRequestHandler() {
+        return new GetRunLogRequestHandler();
+    }
+
+    /**
+     * Get new request handler facilitating retrieval of run status
+     * @return run status retrieval request handler
+     */
+    @Bean
+    @RequestScope
+    public GetRunStatusRequestHandler getRunStatusRequestHandler() {
+        return new GetRunStatusRequestHandler();
+    }
+
+    /**
+     * Get new request handler providing access to nextflow stdout/stderr logs for a single task
+     * @return nextflow task log retrieval request handler
+     */
+    @Bean
+    @RequestScope
+    public NextflowTaskLogsRequestHandler nextflowTaskLogsRequestHandler() {
+        return new NextflowTaskLogsRequestHandler();
+    }
+
+    /**
+     * Get new request handler providing access to nextflow stdout/stderr logs for all tasks in a single workflow run
+     * @return nextflow workflow run log retrieval request handler
+     */
+    @Bean
+    @RequestScope
+    public NextflowWorkflowLogsRequestHandler nextflowWorkflowLogsRequestHandler() {
+        return new NextflowWorkflowLogsRequestHandler();
+    }
+
+    /* ******************************
+     * OTHER UTILS
+     * ****************************** */
+
+    /**
+     * Loads/retrieves the run manager factory, which spawns low-level run manager objects
+     * @return run manager factory singleton
+     */
+    @Bean
+    public RunManagerFactory runManagerFactory() {
+        return new RunManagerFactory();
+    }
+
+    /**
+     * Loads a new run manager instance, which provide low-level access capabilities to workflow run data
+     * @return new RunManager instance
+     */
+    @Bean
+    @Scope("prototype")
+    public RunManager runManager() {
+        return new RunManager();
+    }
+
+    /**
+     * Loads a new nextflow details handler, which has low-level access to nextflow-type workflow runs
+     * @return new NextflowTypeDetailsHandler instance
+     */
+    @Bean
+    @Scope("prototype")
+    public NextflowLanguageHandler nextflowTypeDetailsHandler() {
+        return new NextflowLanguageHandler();
+    }
+
+    /**
+     * Loads a new native details handler, which has low-level access to workflow runs submitted via the "Native" engine
+     * @return new NativeEngineDetailsHandler instance
+     */
+    @Bean
+    @Scope("prototype")
+    public NativeEngineHandler nativeEngineHandler() {
+        return new NativeEngineHandler();
+    }
+
+    @Bean
+    @Scope("prototype")
+    public SlurmEngineHandler slurmEngineHandler() {
+        return new SlurmEngineHandler();
     }
 }

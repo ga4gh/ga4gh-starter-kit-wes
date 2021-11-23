@@ -2,6 +2,7 @@ package org.ga4gh.starterkit.wes.app;
 
 import org.ga4gh.starterkit.common.config.DatabaseProps;
 import org.ga4gh.starterkit.common.config.ServerProps;
+import org.ga4gh.starterkit.wes.config.WesServiceProps;
 import org.ga4gh.starterkit.wes.model.WesServiceInfo;
 
 /**
@@ -26,6 +27,8 @@ public class WesServerYamlConfig {
      */
     private WesServiceInfo serviceInfo;
 
+    private WesServiceProps wesServiceProps;
+
     /**
      * Instantiates a new WesStandaloneYamlConfig object with default properties
      */
@@ -33,6 +36,7 @@ public class WesServerYamlConfig {
         serverProps = new ServerProps();
         databaseProps = new DatabaseProps();
         serviceInfo = new WesServiceInfo();
+        wesServiceProps = new WesServiceProps();
     }
 
     /**
@@ -81,5 +85,13 @@ public class WesServerYamlConfig {
      */
     public WesServiceInfo getServiceInfo() {
         return serviceInfo;
+    }
+
+    public void setWesServiceProps(WesServiceProps wesServiceProps) {
+        this.wesServiceProps = wesServiceProps;
+    }
+
+    public WesServiceProps getWesServiceProps() {
+        return wesServiceProps;
     }
 }

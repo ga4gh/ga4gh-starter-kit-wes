@@ -63,7 +63,7 @@ public class NextflowWorkflowLogsRequestHandler implements RequestHandler<String
         try {
             for (String workdir : workdirsSplit) {
                 Path filePath = Paths.get("work", workdir, ".command." + channelFileSuffix);
-                String logfileContents = runManager.getRunEngineDetailsHandler().getRequestedFileContents(filePath.toString());
+                String logfileContents = runManager.getEngineHandler().getRequestedFileContents(filePath.toString());
                 workflowLogs.add(logfileContents);
             }
         } catch (Exception ex) {
