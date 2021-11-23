@@ -5,7 +5,7 @@ import org.apache.commons.cli.Options;
 import org.ga4gh.starterkit.common.config.DatabaseProps;
 import org.ga4gh.starterkit.common.config.ServerProps;
 import org.ga4gh.starterkit.common.util.CliYamlConfigLoader;
-import org.ga4gh.starterkit.wes.temp.DeepObjectMerger;
+import org.ga4gh.starterkit.common.util.DeepObjectMerger;
 import org.ga4gh.starterkit.common.util.logging.LoggingUtil;
 import org.ga4gh.starterkit.common.util.webserver.AdminEndpointsConnector;
 import org.ga4gh.starterkit.common.util.webserver.AdminEndpointsFilter;
@@ -156,11 +156,11 @@ public class WesServerSpringConfig implements WebMvcConfigurer {
         @Qualifier(WesServerConstants.USER_WES_CONFIG_CONTAINER) WesServerYamlConfigContainer userContainer
     ) {
         DeepObjectMerger merger = new DeepObjectMerger();
-        merger.addClassToSet(WorkflowType.class);
-        merger.addClassToSet(WorkflowEngine.class);
-        merger.addClassToSet(NextflowLanguageConfig.class);
-        merger.addClassToSet(NativeEngineConfig.class);
-        merger.addClassToSet(SlurmEngineConfig.class);
+        merger.addAtomicClass(WorkflowType.class);
+        merger.addAtomicClass(WorkflowEngine.class);
+        merger.addAtomicClass(NextflowLanguageConfig.class);
+        merger.addAtomicClass(NativeEngineConfig.class);
+        merger.addAtomicClass(SlurmEngineConfig.class);
         merger.merge(userContainer, defaultContainer);
         return defaultContainer;
     }
