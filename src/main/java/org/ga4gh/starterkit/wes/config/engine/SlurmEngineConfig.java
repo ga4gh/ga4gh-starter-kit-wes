@@ -7,6 +7,7 @@ public class SlurmEngineConfig extends AbstractEngineConfig {
     private String rundir;
 
     public SlurmEngineConfig() {
+        super();
         setRundir("wes_runs");
         setVersion("0.1.0");
     }
