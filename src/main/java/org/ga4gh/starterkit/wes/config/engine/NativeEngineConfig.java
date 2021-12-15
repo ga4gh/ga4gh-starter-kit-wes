@@ -7,6 +7,7 @@ public class NativeEngineConfig extends AbstractEngineConfig {
     private String rundir;
 
     public NativeEngineConfig() {
+        super();
         setRundir("wes_runs");
         setVersion("1.0.0");
     }
