@@ -1,40 +1,31 @@
-package org.ga4gh.starterkit.wes.utils.runmanager.detailshandler.engine;
+package org.ga4gh.starterkit.wes.utils.runmanager.engine;
 
 import java.util.List;
+import org.ga4gh.starterkit.wes.config.engine.EngineConfig;
 import org.ga4gh.starterkit.wes.model.WesRun;
-import org.ga4gh.starterkit.wes.utils.runmanager.detailshandler.type.RunTypeDetailsHandler;
+import org.ga4gh.starterkit.wes.utils.runmanager.language.LanguageHandler;
 
 /**
  * Generic interface for classes facilitating data access under a particular
  * workflow engine/job scheduling system
  */
-public interface RunEngineDetailsHandler {
+public interface EngineHandler {
 
     // common operations
-
-    /**
-     * Assign wesRun
-     * @param wesRun entity representing the workflow run
-     */
+    public void setup();
     public void setWesRun(WesRun wesRun);
-
-    /**
-     * Retrieve wesRun
-     * @return entity representing the workflow run
-     */
     public WesRun getWesRun();
+    public void setEngineConfig(EngineConfig engineConfig);
+    public EngineConfig getEngineConfig();
+    public void setLanguageHandler(LanguageHandler languageHandler);
+    public LanguageHandler getLanguageHandler();
 
-    /**
-     * Assign the RunTypeDetailsHandler instance belonging to the same run manager as this instance
-     * @param runTypeDetailsHandler manages data access for a particular workflow engine
-     */
-    public void setRunTypeDetailsHandler(RunTypeDetailsHandler runTypeDetailsHandler);
-
-    /**
-     * Retrieve runTypeDetailsHandler
-     * @return runTypeDetailsHandler
-     */
-    public RunTypeDetailsHandler getRunTypeDetailsHandler();
+    // capture exception state
+    public void setExceptionClass(Class<?> exceptionClass);
+    public Class<?> getExceptionClass();
+    public void setExceptionMessage(String exceptionMessage);
+    public String getExceptionMessage();
+    public boolean errored();
 
     /**
      * List the contents (files, subdirectories) of the requested directory
@@ -42,7 +33,7 @@ public interface RunEngineDetailsHandler {
      * @return contents of directory
      * @throws Exception a server-side error occurred
      */
-    public List<String> provideDirectoryContents(String directory) throws Exception;
+    public List<String> provideDirectoryContents(String directory);
 
     /**
      * Read and return the contents of a requested file
@@ -50,7 +41,7 @@ public interface RunEngineDetailsHandler {
      * @return contents of file
      * @throws Exception a server-side error occurred
      */
-    public String getRequestedFileContents(String filename) throws Exception;
+    public String getRequestedFileContents(String filename);
 
     /**
      * Get the stdout of a requested CLI command, when run in the run's working directory
@@ -58,20 +49,22 @@ public interface RunEngineDetailsHandler {
      * @return stdout of command
      * @throws Exception a server-side error occurred
      */
-    public String getRequestedCommandStdout(String[] command) throws Exception;
+    public String getRequestedCommandStdout(String[] command);
 
     // for launching workflow runs
+
+    public void writeContentToFile(String filePath, String content);
 
     /**
      * Prepare the working directory/area according to what is needed by the engine
      * @throws Exception a server-side error occurred
      */
-    public void stageWorkingArea() throws Exception;
+    public void stageWorkingArea();
 
     /**
      * Execute the provided workflow run command through the engine
      * @param workflowRunCommand command to execute that will initiate the workflow run
      * @throws Exception a server-side error occurred
      */
-    public void launchWorkflowRunCommand(String[] workflowRunCommand) throws Exception;
+    public void launchWorkflowRunCommand(String[] workflowRunCommand);
 }

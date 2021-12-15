@@ -61,7 +61,7 @@ public class NextflowTaskLogsRequestHandler implements RequestHandler<String> {
         Path filePath = Paths.get("work", subdirA, subdirB, ".command." + channelFileSuffix);
         
         try {
-            return runManager.getRunEngineDetailsHandler().getRequestedFileContents(filePath.toString());
+            return runManager.getEngineHandler().getRequestedFileContents(filePath.toString());
         } catch (Exception ex) {
             return null;
         }

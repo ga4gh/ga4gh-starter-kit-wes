@@ -1,9 +1,11 @@
 package org.ga4gh.starterkit.wes.utils.runmanager;
 
+import org.ga4gh.starterkit.wes.config.engine.AbstractEngineConfig;
+import org.ga4gh.starterkit.wes.config.language.AbstractLanguageConfig;
 import org.ga4gh.starterkit.wes.model.RunStatus;
 import org.ga4gh.starterkit.wes.model.WesRun;
-import org.ga4gh.starterkit.wes.utils.runmanager.detailshandler.engine.RunEngineDetailsHandler;
-import org.ga4gh.starterkit.wes.utils.runmanager.detailshandler.type.RunTypeDetailsHandler;
+import org.ga4gh.starterkit.wes.utils.runmanager.engine.EngineHandler;
+import org.ga4gh.starterkit.wes.utils.runmanager.language.LanguageHandler;
 
 /**
  * Container for performing low-level inspections/detail management of a 
@@ -15,8 +17,10 @@ import org.ga4gh.starterkit.wes.utils.runmanager.detailshandler.type.RunTypeDeta
 public class RunManager {
 
     private WesRun wesRun;
-    private RunTypeDetailsHandler runTypeDetailsHandler;
-    private RunEngineDetailsHandler runEngineDetailsHandler;
+    private AbstractLanguageConfig languageConfig;
+    private AbstractEngineConfig engineConfig;
+    private LanguageHandler languageHandler;
+    private EngineHandler engineHandler;
 
     /**
      * Instantiates a new RunManager instance
@@ -42,9 +46,12 @@ public class RunManager {
         // a base working dir is setup according to the workflow engine,
         // the raw CLI that the workflow language uses is then constructed
         // and launched through the engine
-        runEngineDetailsHandler.stageWorkingArea();
-        String[] workflowRunCommand = runTypeDetailsHandler.constructWorkflowRunCommand();
-        runEngineDetailsHandler.launchWorkflowRunCommand(workflowRunCommand);
+        getEngineHandler().stageWorkingArea();
+        String[] workflowRunCommand = getLanguageHandler().constructWorkflowRunCommand();
+        WorkflowRunExecutorMediator mediator = new WorkflowRunExecutorMediator();
+        mediator.setRunManager(this);
+        mediator.mediateWorkflowRun();
+        getEngineHandler().launchWorkflowRunCommand(workflowRunCommand);
     }
 
     /**
@@ -54,54 +61,46 @@ public class RunManager {
      * @throws Exception server-side operation could not be completed
      */
     public RunStatus getRunStatus() throws Exception {
-        return runTypeDetailsHandler.determineRunStatus();
+        return getLanguageHandler().determineRunStatus();
     }
 
-    /**
-     * Assign wesRun
-     * @param wesRun WesRun entity
-     */
     public void setWesRun(WesRun wesRun) {
         this.wesRun = wesRun;
     }
 
-    /**
-     * Retrieve wesRun
-     * @return WesRun entity
-     */
     public WesRun getWesRun() {
         return wesRun;
     }
 
-    /**
-     * Assign runTypeDetailsHandler
-     * @param runTypeDetailsHandler handles data access according to workflow language used
-     */
-    public void setRunTypeDetailsHandler(RunTypeDetailsHandler runTypeDetailsHandler) {
-        this.runTypeDetailsHandler = runTypeDetailsHandler;
+    public void setLanguageConfig(AbstractLanguageConfig languageConfig) {
+        this.languageConfig = languageConfig;
     }
 
-    /**
-     * Retrieve runTypeDetailsHandler
-     * @return handles data access according to workflow language used
-     */
-    public RunTypeDetailsHandler getRunTypeDetailsHandler() {
-        return runTypeDetailsHandler;
+    public AbstractLanguageConfig getLanguageConfig() {
+        return languageConfig;
     }
 
-    /**
-     * Assign runEngineDetailsHandler
-     * @param runEngineDetailsHandler handles data access according to workflow engine used
-     */
-    public void setRunEngineDetailsHandler(RunEngineDetailsHandler runEngineDetailsHandler) {
-        this.runEngineDetailsHandler = runEngineDetailsHandler;
+    public void setEngineConfig(AbstractEngineConfig engineConfig) {
+        this.engineConfig = engineConfig;
     }
 
-    /**
-     * Retrieve runEngineDetailsHandler
-     * @return handles data access according to workflow engine used
-     */
-    public RunEngineDetailsHandler getRunEngineDetailsHandler() {
-        return runEngineDetailsHandler;
+    public AbstractEngineConfig getEngineConfig() {
+        return engineConfig;
+    }
+
+    public void setLanguageHandler(LanguageHandler languageHandler) {
+        this.languageHandler = languageHandler;
+    }
+
+    public LanguageHandler getLanguageHandler() {
+        return languageHandler;
+    }
+
+    public void setEngineHandler(EngineHandler engineHandler) {
+        this.engineHandler = engineHandler;
+    }
+
+    public EngineHandler getEngineHandler() {
+        return engineHandler;
     }
 }

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.ga4gh.starterkit.wes.config.WesServiceProps;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -40,7 +41,7 @@ public class WesServiceInfoTest {
             {
                 new HashMap<WorkflowEngine, String>() {{
                     put(WorkflowEngine.NATIVE, "");
-                    put(WorkflowEngine.LSF, "1.2.3");
+                    put(WorkflowEngine.SLURM, "1.2.3");
                 }}
             }
         };
@@ -49,6 +50,8 @@ public class WesServiceInfoTest {
     @Test
     public void testDefaultWesServiceInfo() {
         WesServiceInfo si = new WesServiceInfo();
+        WesServiceProps wesServiceProps = new WesServiceProps();
+        si.updateServiceInfoFromWesServiceProps(wesServiceProps);
 
         Assert.assertEquals(si.isWorkflowTypeSupported(WorkflowType.NEXTFLOW), true);
         Assert.assertEquals(si.isWorkflowTypeSupported(WorkflowType.CWL), false);
@@ -57,10 +60,10 @@ public class WesServiceInfoTest {
         Assert.assertEquals(si.isWorkflowTypeVersionSupported(WorkflowType.CWL, "1.0.0"), false);
 
         Assert.assertEquals(si.isWorkflowEngineSupported(WorkflowEngine.NATIVE), true);
-        Assert.assertEquals(si.isWorkflowEngineSupported(WorkflowEngine.LSF), false);
-        Assert.assertEquals(si.isWorkflowEngineVersionSupported(WorkflowEngine.NATIVE, ""), true);
-        Assert.assertEquals(si.isWorkflowEngineVersionSupported(WorkflowEngine.NATIVE, "1.0.0"), false);
-        Assert.assertEquals(si.isWorkflowEngineVersionSupported(WorkflowEngine.LSF, "1.0.0"), false);
+        Assert.assertEquals(si.isWorkflowEngineSupported(WorkflowEngine.SLURM), false);
+        Assert.assertEquals(si.isWorkflowEngineVersionSupported(WorkflowEngine.NATIVE, "1.0.0"), true);
+        Assert.assertEquals(si.isWorkflowEngineVersionSupported(WorkflowEngine.NATIVE, "2.0.0"), false);
+        Assert.assertEquals(si.isWorkflowEngineVersionSupported(WorkflowEngine.SLURM, "1.0.0"), false);
     }
 
     @Test(dataProvider = "workflowTypeVersions")

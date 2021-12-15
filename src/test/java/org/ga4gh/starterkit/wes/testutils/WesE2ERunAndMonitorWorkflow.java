@@ -2,7 +2,6 @@ package org.ga4gh.starterkit.wes.testutils;
 
 import org.ga4gh.starterkit.wes.app.WesServer;
 import org.ga4gh.starterkit.wes.app.WesServerSpringConfig;
-import org.ga4gh.starterkit.wes.beanconfig.StarterKitWesSpringConfig;
 import org.ga4gh.starterkit.wes.controller.Logs;
 import org.ga4gh.starterkit.wes.controller.Runs;
 import org.ga4gh.starterkit.wes.model.RunId;
@@ -55,7 +54,6 @@ import org.apache.http.util.EntityUtils;
 @ContextConfiguration(classes = {
     WesServer.class,
     WesServerSpringConfig.class,
-    StarterKitWesSpringConfig.class,
     Runs.class,
     Logs.class
 })
