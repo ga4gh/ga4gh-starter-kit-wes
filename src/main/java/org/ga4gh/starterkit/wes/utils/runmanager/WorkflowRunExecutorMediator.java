@@ -3,6 +3,7 @@ package org.ga4gh.starterkit.wes.utils.runmanager;
 import java.util.HashMap;
 import java.util.concurrent.Callable;
 
+import org.ga4gh.starterkit.wes.model.ContainerizationType;
 import org.ga4gh.starterkit.wes.model.WorkflowEngine;
 import org.ga4gh.starterkit.wes.model.WorkflowType;
 
@@ -14,7 +15,7 @@ public class WorkflowRunExecutorMediator {
         put(
             WorkflowType.NEXTFLOW,
             new HashMap<WorkflowEngine, Callable<Void>>() {{
-                put(WorkflowEngine.NATIVE, () -> doNothing());
+                put(WorkflowEngine.NATIVE, () -> nextflowNative());
                 put(WorkflowEngine.SLURM, () -> nextflowSlurm());
             }}
         );
@@ -31,11 +32,44 @@ public class WorkflowRunExecutorMediator {
         return null;
     }
 
-    private Void nextflowSlurm() {
+    /* Language-Engine specific steps */
+
+    private Void nextflowNative() {
         String filePath = "nextflow.config";
-        String content = "process.executor = 'slurm'\n";
+        String content = nextflowConfigForContainerizationType();
         getRunManager().getEngineHandler().writeContentToFile(filePath, content);
         return null;
+    }
+
+    private Void nextflowSlurm() {
+        String filePath = "nextflow.config";
+        String content = "process.executor = 'slurm'\n"
+            + nextflowConfigForContainerizationType();
+        getRunManager().getEngineHandler().writeContentToFile(filePath, content);
+        return null;
+    }
+
+    /* Helper Functions */
+
+    private String nextflowConfigForContainerizationType() {
+        ContainerizationType ct = getRunManager().getEngineHandler().getEngineConfig().getContainerizationType();
+        StringBuffer sb = new StringBuffer();
+        switch(ct) {
+            case DOCKER:
+                sb.append("docker.enabled = true\n");
+                sb.append("singularity.enabled = false\n");
+                break;
+            case SINGULARITY:
+                sb.append("docker.enabled = false\n");
+                sb.append("singularity.enabled = true\n");
+                sb.append("singularity.autoMounts = true\n");
+                break;
+            default:
+                sb.append("docker.enabled = true\n");
+                sb.append("singularity.enabled = false\n");
+                break;
+        }
+        return sb.toString();
     }
 
     /* Setters and Getters */

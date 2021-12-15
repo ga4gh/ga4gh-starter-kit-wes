@@ -26,9 +26,17 @@ plugins {
     id 'io.codearte.nexus-staging' version '0.30.0'
 }
 
+configurations.all {
+  resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+    if (details.requested.group == 'org.apache.logging.log4j') {
+      details.useVersion '2.16.0'
+    }
+  }
+}
+
 archivesBaseName = 'ga4gh-starter-kit-wes'
 group 'org.ga4gh'
-version '0.2.1'
+version '0.2.2'
 
 repositories {
     // Use jcenter for resolving dependencies.
