@@ -21,16 +21,17 @@ jobs:
     - name: Validating Wrapper
       uses: gradle/wrapper-validation-action@v1
 
-    - name: Setting up the SQLite database and Make
-      # INSTALL DOCKER IMAGES FOR NEXTFLOW WORKFLOWS
+    - name: Install Docker Images for Nextflow Workflows
       run: docker pull jbadams/echo-nf:0.1.0 
-      # INSTALL SQLITE AND SETUP DEV DATABASE
+
+    - name: Install SQLite and Setup Dev Database
       run: | 
         sqlite3 -version
         make -version
         make clean-all
         make sqlite-db-build
-      # INSTALL NEXTFLOW
+    
+    - name: Install Nextflow
       runs: |
         export WORKING_DIR=`pwd`
         mkdir -p ~/install/nextflow
@@ -42,17 +43,17 @@ jobs:
         ls
         
     - name: Running Tests
-      id: test
+      id: gradle-test
       run: "./gradlew test"
 
     - name: After Success Submitting Code Coverage
-      if: steps.test.outcome == 'success'
+      if: steps.gradle-test.outcome == 'success'
       run: | #jacocoTestReport is for testing code coverage, submits the last report to the link
         ./gradlew jacocoTestReport
         bash <(curl -s https://codecov.io/bash)
 
     - name: After Failure Step
-      if: steps.test.outcome != 'success'
+      if: steps.gradle-test.outcome != 'success'
       run: cat ./build/reports/tests/test/classes/e2e.EchoNextflowTest.html
 
   Docker-Integration-Test:
@@ -78,7 +79,7 @@ jobs:
       run: |
         source ci/set-docker-image-version.sh
         echo "version=${DOCKER_IMG_VER}" >> $GITHUB_ENV
-        
+
     - name: Build and push
       uses: docker/build-push-action@v2
       with:
