@@ -32,7 +32,7 @@ jobs:
         make sqlite-db-build
     
     - name: Install Nextflow
-      runs: |
+      run: |
         export WORKING_DIR=`pwd`
         mkdir -p ~/install/nextflow
         cd ~/install/nextflow
