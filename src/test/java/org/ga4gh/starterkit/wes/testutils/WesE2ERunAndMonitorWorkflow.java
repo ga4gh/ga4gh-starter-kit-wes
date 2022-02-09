@@ -103,7 +103,7 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
         if (runIncomplete) {
             throw new Exception("workflow run has not completed in expected time frame");
         }
-        System.out.print("HELLO \n"); // I added this
+   
         Assert.assertEquals(runStatus.getRunId(), runId.getRunId());
         Assert.assertEquals(runStatus.getState(), State.COMPLETE);
 
