@@ -84,7 +84,7 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
 
         // poll for status every 5s for workflow completion to maximum of 
         // 12 retries (1min)
-        Thread.sleep(25000); // [change] was 5000
+        Thread.sleep(5000);
         boolean runIncomplete = true;
         int attempt = 0; 
         RunStatus runStatus = getRunStatus(runId.getRunId());
@@ -103,7 +103,7 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
         if (runIncomplete) {
             throw new Exception("workflow run has not completed in expected time frame");
         }
-
+        System.out.print("HELLO \n"); // I added this
         Assert.assertEquals(runStatus.getRunId(), runId.getRunId());
         Assert.assertEquals(runStatus.getState(), State.COMPLETE);
 
