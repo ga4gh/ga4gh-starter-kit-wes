@@ -84,7 +84,7 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
 
         // poll for status every 5s for workflow completion to maximum of 
         // 12 retries (1min)
-        Thread.sleep(5000);
+        Thread.sleep(25000); // [change] was 5000
         boolean runIncomplete = true;
         int attempt = 0; 
         RunStatus runStatus = getRunStatus(runId.getRunId());

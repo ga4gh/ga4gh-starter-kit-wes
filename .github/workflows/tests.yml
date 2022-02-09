@@ -44,7 +44,7 @@ jobs:
         
     - name: Running Tests
       id: gradle-test
-      run: "./gradlew test"
+      run: "./gradlew test" # shouldn't run integration tests. once added, make sure only e2e/org tests run here!
 
     - name: Gradle Outcome
       run: echo steps.gradle-test.outcome
