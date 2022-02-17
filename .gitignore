@@ -39,3 +39,6 @@ gradle.properties
 wes_runs
 
 !gradle/wrapper/*
+
+# Mac OS files
+**/.DS_Store
