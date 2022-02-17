@@ -40,6 +40,7 @@ jobs:
     - name: Install Nextflow
       run: |
         export WORKING_DIR=`pwd`
+        echo $WORKING_DIR
         mkdir -p ~/install/nextflow
         cd ~/install/nextflow
         curl -fsSL https://get.nextflow.io | bash
