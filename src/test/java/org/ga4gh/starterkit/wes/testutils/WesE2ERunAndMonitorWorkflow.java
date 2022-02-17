@@ -95,6 +95,7 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
         boolean runIncomplete = true;
         int attempt = 0; 
         RunStatus runStatus = getRunStatus(runId.getRunId());
+        System.out.print("Last check, runIncomp: " + runIncomplete + ", attempt: " + attempt + "\n");
         while (runIncomplete && attempt < 12) 
         {
             System.out.print("In while loop? \n");
