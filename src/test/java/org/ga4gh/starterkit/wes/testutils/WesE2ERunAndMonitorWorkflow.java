@@ -87,17 +87,25 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
         // submit the workflow
         RunId runId = executePostRequestAndAssert(workflowType, workflowTypeVersion, workflowUrl, workflowParams);
 
+        System.out.print("runId obtained: " + runId + "\n");
+
         // poll for status every 5s for workflow completion to maximum of 
         // 12 retries (1min)
         Thread.sleep(5000);
         boolean runIncomplete = true;
         int attempt = 0; 
         RunStatus runStatus = getRunStatus(runId.getRunId());
-        while (runIncomplete && attempt < 12) {
+        while (runIncomplete && attempt < 12) 
+        {
+            System.out.print("In while loop? \n");
+
             runStatus = getRunStatus(runId.getRunId());
-            if (runStatus.getState().equals(State.COMPLETE)) {
+            if (runStatus.getState().equals(State.COMPLETE)) 
+            {
                 runIncomplete = false;
-            } else if (runStatus.getState().equals(State.EXECUTOR_ERROR)) {
+            } 
+            else if (runStatus.getState().equals(State.EXECUTOR_ERROR)) 
+            {
                 throw new Exception("workflow run errored unexpectedly");
             }
             Thread.sleep(5000);
