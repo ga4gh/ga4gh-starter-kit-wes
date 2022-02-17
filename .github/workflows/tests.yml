@@ -39,7 +39,6 @@ jobs:
     
     - name: Install Nextflow
       run: |
-        docker images
         export WORKING_DIR=`pwd`
         mkdir -p ~/install/nextflow
         cd ~/install/nextflow

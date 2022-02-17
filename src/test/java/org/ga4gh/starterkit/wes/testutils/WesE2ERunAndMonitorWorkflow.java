@@ -87,6 +87,8 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
         // submit the workflow
         RunId runId = executePostRequestAndAssert(workflowType, workflowTypeVersion, workflowUrl, workflowParams);
 
+        System.out.print("Reaching here? \n");
+
         // poll for status every 5s for workflow completion to maximum of 
         // 12 retries (1min)
         Thread.sleep(5000);
@@ -164,6 +166,9 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
         )
         .andExpect(status().isOk()) // problem here
         .andReturn();
+
+        System.out.print("HELLO? \n");
+        System.out.print(status() + "\n");
 
         RunId runId = objectMapper.readValue(result.getResponse().getContentAsString(), RunId.class);
         Assert.assertNotNull(runId.getRunId());
