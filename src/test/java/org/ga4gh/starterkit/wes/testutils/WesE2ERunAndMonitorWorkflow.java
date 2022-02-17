@@ -96,8 +96,8 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
         int attempt = 0; 
 
         // BEYOND THIS POINT IS NOT CALLED IN GHA
-        System.out.print("getRunId: " + runId.getRunId() + "\n");
-        System.out.print("runStatus: " + getRunStatus(runId.getRunId()) + "\n");
+        // System.out.print("getRunId: " + runId.getRunId() + "\n");
+        System.out.print("runStatus: " + getRunStatus(runId.getRunId()) + "\n"); // NOT WORKING !!!
         RunStatus runStatus = getRunStatus(runId.getRunId());
         System.out.print("Last check, runIncomp: " + runIncomplete + ", attempt: " + attempt + "\n");
         while (runIncomplete && attempt < 12) 
@@ -188,13 +188,15 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
         return runId;
     }
 
-    private RunStatus getRunStatus(String runId) throws Exception {
+    private RunStatus getRunStatus(String runId) throws Exception 
+    {
+        System.out.print("getRunStatus 0 \n");
         MvcResult result = mockMvc.perform(
             get(API_PREFIX + "/runs/" + runId + "/status")
         )
         .andExpect(status().isOk())
         .andReturn();
-
+        System.out.print("getRunStatus 1 \n");
         RunStatus runStatus = objectMapper.readValue(result.getResponse().getContentAsString(), RunStatus.class);
         Assert.assertNotNull(runStatus);
         return runStatus;
