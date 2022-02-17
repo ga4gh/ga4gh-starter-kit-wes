@@ -94,7 +94,10 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
         Thread.sleep(5000);
         boolean runIncomplete = true;
         int attempt = 0; 
-        System.out.print("OKAY HERE IS THE PROBLEM \n");
+
+        // BEYOND THIS POINT IS NOT CALLED IN GHA
+        System.out.print("getRunId: " + runId.getRunId() + "\n");
+        System.out.print("runStatus: " + getRunStatus(runId.getRunId()) + "\n");
         RunStatus runStatus = getRunStatus(runId.getRunId());
         System.out.print("Last check, runIncomp: " + runIncomplete + ", attempt: " + attempt + "\n");
         while (runIncomplete && attempt < 12) 
