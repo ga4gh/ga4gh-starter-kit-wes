@@ -87,8 +87,6 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
         // submit the workflow
         RunId runId = executePostRequestAndAssert(workflowType, workflowTypeVersion, workflowUrl, workflowParams);
 
-        System.out.print("Reaching here? runID: " + runId + " \n");
-
         // poll for status every 5s for workflow completion to maximum of 
         // 12 retries (1min)
         Thread.sleep(5000);
@@ -104,6 +102,8 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
             }
             Thread.sleep(5000);
             attempt++;
+
+            System.out.print("Attempting?? \n");
         }
 
         // throw an error if the run hasn't completed in 1 min
