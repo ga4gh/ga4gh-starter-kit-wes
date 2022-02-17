@@ -87,7 +87,7 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
         // submit the workflow
         RunId runId = executePostRequestAndAssert(workflowType, workflowTypeVersion, workflowUrl, workflowParams);
 
-        System.out.print("Reaching here? \n");
+        System.out.print("Reaching here? runID: " + runId + " \n");
 
         // poll for status every 5s for workflow completion to maximum of 
         // 12 retries (1min)
