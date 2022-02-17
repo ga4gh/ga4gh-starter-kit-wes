@@ -75,10 +75,14 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
         mockMvc = MockMvcBuilders.webAppContextSetup(webAppContext).build();
     }
 
-    public void runEndToEndTest(WorkflowType workflowType, String workflowTypeVersion,
-                                String workflowUrl, String workflowParams,
-                                ExpectedLogValues expRunLog, List<ExpectedLogValues> expTaskLogs,
-                                HashMap<String, String> expOutputMd5Map) throws Exception 
+    public void runEndToEndTest(WorkflowType workflowType, 
+                                String workflowTypeVersion,
+                                String workflowUrl, 
+                                String workflowParams,
+                                ExpectedLogValues expRunLog, 
+                                List<ExpectedLogValues> expTaskLogs,
+                                HashMap<String, 
+                                String> expOutputMd5Map) throws Exception 
     {
         // submit the workflow
         RunId runId = executePostRequestAndAssert(workflowType, workflowTypeVersion, workflowUrl, workflowParams);
@@ -158,7 +162,7 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
                 )
             ))
         )
-        .andExpect(status().isOk())
+        .andExpect(status().isOk()) // problem here
         .andReturn();
 
         RunId runId = objectMapper.readValue(result.getResponse().getContentAsString(), RunId.class);
