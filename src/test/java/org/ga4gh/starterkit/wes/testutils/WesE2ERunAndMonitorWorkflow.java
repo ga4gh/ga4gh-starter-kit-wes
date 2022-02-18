@@ -125,6 +125,11 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
             {
                 throw new Exception("workflow run errored unexpectedly");
             }
+            else //I added this
+            {
+                System.out.print("Another error happened \n");
+                System.out.print(runStatus.toString()); 
+            }  
             Thread.sleep(5000);
             attempt++;
 
