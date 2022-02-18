@@ -101,6 +101,19 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
         
         // ////////////////
 
+        // Get list of runs
+
+        MvcResult runsResult = mockMvc.perform(
+            get(API_PREFIX + "/runs")
+        ).andReturn();
+
+        System.out.print("all runs: \n");
+        System.out.print(runsResult + "\n");
+        System.out.print("---------------- \n");
+
+        ///////
+
+
         // poll for status every 5s for workflow completion to maximum of 
         // 12 retries (1min)
         Thread.sleep(5000);
@@ -208,12 +221,8 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
         MvcResult result = mockMvc.perform(
             get(API_PREFIX + "/runs/" + runId + "/status")
         )
-        //.andExpect(status().isOk()) // Getting null run status, status isn't ok
+        .andExpect(status().isOk()) // Getting null run status, status isn't ok
         .andReturn();
-
-        System.out.print("un authorized? " + status().isUnauthorized() + "\n");
-        System.out.print("500 server error? " + status().is5xxServerError() + "\n");
-        System.out.print("not found? " + status().isNotFound() + "\n");
 
         RunStatus runStatus = objectMapper.readValue(result.getResponse().getContentAsString(), RunStatus.class);
         Assert.assertNotNull(runStatus);
