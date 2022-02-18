@@ -42,6 +42,8 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
+import org.json.JSONObject;
+
 /**
  * Abstract class for E2E tests. For a single test case, submits a workflow run
  * request to the WES API, and monitors for workflow completion. When the
@@ -108,7 +110,8 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
         ).andReturn();
 
         System.out.print("all runs: \n");
-        System.out.print(runsResult + "\n");
+        JSONObject js = new JSONObject(runsResult.getResponse().getContentAsString());
+        System.out.print(js + "\n");
         System.out.print("---------------- \n");
 
         ///////
