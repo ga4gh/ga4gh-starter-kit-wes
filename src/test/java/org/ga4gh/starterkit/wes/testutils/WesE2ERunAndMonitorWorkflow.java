@@ -89,6 +89,18 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
 
         System.out.print("runId obtained: " + runId + "\n");
 
+        // Getting service info
+
+        MvcResult result = mockMvc.perform(
+            get(API_PREFIX + "/service-info")
+        ).andReturn();
+
+        System.out.print("mvc service info result: \n");
+        System.out.print(result);
+        System.out.print("---------------- \n");
+        
+        ////////////////
+
         // poll for status every 5s for workflow completion to maximum of 
         // 12 retries (1min)
         Thread.sleep(5000);
@@ -196,7 +208,7 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
         )
         .andExpect(status().isOk())
         .andReturn();
-        System.out.print("getRunStatus 1 \n");
+        System.out.print("getRunStatus 1 \n"); // Can't get this
         RunStatus runStatus = objectMapper.readValue(result.getResponse().getContentAsString(), RunStatus.class);
         Assert.assertNotNull(runStatus);
         return runStatus;
