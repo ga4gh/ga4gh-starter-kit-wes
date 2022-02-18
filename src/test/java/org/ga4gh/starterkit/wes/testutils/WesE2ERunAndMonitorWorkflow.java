@@ -125,11 +125,7 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
             {
                 throw new Exception("workflow run errored unexpectedly");
             }
-            else //I added this
-            {
-                System.out.print("Another error happened \n");
-                System.out.print(runStatus.toString()); 
-            }  
+
             Thread.sleep(5000);
             attempt++;
 
@@ -207,7 +203,7 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
 
     private RunStatus getRunStatus(String runId) throws Exception 
     {
-        System.out.print("getRunStatus 0 \n");
+        System.out.print("getRunStatus 0 (runID: " + runId + ") \n");
         MvcResult result = mockMvc.perform(
             get(API_PREFIX + "/runs/" + runId + "/status")
         )
