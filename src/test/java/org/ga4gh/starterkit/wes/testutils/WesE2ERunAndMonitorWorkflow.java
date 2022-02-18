@@ -117,6 +117,7 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
             System.out.print("In while loop? \n");
 
             runStatus = getRunStatus(runId.getRunId());
+            System.out.print("run status: " + runStatus.getState() + "\n");
             if (runStatus.getState().equals(State.COMPLETE)) 
             {
                 runIncomplete = false;
