@@ -89,17 +89,17 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
 
         System.out.print("runId obtained: " + runId + "\n");
 
-        // Getting service info
+        // // Getting service info (successful)
 
         MvcResult result = mockMvc.perform(
             get(API_PREFIX + "/service-info")
         ).andReturn();
 
         System.out.print("mvc service info result: \n");
-        System.out.print(result);
+        System.out.print(result + "\n");
         System.out.print("---------------- \n");
         
-        ////////////////
+        // ////////////////
 
         // poll for status every 5s for workflow completion to maximum of 
         // 12 retries (1min)
@@ -108,7 +108,7 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
         int attempt = 0; 
 
         // BEYOND THIS POINT IS NOT CALLED IN GHA
-        // System.out.print("getRunId: " + runId.getRunId() + "\n");
+        System.out.print("getRunId: " + runId.getRunId() + "\n");
         System.out.print("runStatus: " + getRunStatus(runId.getRunId()) + "\n"); // NOT WORKING !!!
         RunStatus runStatus = getRunStatus(runId.getRunId());
         System.out.print("Last check, runIncomp: " + runIncomplete + ", attempt: " + attempt + "\n");
