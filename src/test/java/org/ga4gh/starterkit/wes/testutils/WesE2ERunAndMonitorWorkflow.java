@@ -210,7 +210,7 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
         )
         //.andExpect(status().isOk())
         .andReturn();
-        System.out.print("getRunStatus 1 \n"); // Can't get this
+        System.out.print("getRunStatus 1 (status + " + status() + "\n"); // Can't get this
         RunStatus runStatus = objectMapper.readValue(result.getResponse().getContentAsString(), RunStatus.class);
         Assert.assertNotNull(runStatus);
         return runStatus;
