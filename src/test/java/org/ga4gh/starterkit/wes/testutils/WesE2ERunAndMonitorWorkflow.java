@@ -133,6 +133,21 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
         {
             System.out.print("In while loop? \n");
 
+            // ////////////////
+
+            // Get list of runs
+
+            MvcResult runsResult2 = mockMvc.perform(
+                get(API_PREFIX + "/runs")
+            ).andReturn();
+
+            System.out.print("all runs: \n");
+            JSONArray js2 = new JSONArray(runsResult2.getResponse().getContentAsString());
+            System.out.print(js2 + "\n");
+            System.out.print("---------------- \n");
+
+            ///////
+
             runStatus = getRunStatus(runId.getRunId());
             System.out.print("run status: " + runStatus.getState() + "\n");
             if (runStatus.getState().equals(State.COMPLETE)) 
@@ -227,6 +242,8 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
         )
         .andExpect(status().isOk()) // Getting null run status, status isn't ok
         .andReturn();
+
+        System.out.print("getRunStatus 1 \n");
 
         RunStatus runStatus = objectMapper.readValue(result.getResponse().getContentAsString(), RunStatus.class);
         Assert.assertNotNull(runStatus);
