@@ -208,10 +208,11 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
         MvcResult result = mockMvc.perform(
             get(API_PREFIX + "/runs/" + runId + "/status")
         )
-        //.andExpect(status().isOk())
+        //.andExpect(status().isOk()) // Getting null run status
         .andReturn();
-        System.out.print("getRunStatus 1 (status " + status().toString() + "\n"); // Can't get this
+
         RunStatus runStatus = objectMapper.readValue(result.getResponse().getContentAsString(), RunStatus.class);
+        System.out.print("runStatus mapped: " + runStatus);
         Assert.assertNotNull(runStatus);
         return runStatus;
     }
