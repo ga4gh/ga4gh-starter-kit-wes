@@ -43,6 +43,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
 import org.json.JSONObject;
+import org.json.JSONArray;
 
 /**
  * Abstract class for E2E tests. For a single test case, submits a workflow run
@@ -110,7 +111,7 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
         ).andReturn();
 
         System.out.print("all runs: \n");
-        JSONObject js = new JSONObject(runsResult.getResponse().getContentAsString());
+        JSONArray js = new JSONArray(runsResult.getResponse().getContentAsString());
         System.out.print(js + "\n");
         System.out.print("---------------- \n");
 
