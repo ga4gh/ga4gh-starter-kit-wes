@@ -127,7 +127,9 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
         System.out.print("getRunId: " + runId.getRunId() + "\n");
         System.out.print("runStatus: " + getRunStatus(runId.getRunId()) + "\n"); // NOT WORKING !!!
         RunStatus runStatus = getRunStatus(runId.getRunId());
+
         System.out.print("Last check, runIncomp: " + runIncomplete + ", attempt: " + attempt + "\n");
+
         while (runIncomplete && attempt < 12) 
         {
             System.out.print("--- BEGINNING OF WHILE LOOP --- \n");
@@ -237,14 +239,14 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
 
     private RunStatus getRunStatus(String runId) throws Exception 
     {
-        System.out.print("getRunStatus 0 \n");
+        System.out.print("- GET RUN STATUS : BEGIN - \n");
         MvcResult result = mockMvc.perform(
             get(API_PREFIX + "/runs/" + runId + "/status")
         )
         .andExpect(status().isOk()) // Getting null run status, status isn't ok
         .andReturn();
 
-        System.out.print("getRunStatus 1 \n");
+        System.out.print("-  GET RUN STATUS : END  - \n");
 
         RunStatus runStatus = objectMapper.readValue(result.getResponse().getContentAsString(), RunStatus.class);
         Assert.assertNotNull(runStatus);
