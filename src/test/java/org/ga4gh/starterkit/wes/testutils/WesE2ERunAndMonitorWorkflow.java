@@ -121,7 +121,7 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
         // Try to get run log here [experimental]
 
         MvcResult logResult = mockMvc.perform(
-            get(API_PREFIX + "/runs/" + runId.getRunId()) // also try just runId
+            get(API_PREFIX + "/runs/" + runId) // also try just runId (without it)
         ).andReturn();
 
         System.out.print("-- [EXPERIMENTAL] RUN LOG: -- \n");
