@@ -240,6 +240,20 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
     private RunStatus getRunStatus(String runId) throws Exception 
     {
         System.out.print("- GET RUN STATUS : BEGIN - \n");
+
+        // Try getting the run log? //
+        
+        MvcResult runsResult = mockMvc.perform(
+            get(API_PREFIX + "/runs/" + runId)
+        ).andReturn();
+
+        System.out.print("-- RUN LOG: -- \n");
+        JSONObject js = new JSONObject(runsResult.getResponse().getContentAsString());
+        System.out.print(js + "\n");
+        System.out.print("---------------- \n");
+
+        /////////////////////////////
+
         MvcResult result = mockMvc.perform(
             get(API_PREFIX + "/runs/" + runId + "/status")
         )
