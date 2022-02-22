@@ -67,7 +67,7 @@ public class GetRunLogRequestHandler implements RequestHandler<RunLog> {
             RunManager runManager = runManagerFactory.createRunManager(wesRun);
             LanguageHandler runTypeDetailsHandler = runManager.getLanguageHandler();
             System.out.print("- RUN TYPE DETAILS HANDLER: - \n");
-            System.out.print(runTypeDetailsHandler.determineRunStatus() + "\n");
+            System.out.print(runTypeDetailsHandler + "\n");
             // System.out.print(runTypeDetailsHandler.determineRunStatus().getState() + "\n"); // this doesn't print anything
             runLog.setState(runTypeDetailsHandler.determineRunStatus().getState()); // GHA stuck here
             System.out.print("-- RUN LOG FROM HANDLER: -- \n");
