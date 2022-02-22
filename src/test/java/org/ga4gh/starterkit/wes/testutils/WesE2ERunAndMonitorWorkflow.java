@@ -88,11 +88,6 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
                                 String> expOutputMd5Map) throws Exception 
     {
         // submit the workflow
-        System.out.print("-- SUBMITTED WORKFLOW INFO: -- \n");
-        System.out.print(workflowType + "\n");
-        System.out.print(workflowTypeVersion+ "\n");
-        System.out.print(workflowUrl + "\n");
-        System.out.print(workflowParams + "\n");
         RunId runId = executePostRequestAndAssert(workflowType, workflowTypeVersion, workflowUrl, workflowParams);
 
         System.out.print("runId obtained: " + runId + "\n");
