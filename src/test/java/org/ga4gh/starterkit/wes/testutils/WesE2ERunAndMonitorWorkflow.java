@@ -121,7 +121,7 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
         // Try to get run log here [experimental]
 
         MvcResult logResult = mockMvc.perform(
-            get(API_PREFIX + "/runs/" + runId) // also try just runId (without it)
+            get(API_PREFIX + "/runs/" + runId.getRunId()) // also try just runId (without it)
         ).andReturn();
 
         System.out.print("-- [EXPERIMENTAL] RUN LOG: -- \n");
@@ -136,8 +136,8 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
         int attempt = 0; 
 
         // BEYOND THIS POINT IS NOT CALLED IN GHA
-        System.out.print("getRunId: " + runId.getRunId() + "\n");
-        System.out.print("runStatus: " + getRunStatus(runId.getRunId()) + "\n"); // NOT WORKING !!!
+        System.out.print("- GET RUN ID: " + runId.getRunId() + "\n");
+        System.out.print("- RUN STATUS: " + getRunStatus(runId.getRunId()) + "\n"); // NOT WORKING !!!
         RunStatus runStatus = getRunStatus(runId.getRunId());
 
         System.out.print("-- LAST CHECK: runIncomp: " + runIncomplete + ", attempt: " + attempt + "\n");
