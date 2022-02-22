@@ -229,8 +229,8 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
         .andExpect(status().isOk()) // problem here
         .andReturn();
 
-        System.out.print("HELLO? \n");
-        System.out.print(status() + "\n");
+        // System.out.print("HELLO? \n");
+        // System.out.print(status() + "\n");
 
         RunId runId = objectMapper.readValue(result.getResponse().getContentAsString(), RunId.class);
         Assert.assertNotNull(runId.getRunId());
@@ -240,6 +240,7 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
     private RunStatus getRunStatus(String runId) throws Exception 
     {
         System.out.print("- GET RUN STATUS : BEGIN - \n");
+        System.out.print("RUNID: " + runId + "\n");
 
         // Try getting the run log? //
         
