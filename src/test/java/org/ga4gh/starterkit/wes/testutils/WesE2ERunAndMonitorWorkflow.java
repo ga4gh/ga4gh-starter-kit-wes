@@ -117,7 +117,6 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
 
         ///////
 
-
         // poll for status every 5s for workflow completion to maximum of 
         // 12 retries (1min)
         Thread.sleep(5000);
@@ -131,7 +130,7 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
         System.out.print("Last check, runIncomp: " + runIncomplete + ", attempt: " + attempt + "\n");
         while (runIncomplete && attempt < 12) 
         {
-            System.out.print("In while loop? \n");
+            System.out.print("--- BEGINNING OF WHILE LOOP --- \n");
 
             // ////////////////
 
@@ -162,8 +161,10 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
             Thread.sleep(5000);
             attempt++;
 
-            System.out.print("Attempting?? \n");
+            System.out.print("--- END OF WHILE LOOP --- \n");
         }
+
+        System.out.print("--- AFTER THE WHILE LOOP --- \n");
 
         // throw an error if the run hasn't completed in 1 min
         if (runIncomplete) {
