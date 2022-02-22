@@ -116,7 +116,18 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
         System.out.print(js + "\n");
         System.out.print("---------------- \n");
 
-        ///////
+        /////// 
+
+        // Try to get run log here [experimental]
+
+        MvcResult logResult = mockMvc.perform(
+            get(API_PREFIX + "/runs/" + runId.getRunId()) // also try just runId
+        ).andReturn();
+
+        System.out.print("-- [EXPERIMENTAL] RUN LOG: -- \n");
+        JSONObject js_log = new JSONObject(logResult.getResponse().getContentAsString());
+        System.out.print(js_log + "\n");
+        System.out.print("---------------- \n");
 
         // poll for status every 5s for workflow completion to maximum of 
         // 12 retries (1min)
@@ -129,7 +140,7 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
         System.out.print("runStatus: " + getRunStatus(runId.getRunId()) + "\n"); // NOT WORKING !!!
         RunStatus runStatus = getRunStatus(runId.getRunId());
 
-        System.out.print("Last check, runIncomp: " + runIncomplete + ", attempt: " + attempt + "\n");
+        System.out.print("-- LAST CHECK: runIncomp: " + runIncomplete + ", attempt: " + attempt + "\n");
 
         while (runIncomplete && attempt < 12) 
         {
