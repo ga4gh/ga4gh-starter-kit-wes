@@ -66,7 +66,9 @@ public class GetRunLogRequestHandler implements RequestHandler<RunLog> {
         try {
             System.out.print("--- HANDLE REQUEST 1 --- \n");
             RunManager runManager = runManagerFactory.createRunManager(wesRun);
+            System.out.print("--- HANDLE REQUEST 2 --- \n");
             LanguageHandler runTypeDetailsHandler = runManager.getLanguageHandler();
+            System.out.print("--- HANDLE REQUEST 3 --- \n");
             runLog.setState(runTypeDetailsHandler.determineRunStatus().getState());
             System.out.print("-- RUN LOG FROM HANDLER: -- \n");
             System.out.print(runLog.getRunId() + "\n");
