@@ -98,8 +98,9 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
             get(API_PREFIX + "/service-info")
         ).andReturn();
 
-        System.out.print("mvc service info result: \n");
-        System.out.print(result + "\n");
+        System.out.print("-- SERVICE INFO RESULT: -- \n");
+        JSONObject js_service = new JSONObject(result.getResponse().getContentAsString());
+        System.out.print(js_service + "\n");
         System.out.print("---------------- \n");
         
         // ////////////////
