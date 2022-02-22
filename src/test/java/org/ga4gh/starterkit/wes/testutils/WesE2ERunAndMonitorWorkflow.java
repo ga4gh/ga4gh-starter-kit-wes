@@ -118,6 +118,14 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
 
         /////// 
 
+        // poll for status every 5s for workflow completion to maximum of 
+        // 12 retries (1min)
+        Thread.sleep(5000);
+        boolean runIncomplete = true;
+        int attempt = 0; 
+
+        ////
+
         // Try to get run log here [experimental]
 
         MvcResult logResult = mockMvc.perform(
@@ -128,12 +136,6 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
         JSONObject js_log = new JSONObject(logResult.getResponse().getContentAsString());
         System.out.print(js_log + "\n");
         System.out.print("---------------- \n");
-
-        // poll for status every 5s for workflow completion to maximum of 
-        // 12 retries (1min)
-        Thread.sleep(5000);
-        boolean runIncomplete = true;
-        int attempt = 0; 
 
         // BEYOND THIS POINT IS NOT CALLED IN GHA
         System.out.print("- GET RUN ID: " + runId.getRunId() + "\n");
