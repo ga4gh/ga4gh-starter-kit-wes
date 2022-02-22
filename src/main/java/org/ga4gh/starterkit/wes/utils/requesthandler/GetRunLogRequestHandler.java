@@ -64,12 +64,11 @@ public class GetRunLogRequestHandler implements RequestHandler<RunLog> {
         // allow the low-level RunManager to perform language/engine-dependent
         // methods to obtain run status
         try {
-            System.out.print("--- HANDLE REQUEST 1 --- \n");
             RunManager runManager = runManagerFactory.createRunManager(wesRun);
-            System.out.print("--- HANDLE REQUEST 2 --- \n");
             LanguageHandler runTypeDetailsHandler = runManager.getLanguageHandler();
-            System.out.print("--- HANDLE REQUEST 3 --- \n");
-            runLog.setState(runTypeDetailsHandler.determineRunStatus().getState());
+            System.out.print("- RUN TYPE DETAILS HANDLER: - \n");
+            System.out.print(runTypeDetailsHandler.determineRunStatus().getState() + "\n");
+            runLog.setState(runTypeDetailsHandler.determineRunStatus().getState()); // GHA stuck here
             System.out.print("-- RUN LOG FROM HANDLER: -- \n");
             System.out.print(runLog.getRunId() + "\n");
             runTypeDetailsHandler.completeRunLog(runLog);
