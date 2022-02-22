@@ -66,6 +66,8 @@ public class GetRunLogRequestHandler implements RequestHandler<RunLog> {
             RunManager runManager = runManagerFactory.createRunManager(wesRun);
             LanguageHandler runTypeDetailsHandler = runManager.getLanguageHandler();
             runLog.setState(runTypeDetailsHandler.determineRunStatus().getState());
+            System.out.print("-- RUN LOG FROM HANDLER: -- \n");
+            System.out.print(runLog.getRunId() + "\n");
             runTypeDetailsHandler.completeRunLog(runLog);
         } catch (Exception ex) {
             throw new BadRequestException("Could not load WES run log");
