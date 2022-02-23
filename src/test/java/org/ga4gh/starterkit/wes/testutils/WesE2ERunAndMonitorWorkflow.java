@@ -130,19 +130,21 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
         ////
 
         // Get wes_runs contents
-        File f = new File("wes_runs"); // current directory
+        // File f = new File("wes_runs"); // current directory
+        // String fileName = ".nextflow.log";
 
-		File[] files = f.listFiles();
-		for (File file : files) 
-        {
-			if (file.isDirectory()) 
-            {
-				System.out.print("directory:");
-			} else {
-				System.out.print("     file:");
-			}
-			System.out.println(file.getCanonicalPath() + "\n");
-		}
+		// File[] files = f.listFiles();
+		// for (File file : files) 
+        // {
+		// 	if (file.isDirectory()) 
+        //     {
+		// 		System.out.print("directory:");
+		// 	} else 
+        //     {
+		// 		System.out.print("     file:");
+		// 	}
+		// 	System.out.println(file.getCanonicalPath() + "\n");
+		// }
 
         // Try to get run log here [experimental]
 
