@@ -48,17 +48,20 @@ jobs:
         nextflow -h
         ls
     
-    - name: Setup upterm session # Using Github - SSH for debugging
-      uses: lhotari/action-upterm@v1
-      with:
-        ## limits ssh access and adds the ssh public key for the user which triggered the workflow
-        limit-access-to-actor: true
-        ## limits ssh access and adds the ssh public keys of the listed GitHub users
-        limit-access-to-users: emre-f
+    # - name: Setup upterm session # Using Github - SSH for debugging
+    #   uses: lhotari/action-upterm@v1
+    #   with:
+    #     ## limits ssh access and adds the ssh public key for the user which triggered the workflow
+    #     limit-access-to-actor: true
+    #     ## limits ssh access and adds the ssh public keys of the listed GitHub users
+    #     limit-access-to-users: emre-f
         
     - name: Running Tests
       id: gradle-test
-      run: "./gradlew test" # shouldn't run integration tests. once added, make sure only e2e/org tests run here!
+      run: |
+        nextflow -h
+        "./gradlew test"
+      # run: "./gradlew test" # shouldn't run integration tests. once added, make sure only e2e/org tests run here!
 
     - name: Gradle Outcome
       run: echo steps.gradle-test.outcome
