@@ -49,7 +49,6 @@ public class GetRunLogRequestHandler implements RequestHandler<RunLog> {
      * Obtains full log information for the requested workflow run
      */
     public RunLog handleRequest() {
-        System.out.print("--- HANDLE REQUEST 0 --- \n");
         // load the persisten WesRun by its id to obtain workflow language,
         // engine associated with the run
         RunLog runLog = new RunLog();
