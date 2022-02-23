@@ -133,7 +133,7 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
         // File f = new File("wes_runs"); // current directory
         // String fileName = ".nextflow.log";
 
-		// File[] files = f.listFiles();
+		// File[] files = f.listFiles(); // files
 		// for (File file : files) 
         // {
 		// 	if (file.isDirectory()) 
