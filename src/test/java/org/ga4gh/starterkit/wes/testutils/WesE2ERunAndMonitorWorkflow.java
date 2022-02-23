@@ -225,11 +225,11 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
                 )
             ))
         )
-        .andExpect(status().isOk()) // problem here
+        .andExpect(status().isOk()) 
         .andReturn();
 
         System.out.print("SENDING WORKFLOW CORRECTLY \n");
-        System.out.print(status() + "\n");
+        System.out.print(result.getResponse().getContentAsString() + "\n");
 
         RunId runId = objectMapper.readValue(result.getResponse().getContentAsString(), RunId.class);
         Assert.assertNotNull(runId.getRunId());
