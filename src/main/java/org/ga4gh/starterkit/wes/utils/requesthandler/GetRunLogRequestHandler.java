@@ -66,16 +66,17 @@ public class GetRunLogRequestHandler implements RequestHandler<RunLog> {
         try {
             RunManager runManager = runManagerFactory.createRunManager(wesRun);
             // System.out.print("****************************** \n");
-            // System.out.print(runManager.getLanguageHandler().getLanguageConfig() + "\n");
-            // System.out.print(runManager.getLanguageHandler().getLanguageConfig().toString() + "\n");
+            System.out.print("- RUN TYPE DETAILS HANDLER: GET LANG CONFIG: - \n");
+            System.out.print(runManager.getLanguageHandler().getLanguageConfig() + "\n");
+            System.out.print(runManager.getLanguageHandler().getLanguageConfig().toString() + "\n");
             // System.out.print(runManager.getEngineConfig() + "\n");
             // System.out.print(runManager.getEngineHandler() + "\n");
             System.out.print("****************************** \n");
             LanguageHandler runTypeDetailsHandler = runManager.getLanguageHandler();
-            System.out.print("- RUN TYPE DETAILS HANDLER: - \n");
-            System.out.print(runTypeDetailsHandler + "\n");
-            System.out.print("- RUN TYPE DETAILS HANDLER, DETERMINE STATUS: - \n");
-            System.out.print(runTypeDetailsHandler.determineRunStatus() + "\n");
+            // System.out.print("- RUN TYPE DETAILS HANDLER: - \n");
+            // System.out.print(runTypeDetailsHandler + "\n");
+            System.out.print("- RUN TYPE DETAILS HANDLER- DETERMINE STATUS: - \n");
+            System.out.print(runTypeDetailsHandler.determineRunStatus() + "\n"); // nothing is printed here
             // System.out.print(runTypeDetailsHandler.determineRunStatus().getState() + "\n"); // this doesn't print anything
             runLog.setState(runTypeDetailsHandler.determineRunStatus().getState()); // GHA stuck here
             System.out.print("-- RUN LOG FROM HANDLER: -- \n");
