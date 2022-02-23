@@ -148,21 +148,6 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
         {
             System.out.print("--- BEGINNING OF WHILE LOOP --- \n");
 
-            // ////////////////
-
-            // Get list of runs
-
-            MvcResult runsResult2 = mockMvc.perform(
-                get(API_PREFIX + "/runs")
-            ).andReturn();
-
-            System.out.print("all runs: \n");
-            JSONArray js2 = new JSONArray(runsResult2.getResponse().getContentAsString());
-            System.out.print(js2 + "\n");
-            System.out.print("---------------- \n");
-
-            ///////
-
             runStatus = getRunStatus(runId.getRunId());
             System.out.print("run status: " + runStatus.getState() + "\n");
             if (runStatus.getState().equals(State.COMPLETE)) 
@@ -243,8 +228,8 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
         .andExpect(status().isOk()) // problem here
         .andReturn();
 
-        // System.out.print("HELLO? \n");
-        // System.out.print(status() + "\n");
+        System.out.print("SENDING WORKFLOW CORRECTLY \n");
+        System.out.print(status() + "\n");
 
         RunId runId = objectMapper.readValue(result.getResponse().getContentAsString(), RunId.class);
         Assert.assertNotNull(runId.getRunId());
