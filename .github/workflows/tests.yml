@@ -6,14 +6,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Setup upterm session # Using Github - SSH for debugging
-      uses: lhotari/action-upterm@v1
-      with:
-        ## limits ssh access and adds the ssh public key for the user which triggered the workflow
-        limit-access-to-actor: true
-        ## limits ssh access and adds the ssh public keys of the listed GitHub users
-        limit-access-to-users: emre-f
-
     - name: Setting up JDK 11
       uses: actions/setup-java@v2
       with:
@@ -55,6 +47,14 @@ jobs:
         cd $WORKING_DIR
         nextflow -h
         ls
+    
+    - name: Setup upterm session # Using Github - SSH for debugging
+      uses: lhotari/action-upterm@v1
+      with:
+        ## limits ssh access and adds the ssh public key for the user which triggered the workflow
+        limit-access-to-actor: true
+        ## limits ssh access and adds the ssh public keys of the listed GitHub users
+        limit-access-to-users: emre-f
         
     - name: Running Tests
       id: gradle-test
