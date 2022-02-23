@@ -72,10 +72,6 @@ jobs:
         ./gradlew jacocoTestReport
         bash <(curl -s https://codecov.io/bash)
 
-    - name: After Failure Step
-      if: steps.gradle-test.outcome != 'success'
-      run: cat ./build/reports/tests/test/classes/e2e.EchoNextflowTest.html
-
   # Docker-Integration-Test:
   #   needs: Unit-Test
   #   runs-on: ubuntu-latest

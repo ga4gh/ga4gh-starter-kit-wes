@@ -93,83 +93,18 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
         // submit the workflow
         RunId runId = executePostRequestAndAssert(workflowType, workflowTypeVersion, workflowUrl, workflowParams);
 
-        System.out.print("runId obtained: " + runId + "\n");
-
-        // // Getting service info (successful)
-
-        MvcResult result = mockMvc.perform(
-            get(API_PREFIX + "/service-info")
-        ).andReturn();
-
-        System.out.print("-- SERVICE INFO RESULT: -- \n");
-        JSONObject js_service = new JSONObject(result.getResponse().getContentAsString());
-        System.out.print(js_service + "\n");
-        System.out.print("---------------- \n");
-        
-        // ////////////////
-
-        // Get list of runs
-
-        MvcResult runsResult = mockMvc.perform(
-            get(API_PREFIX + "/runs")
-        ).andReturn();
-
-        System.out.print("[shows wrong run?] all runs: \n");
-        JSONArray js = new JSONArray(runsResult.getResponse().getContentAsString());
-        System.out.print(js + "\n");
-        System.out.print("---------------- \n");
-
-        /////// 
-
         // poll for status every 5s for workflow completion to maximum of 
         // 12 retries (1min)
         Thread.sleep(5000);
         boolean runIncomplete = true;
         int attempt = 0; 
 
-        ////
-
-        // Get wes_runs contents
-        // File f = new File("wes_runs"); // current directory
-        // String fileName = ".nextflow.log";
-
-		// File[] files = f.listFiles(); // files
-		// for (File file : files) 
-        // {
-		// 	if (file.isDirectory()) 
-        //     {
-		// 		System.out.print("directory:");
-		// 	} else 
-        //     {
-		// 		System.out.print("     file:");
-		// 	}
-		// 	System.out.println(file.getCanonicalPath() + "\n");
-		// }
-
-        // Try to get run log here [experimental]
-
-        MvcResult logResult = mockMvc.perform(
-            get(API_PREFIX + "/runs/" + runId.getRunId()) // also try just runId (without it)
-        ).andReturn();
-
-        System.out.print("-- [EXPERIMENTAL] RUN LOG: -- \n");
-        JSONObject js_log = new JSONObject(logResult.getResponse().getContentAsString());
-        System.out.print(js_log + "\n");
-        System.out.print("---------------- \n");
-
-        // BEYOND THIS POINT IS NOT CALLED IN GHA
-        System.out.print("- GET RUN ID: " + runId.getRunId() + "\n");
-        System.out.print("- RUN STATUS: " + getRunStatus(runId.getRunId()) + "\n"); // NOT WORKING !!!
         RunStatus runStatus = getRunStatus(runId.getRunId());
-
-        System.out.print("-- LAST CHECK: runIncomp: " + runIncomplete + ", attempt: " + attempt + "\n");
 
         while (runIncomplete && attempt < 12) 
         {
-            System.out.print("--- BEGINNING OF WHILE LOOP --- \n");
-
             runStatus = getRunStatus(runId.getRunId());
-            System.out.print("run status: " + runStatus.getState() + "\n");
+
             if (runStatus.getState().equals(State.COMPLETE)) 
             {
                 runIncomplete = false;
@@ -181,11 +116,7 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
 
             Thread.sleep(5000);
             attempt++;
-
-            System.out.print("--- END OF WHILE LOOP --- \n");
         }
-
-        System.out.print("--- AFTER THE WHILE LOOP --- \n");
 
         // throw an error if the run hasn't completed in 1 min
         if (runIncomplete) {
@@ -248,9 +179,6 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
         .andExpect(status().isOk()) 
         .andReturn();
 
-        System.out.print("SENDING WORKFLOW CORRECTLY \n");
-        System.out.print(result.getResponse().getContentAsString() + "\n");
-
         RunId runId = objectMapper.readValue(result.getResponse().getContentAsString(), RunId.class);
         Assert.assertNotNull(runId.getRunId());
         return runId;
@@ -258,29 +186,11 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
 
     private RunStatus getRunStatus(String runId) throws Exception 
     {
-        System.out.print("- GET RUN STATUS : BEGIN - \n");
-        System.out.print("RUNID: " + runId + "\n");
-
-        // Try getting the run log? //
-        
-        MvcResult runsResult = mockMvc.perform(
-            get(API_PREFIX + "/runs/" + runId)
-        ).andReturn();
-
-        System.out.print("-- RUN LOG: -- \n");
-        JSONObject js = new JSONObject(runsResult.getResponse().getContentAsString());
-        System.out.print(js + "\n");
-        System.out.print("---------------- \n");
-
-        /////////////////////////////
-
         MvcResult result = mockMvc.perform(
             get(API_PREFIX + "/runs/" + runId + "/status")
         )
         .andExpect(status().isOk()) // Getting null run status, status isn't ok
         .andReturn();
-
-        System.out.print("-  GET RUN STATUS : END  - \n");
 
         RunStatus runStatus = objectMapper.readValue(result.getResponse().getContentAsString(), RunStatus.class);
         Assert.assertNotNull(runStatus);
