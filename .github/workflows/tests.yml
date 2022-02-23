@@ -63,7 +63,7 @@ jobs:
         nextflow -h
         pwd
         ls
-        "./gradlew test"
+        ./gradlew test
       # run: "./gradlew test" # shouldn't run integration tests. once added, make sure only e2e/org tests run here!
 
     - name: Gradle Outcome
