@@ -45,6 +45,9 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 import org.json.JSONArray;
 
+import java.io.File;
+import java.io.IOException;
+
 /**
  * Abstract class for E2E tests. For a single test case, submits a workflow run
  * request to the WES API, and monitors for workflow completion. When the
@@ -111,7 +114,7 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
             get(API_PREFIX + "/runs")
         ).andReturn();
 
-        System.out.print("all runs: \n");
+        System.out.print("[shows wrong run?] all runs: \n");
         JSONArray js = new JSONArray(runsResult.getResponse().getContentAsString());
         System.out.print(js + "\n");
         System.out.print("---------------- \n");
@@ -125,6 +128,21 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
         int attempt = 0; 
 
         ////
+
+        // Get wes_runs contents
+        File f = new File("wes_runs"); // current directory
+
+		File[] files = f.listFiles();
+		for (File file : files) 
+        {
+			if (file.isDirectory()) 
+            {
+				System.out.print("directory:");
+			} else {
+				System.out.print("     file:");
+			}
+			System.out.println(file.getCanonicalPath() + "\n");
+		}
 
         // Try to get run log here [experimental]
 
