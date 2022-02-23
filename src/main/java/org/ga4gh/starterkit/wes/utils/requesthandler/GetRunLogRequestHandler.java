@@ -65,10 +65,16 @@ public class GetRunLogRequestHandler implements RequestHandler<RunLog> {
         // methods to obtain run status
         try {
             RunManager runManager = runManagerFactory.createRunManager(wesRun);
-            // System.out.print("****************************** \n");
-            System.out.print("- RUN TYPE DETAILS HANDLER: GET LANG CONFIG: - \n");
-            System.out.print(runManager.getLanguageHandler().getLanguageConfig() + "\n");
-            System.out.print(runManager.getLanguageHandler().getLanguageConfig().toString() + "\n");
+            // 
+            System.out.print("*** RUN TYPE DETAILS HANDLER: GET LANG CONFIG: *** \n");
+            System.out.print("Version: " + runManager.getLanguageHandler().getLanguageConfig().getVersions() + "\n");
+            System.out.print("Engine: " + runManager.getLanguageHandler().getLanguageConfig().getEngine() + "\n");
+            System.out.print("Type; " + runManager.getLanguageHandler().getLanguageConfig().getType() + "\n");
+            System.out.print("****************************** \n");
+            System.out.print("*** RUN TYPE DETAILS HANDLER: GET ENG CONFIG: *** \n");
+            System.out.print("Version: " + runManager.getLanguageHandler().getEngineHandler().getEngineConfig().getVersion() + "\n");
+            System.out.print("Type: " + runManager.getLanguageHandler().getEngineHandler().getEngineConfig().getType() + "\n");
+            System.out.print("****************************** \n");
             // System.out.print(runManager.getEngineConfig() + "\n");
             // System.out.print(runManager.getEngineHandler() + "\n");
             System.out.print("****************************** \n");
