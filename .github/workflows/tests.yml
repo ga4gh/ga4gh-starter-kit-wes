@@ -54,7 +54,8 @@ jobs:
       id: gradle-test
       run: |
         export PATH=~/install/nextflow:$PATH
-        ./gradlew test
+        ./gradlew e2e
+        ./gradlew org
       # run: "./gradlew test" # shouldn't run integration tests. once added, make sure only e2e/org tests run here!
 
     - name: Gradle Outcome
