@@ -19,5 +19,6 @@ COPY --from=wesbuilder /usr/src/app/build/libs/ga4gh-starter-kit-wes-${VERSION}.
 
 WORKDIR /home/user/db
 COPY --from=wesbuilder /usr/src/db/ga4gh-starter-kit.dev.db ga4gh-starter-kit.dev.db
+COPY src/test/resources src/test/resources
 
 ENTRYPOINT [ "java", "-jar", "/home/user/app/ga4gh-starter-kit-wes.jar" ]

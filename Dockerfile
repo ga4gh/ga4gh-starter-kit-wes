@@ -15,7 +15,6 @@ WORKDIR /usr/src/app
 COPY build.gradle build.gradle
 COPY gradle gradle
 COPY gradlew gradlew
-# COPY gradle.properties gradle.properties
 COPY settings.gradle settings.gradle
 COPY src src
 

@@ -1,0 +1,15 @@
+wes:
+  serverProps:
+    scheme: http
+    hostname: localhost
+    publicApiPort: 7000
+    adminApiPort: 7001
+  databaseProps:
+    username: ga4gh-user
+    password: password01234
+  serviceInfo:
+    id: org.ga4gh.starterkit.wes.test
+    name: GA4GH Starter Kit WES server test deployment
+    organization:
+      name: GA4GH
+      url: https://ga4gh.org
