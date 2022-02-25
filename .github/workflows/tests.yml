@@ -1,0 +1,111 @@
+name: Standard Tests
+on: [push, pull_request, workflow_dispatch] #workflow_dispatch works only if its active in the main branch
+jobs:
+  Unit-Test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setting up JDK 11
+      uses: actions/setup-java@v2
+      with:
+        java-version: '11'
+        distribution: 'adopt' #using a specific distribution of jdk12 (AdoptOpenJDK)
+
+    - name: Setting up Gradle
+      uses: gradle/gradle-build-action@v2
+
+    - name: Setting up Gradle Wrapper
+      run: "gradle wrapper"
+
+    - name: Validating Wrapper
+      uses: gradle/wrapper-validation-action@v1
+
+    - name: Install Docker Images for Nextflow Workflows
+      run: docker pull jbadams/echo-nf:0.1.0 
+
+    - name: Install SQLite and Setup Dev Database
+      run: | 
+        sqlite3 -version
+        make -version
+        make clean-all
+        make sqlite-db-build
+    
+    - name: Install Nextflow
+      run: |
+        export WORKING_DIR=`pwd`
+        mkdir -p ~/install/nextflow
+        cd ~/install/nextflow
+        curl -fsSL https://get.nextflow.io | bash
+        export PATH=~/install/nextflow:$PATH
+        cd $WORKING_DIR
+        nextflow -h
+        ls
+    
+    # - name: Setup upterm session # Using Github - SSH for debugging
+    #   uses: lhotari/action-upterm@v1
+    #   with:
+    #     ## limits ssh access and adds the ssh public key for the user which triggered the workflow
+    #     limit-access-to-actor: true
+    #     ## limits ssh access and adds the ssh public keys of the listed GitHub users
+    #     limit-access-to-users: emre-f
+        
+    - name: Running Tests
+      id: gradle-test
+      run: |
+        export PATH=~/install/nextflow:$PATH
+        ./gradlew test
+      # run: "./gradlew test" # shouldn't run integration tests. once added, make sure only e2e/org tests run here!
+
+    - name: Gradle Outcome
+      run: echo steps.gradle-test.outcome
+
+    - name: After Success Submitting Code Coverage
+      if: steps.gradle-test.outcome == 'success'
+      run: | #jacocoTestReport is for testing code coverage, submits the last report to the link
+        ./gradlew jacocoTestReport
+        bash <(curl -s https://codecov.io/bash)
+
+  # Docker-Integration-Test:
+  #   needs: Unit-Test
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - uses: actions/checkout@v2
+
+  #   - name: Setting up Gradle
+  #     uses: gradle/gradle-build-action@v2
+
+  #   - name: Setting Up Docker Buildx #used for caching image layers, improves performance
+  #     id: buildx
+  #     uses: docker/setup-buildx-action@v1
+
+  #   - name: Login to Docker Hub
+  #     uses: docker/login-action@v1
+  #     with: 
+  #       username: ${{ secrets.DOCKER_HUB_USERNAME }}
+  #       password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+  #   - name: Get and Set Version
+  #     run: |
+  #       source ci/set-docker-image-version.sh
+  #       echo "version=${DOCKER_IMG_VER}" >> $GITHUB_ENV
+
+  #   - name: Build and push
+  #     uses: docker/build-push-action@v2
+  #     with:
+  #       context: .
+  #       builder: ${{ steps.buildx.outputs.name }}
+  #       file: ./Dockerfile
+  #       push: true
+  #       tags: ga4gh/ga4gh-starter-kit-wes:test
+  #       build-args: VERSION=${{ env.version }}
+  #       cache-from: type=gha #GitHub Actions Cache Exporter
+  #       cache-to: type=gha,mode=max
+
+  #   - name: Running Tests
+  #     run: |
+  #       docker run --rm -d --name starter-kit-wes-test-default -p 4500:4500 -p 4501:4501 ga4gh/ga4gh-starter-kit-wes:test
+  #       docker run --rm -d --name starter-kit-wes-test-custom -p 7000:7000 -p 7001:7001 ga4gh/ga4gh-starter-kit-wes:test --config ./src/test/resources/config/demo-config.yml
+    
+  #   - name: Gradle Integration Test
+  #     run: ./gradlew test --tests=integration.*

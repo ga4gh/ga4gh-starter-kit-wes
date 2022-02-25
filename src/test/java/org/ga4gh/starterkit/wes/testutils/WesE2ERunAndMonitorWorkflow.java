@@ -75,10 +75,15 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
         mockMvc = MockMvcBuilders.webAppContextSetup(webAppContext).build();
     }
 
-    public void runEndToEndTest(WorkflowType workflowType, String workflowTypeVersion,
-        String workflowUrl, String workflowParams,
-        ExpectedLogValues expRunLog, List<ExpectedLogValues> expTaskLogs,
-        HashMap<String, String> expOutputMd5Map) throws Exception {
+    public void runEndToEndTest(WorkflowType workflowType, 
+                                String workflowTypeVersion,
+                                String workflowUrl, 
+                                String workflowParams,
+                                ExpectedLogValues expRunLog, 
+                                List<ExpectedLogValues> expTaskLogs,
+                                HashMap<String, 
+                                String> expOutputMd5Map) throws Exception 
+    {
         // submit the workflow
         RunId runId = executePostRequestAndAssert(workflowType, workflowTypeVersion, workflowUrl, workflowParams);
 
@@ -87,14 +92,22 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
         Thread.sleep(5000);
         boolean runIncomplete = true;
         int attempt = 0; 
+
         RunStatus runStatus = getRunStatus(runId.getRunId());
-        while (runIncomplete && attempt < 12) {
+
+        while (runIncomplete && attempt < 12) 
+        {
             runStatus = getRunStatus(runId.getRunId());
-            if (runStatus.getState().equals(State.COMPLETE)) {
+
+            if (runStatus.getState().equals(State.COMPLETE)) 
+            {
                 runIncomplete = false;
-            } else if (runStatus.getState().equals(State.EXECUTOR_ERROR)) {
+            } 
+            else if (runStatus.getState().equals(State.EXECUTOR_ERROR)) 
+            {
                 throw new Exception("workflow run errored unexpectedly");
             }
+
             Thread.sleep(5000);
             attempt++;
         }
@@ -103,7 +116,7 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
         if (runIncomplete) {
             throw new Exception("workflow run has not completed in expected time frame");
         }
-
+   
         Assert.assertEquals(runStatus.getRunId(), runId.getRunId());
         Assert.assertEquals(runStatus.getState(), State.COMPLETE);
 
@@ -138,7 +151,11 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
         }
     }
 
-    private RunId executePostRequestAndAssert(WorkflowType workflowType, String workflowTypeVersion, String workflowUrl, String workflowParams) throws Exception {
+    private RunId executePostRequestAndAssert(WorkflowType workflowType, 
+                                              String workflowTypeVersion, 
+                                              String workflowUrl, 
+                                              String workflowParams) throws Exception 
+    {
         MvcResult result = mockMvc.perform(
             post(API_PREFIX + "/runs")
             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
@@ -153,7 +170,7 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
                 )
             ))
         )
-        .andExpect(status().isOk())
+        .andExpect(status().isOk()) 
         .andReturn();
 
         RunId runId = objectMapper.readValue(result.getResponse().getContentAsString(), RunId.class);
@@ -161,7 +178,8 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
         return runId;
     }
 
-    private RunStatus getRunStatus(String runId) throws Exception {
+    private RunStatus getRunStatus(String runId) throws Exception 
+    {
         MvcResult result = mockMvc.perform(
             get(API_PREFIX + "/runs/" + runId + "/status")
         )
