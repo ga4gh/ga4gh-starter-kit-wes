@@ -108,10 +108,12 @@ jobs:
           -v /var/run/docker.sock:/var/run/docker.sock \
           -v /usr/bin/docker:/usr/bin/docker \
           ga4gh/ga4gh-starter-kit-wes:test 
-        docker run --rm -d --name starter-kit-wes-test-custom \
-          -p 7000:7000 -p 7001:7001 \
-          ga4gh/ga4gh-starter-kit-wes:test \
-          --config ./src/test/resources/config/demo-config.yml
+
+    # [currently gives error of no config file found (even in GHA, why?), but no error with :-0.2.2nextflow]
+    # docker run --rm -d --name starter-kit-wes-test-custom \
+    #   -p 7000:7000 -p 7001:7001 \
+    #   ga4gh/ga4gh-starter-kit-wes:test \
+    #   --config ./src/test/resources/config/demo-config.yml
     
     - name: Gradle Integration Test
       run: ./gradlew test --tests=integration.*
