@@ -1,0 +1,25 @@
+# wes:
+#   serverProps:
+#     scheme: http
+#     hostname: localhost
+#     publicApiPort: 4500
+#     adminApiPort: 4501
+#   ports:
+#     - "4500:4500"
+#     - "4501:4501"
+#   privileged: true
+#   volumes:
+#     # - $PWD/src:/src
+#     # - /var/run/docker.sock:/var/run/docker.sock
+#     # - $(which docker):/usr/bin/docker ubuntu:xenial
+#     # - /usr/bin/docker:/usr/bin/docker
+#     # - /tmp/shared/wes_docker_integration:/tmp/shared/wes_docker_integration
+#   databaseProps:
+#     username: ga4gh-user
+#     password: password01234
+#   serviceInfo:
+#     id: org.ga4gh.starterkit.wes.test
+#     name: GA4GH Starter Kit WES server test deployment
+#     organization:
+#       name: GA4GH
+#       url: https://ga4gh.org

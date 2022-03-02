@@ -19,6 +19,10 @@ import java.nio.file.Paths;
 import org.json.JSONObject;
 import org.json.JSONArray;
 
+import org.ga4gh.starterkit.wes.app.WesServer;
+import org.ga4gh.starterkit.wes.app.WesServerSpringConfig;
+import org.ga4gh.starterkit.wes.controller.Logs;
+import org.ga4gh.starterkit.wes.controller.Runs;
 import org.ga4gh.starterkit.wes.model.WorkflowType;
 import org.ga4gh.starterkit.wes.testutils.ExpectedLogValues;
 import org.ga4gh.starterkit.wes.testutils.WesE2ERunAndMonitorWorkflow;
@@ -36,6 +40,10 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.context.WebApplicationContext;
@@ -53,7 +61,20 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class DemoNextFlowTest
+
+@SpringBootTest
+@ContextConfiguration
+(
+    classes = 
+    {
+        WesServer.class,
+        WesServerSpringConfig.class,
+        Runs.class,
+        Logs.class
+    }
+)
+@WebAppConfiguration
+public class DemoNextFlowTest extends AbstractTestNGSpringContextTests
 {
     // Define variables and constants
     private static final String DEFAULT_PUBLIC_URL = "http://localhost:4500/ga4gh/wes/v1/";
@@ -257,8 +278,6 @@ public class DemoNextFlowTest
         System.out.print(response.body() + "\n");
         System.out.print("--------------- \n");
 
-        // JSONObject response_JO = new JSONObject(response.body());
-
         //
 
         // MvcResult result = mockMvc.perform(
@@ -277,14 +296,18 @@ public class DemoNextFlowTest
         // )
         // .andExpect(status().isOk()) 
         // .andReturn();
-
-        RunId runId = objectMapper.readValue(response.body(), RunId.class);
+        
+        if(objectMapper == null) System.out.print("object mapper is null \n");
+        RunId runId = objectMapper.readValue(response.body(), RunId.class); // Problem here !!
+        System.out.print("runId: " + runId.getRunId() + "\n");
         Assert.assertNotNull(runId.getRunId());
         return runId;
     }
 
     private RunStatus getRunStatus(String runId) throws Exception 
     {
+        System.out.print("GETTING RUN STATUS FOR RUN WITH ID: " + runId + "\n");
+
         HttpClient client = HttpClient.newHttpClient();
 
         Builder requestBuilder = HttpRequest.newBuilder()
@@ -299,7 +322,8 @@ public class DemoNextFlowTest
         // )
         // .andExpect(status().isOk())
         // .andReturn();
-
+        
+        System.out.print("STATUS RESPONSE : \n " + response.body() + "\n"); // Getting executor error
         RunStatus runStatus = objectMapper.readValue(response.body(), RunStatus.class);
         Assert.assertNotNull(runStatus);
         return runStatus;
@@ -321,7 +345,7 @@ public class DemoNextFlowTest
         // )
         // .andExpect(status().isOk())
         // .andReturn();
-
+        
         RunLog runLog = objectMapper.readValue(response.body(), RunLog.class);
         Assert.assertNotNull(runLog);
         return runLog;

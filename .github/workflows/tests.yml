@@ -103,8 +103,15 @@ jobs:
 
     - name: Running Tests
       run: |
-        docker run --rm -d --name starter-kit-wes-test-default -p 4500:4500 -p 4501:4501 ga4gh/ga4gh-starter-kit-wes:test
-        docker run --rm -d --name starter-kit-wes-test-custom -p 7000:7000 -p 7001:7001 ga4gh/ga4gh-starter-kit-wes:test --config ./src/test/resources/config/demo-config.yml
+        docker run --rm -d --name starter-kit-wes-test-default \
+          -p 4500:4500 -p 4501:4501 \
+          -v /var/run/docker.sock:/var/run/docker.sock \
+          -v /usr/bin/docker:/usr/bin/docker \
+          ga4gh/ga4gh-starter-kit-wes:test 
+        docker run --rm -d --name starter-kit-wes-test-custom \
+          -p 7000:7000 -p 7001:7001 \
+          ga4gh/ga4gh-starter-kit-wes:test \
+          --config ./src/test/resources/config/demo-config.yml
     
     - name: Gradle Integration Test
       run: ./gradlew test --tests=integration.*
