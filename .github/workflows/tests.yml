@@ -106,9 +106,10 @@ jobs:
         docker run --rm -d --name starter-kit-wes-test-default \
           -p 4500:4500 -p 4501:4501 \
           -v /var/run/docker.sock:/var/run/docker.sock \
-          -v /usr/bin/docker:/usr/bin/docker \
           ga4gh/ga4gh-starter-kit-wes:test 
-
+    # -v /wes_runs/:/home/user/db/wes_runs/ \
+    # -v /usr/bin/docker:/usr/bin/docker \
+    # -v runs/home/user/db/wes_runs:wes_runs
     # [currently gives error of no config file found (even in GHA, why?), but no error with :-0.2.2nextflow]
     # docker run --rm -d --name starter-kit-wes-test-custom \
     #   -p 7000:7000 -p 7001:7001 \
