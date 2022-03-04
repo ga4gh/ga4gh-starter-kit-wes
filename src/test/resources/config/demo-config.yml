@@ -1,9 +1,9 @@
 wes:
-  # serverProps:
-  #   scheme: http
-  #   hostname: localhost
-  #   publicApiPort: 7000
-  #   adminApiPort: 7001
+  serverProps:
+    scheme: http
+    hostname: localhost
+    publicApiPort: 7000
+    adminApiPort: 7001
   databaseProps:
     url: jdbc:sqlite:/home/user/db/ga4gh-starter-kit.dev.db
   serviceInfo:
