@@ -93,8 +93,81 @@ public class DemoNextFlowTest extends AbstractTestNGSpringContextTests
     @DataProvider(name = "cases")
     public Object[][] getData() {
         return new Object[][] {
-            // workflow run 0
+            // WORKFLOW RUN 0: DEFAULT WES
+            // {
+            //     DEFAULT_PUBLIC_URL,
+            //     "{\"message_1\":\"HELLOWORLD\",\"message_2\":\"FOO\",\"message_3\":\"BAR\"}",
+            //     new ExpectedLogValues() {{
+            //         setExpName("jb-adams/echo-nf");
+            //         setExpCmd(new ArrayList<String>(Arrays.asList(
+            //             "#!/bin/bash -ue",
+            //             "echo \"STDOUT: writing message 1 to message_1.txt\"",
+            //             "echo \"STDERR: writing message 1 to message_1.txt\" >&2",
+            //             "echo \"Current message: HELLOWORLD\" > message_1.txt",
+            //             "#!/bin/bash -ue",
+            //             "echo \"STDOUT: writing message 2 to message_2.txt\"",
+            //             "echo \"STDERR: writing message 2 to message_2.txt\" >&2",
+            //             "echo \"Contents of previous message: `cat message_1.txt`\"",
+            //             "echo \"Current message: FOO\" > message_2.txt",
+            //             "#!/bin/bash -ue",
+            //             "echo \"STDOUT: writing message 3 to message_3.txt\"",
+            //             "echo \"STDERR: writing message 3 to message_3.txt\" >&2",
+            //             "echo \"Contents of previous message: `cat message_2.txt`\"",
+            //             "echo \"Current message: BAR\" > message_3.txt"
+            //         )));
+            //         setExpStdoutMd5("a8aaf562ecccb0b877db257d8dff66e4");
+            //         setExpStderrMd5("5f19d60316bff6cdb924a419e6d2ca39");
+            //         setExpExitCode(0);
+            //     }},
+            //     new ArrayList<ExpectedLogValues>() {{
+            //         add(new ExpectedLogValues() {{
+            //             setExpName("output_message_1");
+            //             setExpCmd(new ArrayList<String>(Arrays.asList(
+            //                 "#!/bin/bash -ue",
+            //                 "echo \"STDOUT: writing message 1 to message_1.txt\"",
+            //                 "echo \"STDERR: writing message 1 to message_1.txt\" >&2",
+            //                 "echo \"Current message: HELLOWORLD\" > message_1.txt"
+            //             )));
+            //             setExpStdoutMd5("4dd961d06916fd0ca9b9db4f41553693");
+            //             setExpStderrMd5("2785ec9fa04371e914be4a64b307910c");
+            //             setExpExitCode(0);
+            //         }});
+            //         add(new ExpectedLogValues() {{
+            //             setExpName("output_message_2");
+            //             setExpCmd(new ArrayList<String>(Arrays.asList(
+            //                 "#!/bin/bash -ue",
+            //                 "echo \"STDOUT: writing message 2 to message_2.txt\"",
+            //                 "echo \"STDERR: writing message 2 to message_2.txt\" >&2",
+            //                 "echo \"Contents of previous message: `cat message_1.txt`\"",
+            //                 "echo \"Current message: FOO\" > message_2.txt"
+            //             )));
+            //             setExpStdoutMd5("46bb429850e032880977337362994bd1");
+            //             setExpStderrMd5("260c7e55c4a5e4c0f3ef4014acdad12d");
+            //             setExpExitCode(0);
+            //         }});
+            //         add(new ExpectedLogValues() {{
+            //             setExpName("output_message_3");
+            //             setExpCmd(new ArrayList<String>(Arrays.asList(
+            //                 "#!/bin/bash -ue",
+            //                 "echo \"STDOUT: writing message 3 to message_3.txt\"",
+            //                 "echo \"STDERR: writing message 3 to message_3.txt\" >&2",
+            //                 "echo \"Contents of previous message: `cat message_2.txt`\"",
+            //                 "echo \"Current message: BAR\" > message_3.txt"
+            //             )));
+            //             setExpStdoutMd5("8cd93c14c6a2bb5142ce6c3769274311");
+            //             setExpStderrMd5("94e537de7cf7343e7a834bc8de52d10b");
+            //             setExpExitCode(0);
+            //         }});
+            //     }},
+            //     new HashMap<String, String>() {{
+            //         put("message_1.txt", "9ebb038f0cf3b8c6e0d98b0e7a723aff");
+            //         put("message_2.txt", "9b9384b69c2f2c2cf653f25b6725d59a");
+            //         put("message_3.txt", "4fb1af51dbd9aa628a1b34d9e08e6d1b");
+            //     }}
+            // },
+            // WORKFLOW RUN 1: CUSTOM WES
             {
+                CUSTOM_PUBLIC_URL,
                 "{\"message_1\":\"HELLOWORLD\",\"message_2\":\"FOO\",\"message_3\":\"BAR\"}",
                 new ExpectedLogValues() {{
                     setExpName("jb-adams/echo-nf");
@@ -168,7 +241,8 @@ public class DemoNextFlowTest extends AbstractTestNGSpringContextTests
     }
 
     @Test(dataProvider = "cases")
-    public void test(String workflowParams,
+    public void test(String requestURL,
+                     String workflowParams,
                      ExpectedLogValues expRunLog, 
                      List<ExpectedLogValues> expTaskLogs,
                      HashMap<String, 
@@ -177,7 +251,7 @@ public class DemoNextFlowTest extends AbstractTestNGSpringContextTests
         HashMap<String, String> expOutputMd5Map = outputMd5Map;
 
         // submit the workflow
-        RunId runId = executePostRequestAndAssert(WORKFLOW_TYPE, WORKFLOW_TYPE_VERSION, WORKFLOW_URL, workflowParams);
+        RunId runId = executePostRequestAndAssert(requestURL, WORKFLOW_TYPE, WORKFLOW_TYPE_VERSION, WORKFLOW_URL, workflowParams);
 
         // poll for status every 5s for workflow completion to maximum of 
         // 12 retries (1min)
@@ -185,11 +259,11 @@ public class DemoNextFlowTest extends AbstractTestNGSpringContextTests
         boolean runIncomplete = true;
         int attempt = 0; 
 
-        RunStatus runStatus = getRunStatus(runId.getRunId());
+        RunStatus runStatus = getRunStatus(requestURL, runId.getRunId());
 
         while (runIncomplete && attempt < 12) 
         {
-            runStatus = getRunStatus(runId.getRunId());
+            runStatus = getRunStatus(requestURL, runId.getRunId());
 
             if (runStatus.getState().equals(State.COMPLETE)) 
             {
@@ -213,7 +287,7 @@ public class DemoNextFlowTest extends AbstractTestNGSpringContextTests
         Assert.assertEquals(runStatus.getState(), State.COMPLETE);
 
         // retrieve run log and assert run log components
-        RunLog runLog = getRunLog(runId.getRunId());
+        RunLog runLog = getRunLog(requestURL, runId.getRunId());
         Assert.assertEquals(runLog.getRunId(), runId.getRunId());
         Assert.assertEquals(runLog.getState(), State.COMPLETE);
 
@@ -243,7 +317,8 @@ public class DemoNextFlowTest extends AbstractTestNGSpringContextTests
         }
     }
 
-    private RunId executePostRequestAndAssert(WorkflowType workflowType, 
+    private RunId executePostRequestAndAssert(String requestURL,
+                                              WorkflowType workflowType, 
                                               String workflowTypeVersion, 
                                               String workflowUrl, 
                                               String workflowParams) throws Exception 
@@ -252,7 +327,7 @@ public class DemoNextFlowTest extends AbstractTestNGSpringContextTests
 
         // post but with HTTP
         HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create(DEFAULT_PUBLIC_URL + "runs"))
+            .uri(URI.create(requestURL + "runs"))
             .header("Content-Type", MediaType.APPLICATION_FORM_URLENCODED.toString()) // not sure if it will work
             .POST
             (
@@ -279,23 +354,6 @@ public class DemoNextFlowTest extends AbstractTestNGSpringContextTests
         System.out.print("--------------- \n");
 
         //
-
-        // MvcResult result = mockMvc.perform(
-        //     post(API_PREFIX + "/runs")
-        //     .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-        //     .content(EntityUtils.toString(
-        //         new UrlEncodedFormEntity(
-        //             Arrays.asList(
-        //                 new BasicNameValuePair("workflow_type", workflowType.toString()),
-        //                 new BasicNameValuePair("workflow_type_version", workflowTypeVersion),
-        //                 new BasicNameValuePair("workflow_url", workflowUrl),
-        //                 new BasicNameValuePair("workflow_params", workflowParams)
-        //             )
-        //         )
-        //     ))
-        // )
-        // .andExpect(status().isOk()) 
-        // .andReturn();
         
         if(objectMapper == null) System.out.print("object mapper is null \n");
         RunId runId = objectMapper.readValue(response.body(), RunId.class); // Problem here !!
@@ -304,7 +362,7 @@ public class DemoNextFlowTest extends AbstractTestNGSpringContextTests
         return runId;
     }
 
-    private RunStatus getRunStatus(String runId) throws Exception 
+    private RunStatus getRunStatus(String requestURL, String runId) throws Exception 
     {
         System.out.print("GETTING RUN STATUS FOR RUN WITH ID: " + runId + "\n");
 
@@ -312,39 +370,27 @@ public class DemoNextFlowTest extends AbstractTestNGSpringContextTests
 
         Builder requestBuilder = HttpRequest.newBuilder()
             .GET()
-            .uri(URI.create(DEFAULT_PUBLIC_URL + "runs/" + runId + "/status"));
+            .uri(URI.create(requestURL + "runs/" + runId + "/status"));
 
         HttpRequest request = requestBuilder.build();
         HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
 
-        // MvcResult result = mockMvc.perform(
-        //     get(API_PREFIX + "/runs/" + runId + "/status")
-        // )
-        // .andExpect(status().isOk())
-        // .andReturn();
-        
         System.out.print("STATUS RESPONSE : \n " + response.body() + "\n"); // Getting executor error
         RunStatus runStatus = objectMapper.readValue(response.body(), RunStatus.class);
         Assert.assertNotNull(runStatus);
         return runStatus;
     }
 
-    private RunLog getRunLog(String runId) throws Exception 
+    private RunLog getRunLog(String requestURL, String runId) throws Exception 
     {
         HttpClient client = HttpClient.newHttpClient();
 
         Builder requestBuilder = HttpRequest.newBuilder()
             .GET()
-            .uri(URI.create(DEFAULT_PUBLIC_URL + "runs/" + runId));
+            .uri(URI.create(requestURL + "runs/" + runId));
 
         HttpRequest request = requestBuilder.build();
         HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
-
-        // MvcResult result = mockMvc.perform(
-        //     get(API_PREFIX + "/runs/" + runId)
-        // )
-        // .andExpect(status().isOk())
-        // .andReturn();
         
         RunLog runLog = objectMapper.readValue(response.body(), RunLog.class);
         Assert.assertNotNull(runLog);
@@ -353,21 +399,6 @@ public class DemoNextFlowTest extends AbstractTestNGSpringContextTests
 
     private String getLogOutput(String logURL) throws Exception 
     {
-        // URI logURI = URI.create(logURL);
-        // String logURLPath = logURI.getPath();
-        // String logURLQuery = logURI.getQuery();
-
-        // MockHttpServletRequestBuilder requestBuilder = get(logURLPath);
-        // if (logURLQuery != null) {
-        //     requestBuilder.params(parseQueryString(logURLQuery));
-        // }
-
-        // MvcResult result = mockMvc.perform(requestBuilder)
-        //     .andExpect(status().isOk())
-        //     .andReturn();
-
-        // return result.getResponse().getContentAsString();
-
         HttpClient client = HttpClient.newHttpClient();
 
         Builder requestBuilder = HttpRequest.newBuilder()
