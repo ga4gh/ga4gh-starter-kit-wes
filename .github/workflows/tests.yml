@@ -101,12 +101,18 @@ jobs:
         cache-from: type=gha #GitHub Actions Cache Exporter
         cache-to: type=gha,mode=max
 
+    - name: Make tmp Directory
+      run: mkdir -p /tmp/shared/wes_tests
     - name: Running Tests
       run: |
         docker run --rm -d --name starter-kit-wes-test-default \
           -p 4500:4500 -p 4501:4501 \
           -v /var/run/docker.sock:/var/run/docker.sock \
-          ga4gh/ga4gh-starter-kit-wes:test 
+          -v /tmp/shared/wes_tests:/tmp/shared/wes_tests \
+          -w /tmp/shared/wes_tests \
+          ga4gh/ga4gh-starter-kit-wes:test \
+          --config /home/user/db/src/test/resources/config/standard-config.yml
+    # -v /home/user/db:/home/user/db \
     # -v /wes_runs/:/home/user/db/wes_runs/ \
     # -v /usr/bin/docker:/usr/bin/docker \
     # -v runs/home/user/db/wes_runs:wes_runs
