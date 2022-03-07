@@ -103,8 +103,8 @@ jobs:
     # - name: Build and push WES Builder but inefficient
     #   run: make docker-wes-builder-build
 
-    - name: Pull WES Builder
-      run: docker pull ga4gh/ga4gh-starter-kit-wesbuilder
+    # - name: Pull WES Builder
+    #   run: docker pull ga4gh/ga4gh-starter-kit-wesbuilder
 
     # - name: Setup upterm session # Using Github - SSH for debugging
     #   uses: lhotari/action-upterm@v1
