@@ -1,6 +1,7 @@
 FROM keinos/sqlite3:latest as dbbuilder
 
-USER root
+# To enable creating files [see line 9]
+USER root 
 
 WORKDIR /usr/src/db
 
