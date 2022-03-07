@@ -1,5 +1,7 @@
 FROM keinos/sqlite3:latest as dbbuilder
 
+USER root
+
 WORKDIR /usr/src/db
 
 COPY database/sqlite/create-tables.sql create-tables.sql
