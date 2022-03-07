@@ -2,6 +2,7 @@ name: Standard Tests
 on: [push, pull_request, workflow_dispatch] #workflow_dispatch works only if its active in the main branch
 jobs:
   Unit-Test:
+    if false:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -66,7 +67,7 @@ jobs:
         bash <(curl -s https://codecov.io/bash)
 
   Docker-Integration-Test:
-    needs: Unit-Test
+    # needs: Unit-Test
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -104,6 +105,14 @@ jobs:
     - name: Make tmp Directory
       run: mkdir -p /tmp/shared/wes_tests
 
+    - name: Setup upterm session # Using Github - SSH for debugging
+      uses: lhotari/action-upterm@v1
+      with:
+        ## limits ssh access and adds the ssh public key for the user which triggered the workflow
+        limit-access-to-actor: true
+        ## limits ssh access and adds the ssh public keys of the listed GitHub users
+        limit-access-to-users: emre-f
+
     - name: Running Docker Containers
       run: |
         docker run --rm -d --name starter-kit-wes-test-default \
@@ -120,14 +129,6 @@ jobs:
           -w /tmp/shared/wes_tests \
           ga4gh/ga4gh-starter-kit-wes:test \
           --config /home/user/db/src/test/resources/config/demo-config.yml
-
-    - name: Setup upterm session # Using Github - SSH for debugging
-      uses: lhotari/action-upterm@v1
-      with:
-        ## limits ssh access and adds the ssh public key for the user which triggered the workflow
-        limit-access-to-actor: true
-        ## limits ssh access and adds the ssh public keys of the listed GitHub users
-        limit-access-to-users: emre-f
     
     - name: Gradle Integration Test
       run: ./gradlew test --tests=integration.*
