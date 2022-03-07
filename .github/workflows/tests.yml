@@ -96,14 +96,14 @@ jobs:
         builder: ${{ steps.buildx.outputs.name }}
         file: ./Dockerfile
         push: true
-        tags: ga4gh/ga4gh-starter-kit-wes:test-wesbuilder
+        tags: ga4gh/ga4gh-starter-kit-wesbuilder
         # build-args: VERSION=${{ env.version }}
         cache-from: type=gha #GitHub Actions Cache Exporter
         cache-to: type=gha,mode=max
     
-    - uses: addnab/docker-run-action@v3
-      with:
-        image: ga4gh/ga4gh-starter-kit-wes:test-wesbuilder
+    # - uses: addnab/docker-run-action@v3
+    #   with:
+    #     image: ga4gh/ga4gh-starter-kit-wes:test-wesbuilder
 
     - name: Setup upterm session # Using Github - SSH for debugging
       uses: lhotari/action-upterm@v1
