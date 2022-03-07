@@ -1,15 +1,23 @@
 package org.ga4gh.starterkit.wes.utils.runmanager.language;
 
+import java.io.File;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.FileFilterUtils;
+import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.logging.log4j.util.Strings;
 import org.ga4gh.starterkit.common.config.ServerProps;
 import org.ga4gh.starterkit.wes.config.language.LanguageConfig;
@@ -209,16 +217,37 @@ public class NextflowLanguageHandler extends AbstractLanguageHandler {
     private Map<String, String> determineOutputs() throws Exception {
         HashMap<String, String> outputs = new HashMap<>();
 
-        for (String taskLogRow: taskLogTableList) {
-            // unpack the task level nextflow log row, get contents of workdir
-            String[] taskLogRowArr = taskLogRow.split("\t");
-            String workdir = taskLogRowArr[4];
-            List<String> workDirFiles = getEngineHandler().provideDirectoryContents(workdir);
-            for (String workDirFile : workDirFiles) {
-                if (!workDirFile.startsWith(".")) {
-                    if (!outputs.containsKey(workDirFile)) {
-                        String outputLocation = "file://" + Paths.get(workdir, workDirFile).toString();
-                        outputs.put(workDirFile, outputLocation);
+        HashSet<String> nextflowFiles = new HashSet<>() {{
+            add(".command.begin");
+            add(".command.err");
+            add(".command.log");
+            add(".command.out");
+            add(".command.run");
+            add(".command.sh");
+            add(".exitcode");
+        }};
+
+        // get the location of each working directory
+        for (String testTaskLogRow: taskLogTableList) {
+            String[] testTaskLogRowArr = testTaskLogRow.split("\t");
+            String testWorkdir = testTaskLogRowArr[4];
+
+            // collect all files from the working directory
+            Collection<File> files = FileUtils.listFiles(
+                Paths.get(testWorkdir).toFile(),
+                TrueFileFilter.INSTANCE,
+                TrueFileFilter.INSTANCE
+            );
+            
+            // place files into the outputs hashmap if they are not standard
+            // nextflow files
+            for (File file : files) {
+                String key = file.getPath().replaceAll(testWorkdir+"/", "");
+                String value = "file://" + file.getPath();
+                
+                if (!nextflowFiles.contains(key)) {
+                    if (!outputs.containsKey(key)) {
+                        outputs.put(key, value);
                     }
                 }
             }
