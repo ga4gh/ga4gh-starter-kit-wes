@@ -103,7 +103,8 @@ jobs:
 
     - name: Make tmp Directory
       run: mkdir -p /tmp/shared/wes_tests
-    - name: Running Tests
+
+    - name: Running Docker Containers
       run: |
         docker run --rm -d --name starter-kit-wes-test-default \
           -p 4500:4500 -p 4501:4501 \
@@ -119,15 +120,14 @@ jobs:
           -w /tmp/shared/wes_tests \
           ga4gh/ga4gh-starter-kit-wes:test \
           --config /home/user/db/src/test/resources/config/demo-config.yml
-    # -v /home/user/db:/home/user/db \
-    # -v /wes_runs/:/home/user/db/wes_runs/ \
-    # -v /usr/bin/docker:/usr/bin/docker \
-    # -v runs/home/user/db/wes_runs:wes_runs
-    # [currently gives error of no config file found (even in GHA, why?), but no error with :-0.2.2nextflow]
-    # docker run --rm -d --name starter-kit-wes-test-custom \
-    #   -p 7000:7000 -p 7001:7001 \
-    #   ga4gh/ga4gh-starter-kit-wes:test \
-    #   --config ./src/test/resources/config/demo-config.yml
+
+    - name: Setup upterm session # Using Github - SSH for debugging
+        uses: lhotari/action-upterm@v1
+        with:
+          ## limits ssh access and adds the ssh public key for the user which triggered the workflow
+          limit-access-to-actor: true
+          ## limits ssh access and adds the ssh public keys of the listed GitHub users
+          limit-access-to-users: emre-f
     
     - name: Gradle Integration Test
       run: ./gradlew test --tests=integration.*
