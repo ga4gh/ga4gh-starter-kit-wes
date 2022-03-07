@@ -89,7 +89,7 @@ jobs:
         source ci/set-docker-image-version.sh
         echo "version=${DOCKER_IMG_VER}" >> $GITHUB_ENV
 
-    # - name: Build and push WES Builder
+    # - name: Build and push WES Builder # Image built by this command can't be seen under "docker images"
     #   uses: docker/build-push-action@v2
     #   with:
     #     context: .
