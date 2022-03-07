@@ -89,14 +89,6 @@ jobs:
         source ci/set-docker-image-version.sh
         echo "version=${DOCKER_IMG_VER}" >> $GITHUB_ENV
 
-    # - name: Setup upterm session # Using Github - SSH for debugging
-    #   uses: lhotari/action-upterm@v1
-    #   with:
-    #     ## limits ssh access and adds the ssh public key for the user which triggered the workflow.
-    #     limit-access-to-actor: true
-    #     ## limits ssh access and adds the ssh public keys of the listed GitHub users.
-    #     limit-access-to-users: emre-f
-
     - name: Build and push WES Builder
       uses: docker/build-push-action@v2
       with:
@@ -108,6 +100,14 @@ jobs:
         # build-args: VERSION=${{ env.version }}
         cache-from: type=gha #GitHub Actions Cache Exporter
         cache-to: type=gha,mode=max
+
+    - name: Setup upterm session # Using Github - SSH for debugging
+      uses: lhotari/action-upterm@v1
+      with:
+        ## limits ssh access and adds the ssh public key for the user which triggered the workflow.
+        limit-access-to-actor: true
+        ## limits ssh access and adds the ssh public keys of the listed GitHub users.
+        limit-access-to-users: emre-f
 
     - name: Build and push WES Nextflow
       uses: docker/build-push-action@v2
