@@ -94,9 +94,9 @@ jobs:
       with:
         context: .
         builder: ${{ steps.buildx.outputs.name }}
-        file: ./Dockerfile
+        file: ./Dockerfile-Nextflow
         push: true
-        tags: ga4gh/ga4gh-starter-kit-wes:test
+        tags: ga4gh/ga4gh-starter-kit-wes:test-nextflow
         build-args: VERSION=${{ env.version }}
         cache-from: type=gha #GitHub Actions Cache Exporter
         cache-to: type=gha,mode=max
@@ -104,13 +104,13 @@ jobs:
     - name: Make tmp Directory
       run: mkdir -p /tmp/shared/wes_tests
 
-    - name: Setup upterm session # Using Github - SSH for debugging
-      uses: lhotari/action-upterm@v1
-      with:
-        ## limits ssh access and adds the ssh public key for the user which triggered the workflow
-        limit-access-to-actor: true
-        ## limits ssh access and adds the ssh public keys of the listed GitHub users
-        limit-access-to-users: emre-f
+    # - name: Setup upterm session # Using Github - SSH for debugging
+    #   uses: lhotari/action-upterm@v1
+    #   with:
+    #     ## limits ssh access and adds the ssh public key for the user which triggered the workflow
+    #     limit-access-to-actor: true
+    #     ## limits ssh access and adds the ssh public keys of the listed GitHub users
+    #     limit-access-to-users: emre-f
 
     - name: Running Docker Containers
       run: |
@@ -119,14 +119,14 @@ jobs:
           -v /var/run/docker.sock:/var/run/docker.sock \
           -v /tmp/shared/wes_tests:/tmp/shared/wes_tests \
           -w /tmp/shared/wes_tests \
-          ga4gh/ga4gh-starter-kit-wes:0.2.2-nextflow \
+          ga4gh/ga4gh-starter-kit-wes:test-nextflow \
           --config /home/user/db/src/test/resources/config/standard-config.yml
         docker run --rm -d --name starter-kit-wes-test-custom \
           -p 7000:7000 -p 7001:7001 \
           -v /var/run/docker.sock:/var/run/docker.sock \
           -v /tmp/shared/wes_tests:/tmp/shared/wes_tests \
           -w /tmp/shared/wes_tests \
-          ga4gh/ga4gh-starter-kit-wes:0.2.2-nextflow \
+          ga4gh/ga4gh-starter-kit-wes:test-nextflow \
           --config /home/user/db/src/test/resources/config/demo-config.yml
     
     - name: Gradle Integration Test
