@@ -92,6 +92,14 @@ jobs:
     - name: Pull WES Builder
       run: docker pull ga4gh/ga4gh-starter-kit-wesbuilder
 
+    - name: Setup upterm session # Using Github - SSH for debugging
+    uses: lhotari/action-upterm@v1
+    with:
+      ## limits ssh access and adds the ssh public key for the user which triggered the workflow
+      limit-access-to-actor: true
+      ## limits ssh access and adds the ssh public keys of the listed GitHub users
+      limit-access-to-users: emre-f
+
     - name: Build and push
       uses: docker/build-push-action@v2
       with:
@@ -106,14 +114,6 @@ jobs:
 
     - name: Make tmp Directory
       run: mkdir -p /tmp/shared/wes_tests
-
-    # - name: Setup upterm session # Using Github - SSH for debugging
-    #   uses: lhotari/action-upterm@v1
-    #   with:
-    #     ## limits ssh access and adds the ssh public key for the user which triggered the workflow
-    #     limit-access-to-actor: true
-    #     ## limits ssh access and adds the ssh public keys of the listed GitHub users
-    #     limit-access-to-users: emre-f
 
     - name: Running Docker Containers
       run: |
