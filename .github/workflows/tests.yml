@@ -103,7 +103,7 @@ jobs:
         context: .
         builder: ${{ steps.buildx.outputs.name }}
         file: ./Dockerfile
-        push: true
+        push: false
         tags: ga4gh/ga4gh-starter-kit-wes:test-wesbuilder
         # build-args: VERSION=${{ env.version }}
         cache-from: type=gha #GitHub Actions Cache Exporter
