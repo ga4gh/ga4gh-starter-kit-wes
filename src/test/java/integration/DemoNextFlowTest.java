@@ -437,14 +437,6 @@ public class DemoNextFlowTest extends AbstractTestNGSpringContextTests
         String stdoutMd5 = DigestUtils.md5DigestAsHex(stdout.getBytes());
         String stderrMd5 = DigestUtils.md5DigestAsHex(stderr.getBytes());
         Assert.assertEquals(stdoutMd5, expLogValues.getExpStdoutMd5());
-        
-        System.out.print("-------------------- \n");
-        System.out.print("first : \n");
-        System.out.print(stderrMd5 + "\n");
-        System.out.print("second : \n");
-        System.out.print(expLogValues.getExpStderrMd5() + "\n");
-        System.out.print("-------------------- \n");
-
         Assert.assertEquals(stderrMd5, expLogValues.getExpStderrMd5());
     }
 
