@@ -94,7 +94,7 @@ jobs:
       with:
         context: .
         builder: ${{ steps.buildx.outputs.name }}
-        file: ./Dockerfile-Nextflow # I think this is correct now
+        file: ./Dockerfile
         push: true
         tags: ga4gh/ga4gh-starter-kit-wes:test
         build-args: VERSION=${{ env.version }}
