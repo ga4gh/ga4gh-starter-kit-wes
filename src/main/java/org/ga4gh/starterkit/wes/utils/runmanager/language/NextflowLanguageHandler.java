@@ -3,7 +3,6 @@ package org.ga4gh.starterkit.wes.utils.runmanager.language;
 import java.io.File;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -14,9 +13,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.logging.log4j.util.Strings;
 import org.ga4gh.starterkit.common.config.ServerProps;
@@ -222,6 +219,7 @@ public class NextflowLanguageHandler extends AbstractLanguageHandler {
             add(".command.err");
             add(".command.log");
             add(".command.out");
+            add(".command.in");
             add(".command.run");
             add(".command.sh");
             add(".exitcode");
@@ -244,7 +242,7 @@ public class NextflowLanguageHandler extends AbstractLanguageHandler {
             for (File file : files) {
                 String key = file.getPath().replaceAll(testWorkdir+"/", "");
                 String value = "file://" + file.getPath();
-                
+
                 if (!nextflowFiles.contains(key)) {
                     if (!outputs.containsKey(key)) {
                         outputs.put(key, value);
