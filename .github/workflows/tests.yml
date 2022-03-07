@@ -89,20 +89,23 @@ jobs:
         source ci/set-docker-image-version.sh
         echo "version=${DOCKER_IMG_VER}" >> $GITHUB_ENV
 
-    - name: Build Wes Builder
-      run: make docker-wes-builder-build
+    # - name: Build WES Builder
+    #   run: make docker-wes-builder-build
 
-    - name: Build and push
-      uses: docker/build-push-action@v2
-      with:
-        context: .
-        builder: ${{ steps.buildx.outputs.name }}
-        file: ./Dockerfile-Nextflow
-        push: true
-        tags: ga4gh/ga4gh-starter-kit-wes:test-nextflow
-        build-args: VERSION=${{ env.version }}
-        cache-from: type=gha #GitHub Actions Cache Exporter
-        cache-to: type=gha,mode=max
+    # - name: Build and push
+    #   uses: docker/build-push-action@v2
+    #   with:
+    #     context: .
+    #     builder: ${{ steps.buildx.outputs.name }}
+    #     file: ./Dockerfile-Nextflow
+    #     push: true
+    #     tags: ga4gh/ga4gh-starter-kit-wes:test-nextflow
+    #     build-args: VERSION=${{ env.version }}
+    #     cache-from: type=gha #GitHub Actions Cache Exporter
+    #     cache-to: type=gha,mode=max
+
+    - name: Bad Builder
+      run: make docker-wes-nextflow-build
 
     - name: Make tmp Directory
       run: mkdir -p /tmp/shared/wes_tests
