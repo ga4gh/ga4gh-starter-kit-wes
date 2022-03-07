@@ -441,7 +441,7 @@ public class DemoNextFlowTest extends AbstractTestNGSpringContextTests
         System.out.print("----------------- \n");
         System.out.print(stderrMd5 + "\n");
         System.out.print(expLogValues.getExpStderrMd5() + "\n");
-        // if()
+        if(stderrMd5.equals(expLogValues.getExpStderrMd5())) System.out.print("They are equal! \n");
         Assert.assertEquals(stderrMd5, expLogValues.getExpStderrMd5()); //problem here
     }
 
