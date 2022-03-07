@@ -437,7 +437,11 @@ public class DemoNextFlowTest extends AbstractTestNGSpringContextTests
         String stdoutMd5 = DigestUtils.md5DigestAsHex(stdout.getBytes());
         String stderrMd5 = DigestUtils.md5DigestAsHex(stderr.getBytes());
         Assert.assertEquals(stdoutMd5, expLogValues.getExpStdoutMd5());
-        // Assert.assertEquals(stderrMd5, expLogValues.getExpStderrMd5());
+        
+        System.out.print("----------------- \n");
+        System.out.print(stdoutMd5 + "\n");
+        System.out.print(expLogValues.getExpStdoutMd5() + "\n");
+        Assert.assertEquals(stderrMd5, expLogValues.getExpStderrMd5()); //problem here
     }
 
     private void assertOutputEquivalence(String outputURL, String expMd5) throws Exception 
