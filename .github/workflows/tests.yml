@@ -1,74 +1,85 @@
 name: Standard Tests
 on: [push, pull_request, workflow_dispatch] #workflow_dispatch works only if its active in the main branch
 jobs:
-  # Unit-Test:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - uses: actions/checkout@v2
+  Unit-Test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
 
-  #   - name: Setting up JDK 11
-  #     uses: actions/setup-java@v2
-  #     with:
-  #       java-version: '11'
-  #       distribution: 'adopt' #using a specific distribution of jdk12 (AdoptOpenJDK)
-
-  #   - name: Setting up Gradle
-  #     uses: gradle/gradle-build-action@v2
-
-  #   - name: Setting up Gradle Wrapper
-  #     run: "gradle wrapper"
-
-  #   - name: Validating Wrapper
-  #     uses: gradle/wrapper-validation-action@v1
-
-  #   - name: Install Docker Images for Nextflow Workflows
-  #     run: docker pull jbadams/echo-nf:0.1.0 
-
-  #   - name: Install SQLite and Setup Dev Database
-  #     run: | 
-  #       sqlite3 -version
-  #       make -version
-  #       make clean-all
-  #       make sqlite-db-build
+    - name: Setting up JDK 11
+      uses: actions/setup-java@v2
+      with:
+        java-version: '11'
+        distribution: 'adopt' #using a specific distribution of jdk12 (AdoptOpenJDK)
     
-  #   - name: Install Nextflow
-  #     run: |
-  #       export WORKING_DIR=`pwd`
-  #       mkdir -p ~/install/nextflow
-  #       cd ~/install/nextflow
-  #       curl -fsSL https://get.nextflow.io | bash
-  #       export PATH=~/install/nextflow:$PATH
-  #       cd $WORKING_DIR
-  #       nextflow -h
-  #       ls
+    # Experimental, trying to cache gradle / gradle wrapper
+    - name: Cache Gradle packages
+      id: cache-gradle
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+
+    - name: Setting up Gradle
+      if: steps.cache-gradle.outputs.cache-hit != 'true' # experimental
+      uses: gradle/gradle-build-action@v2
+
+    - name: Setting up Gradle Wrapper
+      if: steps.cache-gradle.outputs.cache-hit != 'true' # experimental
+      run: "gradle wrapper"
+
+    - name: Validating Wrapper
+      uses: gradle/wrapper-validation-action@v1
+
+    - name: Install Docker Images for Nextflow Workflows
+      run: docker pull jbadams/echo-nf:0.1.0 
+
+    - name: Install SQLite and Setup Dev Database
+      run: | 
+        sqlite3 -version
+        make -version
+        make clean-all
+        make sqlite-db-build
     
-  #   # ## To use this, open the current running workflow. Copy the final line starting with "ssh ..." and paste to terminal
-  #   # ## Note: You need to have a SSH key added to your GitHub account in the settings if limitations are present
-  #   # - name: Setup upterm session # Using Github - SSH for debugging
-  #   #   uses: lhotari/action-upterm@v1
-  #   #   with:
-  #   #     ## limits ssh access and adds the ssh public key for the user which triggered the workflow
-  #   #     limit-access-to-actor: true
-  #   #     ## limits ssh access and adds the ssh public keys of the listed GitHub users
-  #   #     limit-access-to-users: emre-f
+    - name: Install Nextflow
+      run: |
+        export WORKING_DIR=`pwd`
+        mkdir -p ~/install/nextflow
+        cd ~/install/nextflow
+        curl -fsSL https://get.nextflow.io | bash
+        export PATH=~/install/nextflow:$PATH
+        cd $WORKING_DIR
+        nextflow -h
+        ls
+    
+    # ## To use this, open the current running workflow. Copy the final line starting with "ssh ..." and paste to terminal
+    # ## Note: You need to have a SSH key added to your GitHub account in the settings if limitations are present
+    # - name: Setup upterm session # Using Github - SSH for debugging
+    #   uses: lhotari/action-upterm@v1
+    #   with:
+    #     ## limits ssh access and adds the ssh public key for the user which triggered the workflow
+    #     limit-access-to-actor: true
+    #     ## limits ssh access and adds the ssh public keys of the listed GitHub users
+    #     limit-access-to-users: emre-f
         
-  #   - name: Running Tests
-  #     id: gradle-test
-  #     run: |
-  #       export PATH=~/install/nextflow:$PATH 
-  #       ./gradlew test --tests=org.* && test --tests=e2e.*
+    - name: Running Tests
+      id: gradle-test
+      run: |
+        export PATH=~/install/nextflow:$PATH 
+        ./gradlew test --tests=org.* && test --tests=e2e.*
 
-  #   - name: Gradle Outcome
-  #     run: echo steps.gradle-test.outcome
+    - name: Gradle Outcome
+      run: echo steps.gradle-test.outcome
 
-  #   - name: After Success Submitting Code Coverage
-  #     if: steps.gradle-test.outcome == 'success'
-  #     run: | #jacocoTestReport is for testing code coverage, submits the last report to the link
-  #       ./gradlew jacocoTestReport
-  #       bash <(curl -s https://codecov.io/bash)
+    - name: After Success Submitting Code Coverage
+      if: steps.gradle-test.outcome == 'success'
+      run: | #jacocoTestReport is for testing code coverage, submits the last report to the link
+        ./gradlew jacocoTestReport
+        bash <(curl -s https://codecov.io/bash)
 
   Docker-Integration-Test:
-    # needs: Unit-Test
+    needs: Unit-Test
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
