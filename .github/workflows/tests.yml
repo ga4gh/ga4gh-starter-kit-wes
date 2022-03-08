@@ -97,6 +97,7 @@ jobs:
         file: ./Dockerfile
         push: true
         tags: ga4gh/ga4gh-starter-kit-wesbuilder
+        build-args: VERSION=${{ env.version }}
         cache-from: type=gha #GitHub Actions Cache Exporter
         cache-to: type=gha,mode=max
 
