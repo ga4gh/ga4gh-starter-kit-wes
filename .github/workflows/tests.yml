@@ -1,72 +1,72 @@
 name: Standard Tests
 on: [push, pull_request, workflow_dispatch] #workflow_dispatch works only if its active in the main branch
 jobs:
-  # Unit-Test:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - uses: actions/checkout@v2
+  Unit-Test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
 
-  #   - name: Setting up JDK 11
-  #     uses: actions/setup-java@v2
-  #     with:
-  #       java-version: '11'
-  #       distribution: 'adopt' #using a specific distribution of jdk12 (AdoptOpenJDK)
+    - name: Setting up JDK 11
+      uses: actions/setup-java@v2
+      with:
+        java-version: '11'
+        distribution: 'adopt' #using a specific distribution of jdk12 (AdoptOpenJDK)
 
-  #   - name: Setting up Gradle
-  #     uses: gradle/gradle-build-action@v2
+    - name: Setting up Gradle
+      uses: gradle/gradle-build-action@v2
 
-  #   - name: Setting up Gradle Wrapper
-  #     run: "gradle wrapper"
+    - name: Setting up Gradle Wrapper
+      run: "gradle wrapper"
 
-  #   - name: Validating Wrapper
-  #     uses: gradle/wrapper-validation-action@v1
+    - name: Validating Wrapper
+      uses: gradle/wrapper-validation-action@v1
 
-  #   - name: Install Docker Images for Nextflow Workflows
-  #     run: docker pull jbadams/echo-nf:0.1.0 
+    - name: Install Docker Images for Nextflow Workflows
+      run: docker pull jbadams/echo-nf:0.1.0 
 
-  #   - name: Install SQLite and Setup Dev Database
-  #     run: | 
-  #       sqlite3 -version
-  #       make -version
-  #       make clean-all
-  #       make sqlite-db-build
+    - name: Install SQLite and Setup Dev Database
+      run: | 
+        sqlite3 -version
+        make -version
+        make clean-all
+        make sqlite-db-build
     
-  #   - name: Install Nextflow
-  #     run: |
-  #       export WORKING_DIR=`pwd`
-  #       mkdir -p ~/install/nextflow
-  #       cd ~/install/nextflow
-  #       curl -fsSL https://get.nextflow.io | bash
-  #       export PATH=~/install/nextflow:$PATH
-  #       cd $WORKING_DIR
-  #       nextflow -h
-  #       ls
+    - name: Install Nextflow
+      run: |
+        export WORKING_DIR=`pwd`
+        mkdir -p ~/install/nextflow
+        cd ~/install/nextflow
+        curl -fsSL https://get.nextflow.io | bash
+        export PATH=~/install/nextflow:$PATH
+        cd $WORKING_DIR
+        nextflow -h
+        ls
     
-  #   # - name: Setup upterm session # Using Github - SSH for debugging
-  #   #   uses: lhotari/action-upterm@v1
-  #   #   with:
-  #   #     ## limits ssh access and adds the ssh public key for the user which triggered the workflow
-  #   #     limit-access-to-actor: true
-  #   #     ## limits ssh access and adds the ssh public keys of the listed GitHub users
-  #   #     limit-access-to-users: emre-f
+    # - name: Setup upterm session # Using Github - SSH for debugging
+    #   uses: lhotari/action-upterm@v1
+    #   with:
+    #     ## limits ssh access and adds the ssh public key for the user which triggered the workflow
+    #     limit-access-to-actor: true
+    #     ## limits ssh access and adds the ssh public keys of the listed GitHub users
+    #     limit-access-to-users: emre-f
         
-  #   - name: Running Tests
-  #     id: gradle-test
-  #     run: |
-  #       export PATH=~/install/nextflow:$PATH 
-  #       ./gradlew test --tests=org.* && test --tests=e2e.*
+    - name: Running Tests
+      id: gradle-test
+      run: |
+        export PATH=~/install/nextflow:$PATH 
+        ./gradlew test --tests=org.* && test --tests=e2e.*
 
-  #   - name: Gradle Outcome
-  #     run: echo steps.gradle-test.outcome
+    - name: Gradle Outcome
+      run: echo steps.gradle-test.outcome
 
-  #   - name: After Success Submitting Code Coverage
-  #     if: steps.gradle-test.outcome == 'success'
-  #     run: | #jacocoTestReport is for testing code coverage, submits the last report to the link
-  #       ./gradlew jacocoTestReport
-  #       bash <(curl -s https://codecov.io/bash)
+    - name: After Success Submitting Code Coverage
+      if: steps.gradle-test.outcome == 'success'
+      run: | #jacocoTestReport is for testing code coverage, submits the last report to the link
+        ./gradlew jacocoTestReport
+        bash <(curl -s https://codecov.io/bash)
 
   Docker-Integration-Test:
-    # needs: Unit-Test
+    needs: Unit-Test
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -100,17 +100,6 @@ jobs:
         cache-from: type=gha #GitHub Actions Cache Exporter
         cache-to: type=gha,mode=max
 
-    # - name: Build and push WES Builder but inefficient
-    #   run: make docker-wes-builder-build
-
-    # - name: Setup upterm session # Using Github - SSH for debugging
-    #   uses: lhotari/action-upterm@v1
-    #   with:
-    #     ## limits ssh access and adds the ssh public key for the user which triggered the workflow.
-    #     limit-access-to-actor: true
-    #     ## limits ssh access and adds the ssh public keys of the listed GitHub users.
-    #     limit-access-to-users: emre-f
-
     - name: Build and Push WES Nextflow
       uses: docker/build-push-action@v2
       with:
@@ -123,15 +112,14 @@ jobs:
         cache-from: type=gha #GitHub Actions Cache Exporter
         cache-to: type=gha,mode=max
 
-    # - name: Build and push WES Nextflow (inefficient)
-    #   run: make docker-wes-nextflow-build
-
     - name: Make tmp Directory
       run: mkdir -p /tmp/shared/wes_tests
 
+    - name: Pull Nextflow Docker Image
+      run: docker pull jbadams/echo-nf:0.1.0
+
     - name: Running Docker Containers
       run: |
-        docker pull jbadams/echo-nf:0.1.0
         docker run --rm -d --name starter-kit-wes-test-default \
           -p 4500:4500 -p 4501:4501 \
           -v /var/run/docker.sock:/var/run/docker.sock \

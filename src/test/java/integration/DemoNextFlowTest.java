@@ -350,17 +350,13 @@ public class DemoNextFlowTest extends AbstractTestNGSpringContextTests
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         
-        if(objectMapper == null) System.out.print("object mapper is null \n");
         RunId runId = objectMapper.readValue(response.body(), RunId.class);
-        System.out.print("runId: " + runId.getRunId() + "\n");
         Assert.assertNotNull(runId.getRunId());
         return runId;
     }
 
     private RunStatus getRunStatus(String requestURL, String runId) throws Exception 
     {
-        System.out.print("GETTING RUN STATUS FOR RUN WITH ID: " + runId + "\n");
-
         HttpClient client = HttpClient.newHttpClient();
 
         Builder requestBuilder = HttpRequest.newBuilder()
@@ -370,7 +366,6 @@ public class DemoNextFlowTest extends AbstractTestNGSpringContextTests
         HttpRequest request = requestBuilder.build();
         HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
 
-        System.out.print("STATUS RESPONSE : \n " + response.body() + "\n"); // Getting executor error
         RunStatus runStatus = objectMapper.readValue(response.body(), RunStatus.class);
         Assert.assertNotNull(runStatus);
         return runStatus;
@@ -432,7 +427,7 @@ public class DemoNextFlowTest extends AbstractTestNGSpringContextTests
 
         String stdoutMd5 = DigestUtils.md5DigestAsHex(stdout.getBytes());
         String stderrMd5 = DigestUtils.md5DigestAsHex(stderr.getBytes());
-        
+
         Assert.assertEquals(stdoutMd5, expLogValues.getExpStdoutMd5());
         Assert.assertEquals(stderrMd5, expLogValues.getExpStderrMd5()); //problem here
     }
