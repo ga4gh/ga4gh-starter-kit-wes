@@ -41,7 +41,7 @@ WORKDIR /usr/src/db
 COPY --from=dbbuilder /usr/src/db/ga4gh-starter-kit.dev.db ga4gh-starter-kit.dev.db
 
 WORKDIR /usr/src/app
-COPY --from=gradleimage /home/gradle/source/build/libs/ga4gh-starter-kit-wes-${VERSION}.jar ga4gh-starter-kit-wes.jar
+COPY --from=gradleimage /home/gradle/source/build/libs/ga4gh-starter-kit-wes-${VERSION}.jar ga4gh-starter-kit-wes-${VERSION}.jar
 
 # COPY build.gradle build.gradle
 # COPY gradle gradle
