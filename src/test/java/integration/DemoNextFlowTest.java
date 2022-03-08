@@ -298,14 +298,12 @@ public class DemoNextFlowTest extends AbstractTestNGSpringContextTests
         Assert.assertEquals(request.getWorkflowUrl(), WORKFLOW_URL);
 
         // assert 'runLog' attribute
-        System.out.print(requestURL + "\n");
         assertWesLogEquivalence(runLog.getRunLog(), expRunLog);
 
         // assert 'taskLogs' attribute
         Assert.assertEquals(runLog.getTaskLogs().size(), expTaskLogs.size());
         for (int i = 0; i < runLog.getTaskLogs().size(); i++) 
         {
-            System.out.print(requestURL + "( i = " + i + "\n");
             WesLog taskLog = runLog.getTaskLogs().get(i);
             ExpectedLogValues expTaskLog = expTaskLogs.get(i);
             assertWesLogEquivalence(taskLog, expTaskLog);
@@ -431,14 +429,11 @@ public class DemoNextFlowTest extends AbstractTestNGSpringContextTests
         // assert md5 sums match expected for stdout and stderr
         String stdout = getLogOutput(wesLog.getStdout());
         String stderr = getLogOutput(wesLog.getStderr());
+
         String stdoutMd5 = DigestUtils.md5DigestAsHex(stdout.getBytes());
         String stderrMd5 = DigestUtils.md5DigestAsHex(stderr.getBytes());
-        Assert.assertEquals(stdoutMd5, expLogValues.getExpStdoutMd5());
         
-        System.out.print("----------------- \n");
-        System.out.print(stderrMd5 + "\n");
-        System.out.print(expLogValues.getExpStderrMd5() + "\n");
-        if(stderrMd5.equals(expLogValues.getExpStderrMd5())) System.out.print("They are equal! \n");
+        Assert.assertEquals(stdoutMd5, expLogValues.getExpStdoutMd5());
         Assert.assertEquals(stderrMd5, expLogValues.getExpStderrMd5()); //problem here
     }
 
