@@ -15,7 +15,6 @@ RUN sqlite3 ./ga4gh-starter-kit.dev.db < create-tables.sql
 # GRADLE CONTAINER
 ##################################################
 # was gradle:5.6.4-jdk12 [originally]
-# FROM gradle:7.3.2-jdk12
 FROM gradle:7.3.3-jdk11 as gradleimage
 
 WORKDIR /home/gradle/source

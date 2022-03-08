@@ -1,18 +1,34 @@
+##################################################
+# WES BUILDER CONTAINER
+##################################################
 FROM ga4gh/ga4gh-starter-kit-wesbuilder as wesbuilder
+
+##################################################
+# DOCKER CONTAINER
+##################################################
 FROM docker:20.10.8-dind-alpine3.13 as dockerbuilder
 
+##################################################
+# NEXTFLOW CONTAINER
+##################################################
+# FROM nextflow/nextflow:latest as nextflowbuilder
+FROM adoptopenjdk/openjdk12:jre-12.0.2_10-debian as nextflowbuilder
+
+RUN curl -s https://get.nextflow.io | bash
+RUN chmod -R 777 .
+ENV PATH="/home/user/nextflow:${PATH}"
+
+##################################################
+# FINAL CONTAINER
+##################################################
 FROM adoptopenjdk/openjdk12:jre-12.0.2_10-debian
 
 ARG VERSION
 
-#INSTALL DOCKER
 COPY --from=dockerbuilder /usr/local/bin/docker /usr/local/bin/docker
 
-# INSTALL NEXTFLOW
-WORKDIR /home/user/nextflow
-RUN curl -s https://get.nextflow.io | bash
-RUN chmod -R 777 .
-ENV PATH="/home/user/nextflow:${PATH}"
+# Nextflow goes here
+COPY --from=nextflowbuilder /home/user/nextflow /home/user/nextflow
 
 WORKDIR /home/user/app
 # COPY --from=wesbuilder /usr/src/app/build/libs/ga4gh-starter-kit-wes-${VERSION}.jar ga4gh-starter-kit-wes.jar
