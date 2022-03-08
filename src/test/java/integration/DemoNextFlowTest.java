@@ -298,15 +298,16 @@ public class DemoNextFlowTest extends AbstractTestNGSpringContextTests
         Assert.assertEquals(request.getWorkflowUrl(), WORKFLOW_URL);
 
         // assert 'runLog' attribute
-        // assertWesLogEquivalence(runLog.getRunLog(), expRunLog);
+        assertWesLogEquivalence(runLog.getRunLog(), expRunLog);
 
         // assert 'taskLogs' attribute
         Assert.assertEquals(runLog.getTaskLogs().size(), expTaskLogs.size());
-        for (int i = 0; i < runLog.getTaskLogs().size(); i++) {
-            WesLog taskLog = runLog.getTaskLogs().get(i);
-            ExpectedLogValues expTaskLog = expTaskLogs.get(i);
-            assertWesLogEquivalence(taskLog, expTaskLog);
-        }
+        // for (int i = 0; i < runLog.getTaskLogs().size(); i++) 
+        // {
+        //     WesLog taskLog = runLog.getTaskLogs().get(i);
+        //     ExpectedLogValues expTaskLog = expTaskLogs.get(i);
+        //     assertWesLogEquivalence(taskLog, expTaskLog);
+        // }
         
         // assert 'outputs' attribute
         Map<String, String> outputs = runLog.getOutputs();
