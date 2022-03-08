@@ -8,7 +8,8 @@ WORKDIR /usr/src/db
 COPY database/sqlite/create-tables.sql create-tables.sql
 RUN sqlite3 ./ga4gh-starter-kit.dev.db < create-tables.sql
 
-FROM gradle:5.6.4-jdk12
+# was gradle:5.6.4
+FROM gradle:7.3.2-jdk12
 
 WORKDIR /usr/src/db
 COPY --from=dbbuilder /usr/src/db/ga4gh-starter-kit.dev.db ga4gh-starter-kit.dev.db
