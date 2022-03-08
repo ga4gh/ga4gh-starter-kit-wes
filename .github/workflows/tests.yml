@@ -131,7 +131,7 @@ jobs:
 
     - name: Running Docker Containers
       run: |
-        docker pull jbadams/echo-nf
+        docker pull jbadams/echo-nf:0.1.0
         docker run --rm -d --name starter-kit-wes-test-default \
           -p 4500:4500 -p 4501:4501 \
           -v /var/run/docker.sock:/var/run/docker.sock \
