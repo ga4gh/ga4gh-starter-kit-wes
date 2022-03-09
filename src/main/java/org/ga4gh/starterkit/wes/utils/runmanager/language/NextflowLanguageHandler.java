@@ -96,6 +96,7 @@ public class NextflowLanguageHandler extends AbstractLanguageHandler {
        ################################################## */
 
     public RunStatus determineRunStatus() throws Exception {
+        // run status is determined based on output of "nextflow log" command
         RunStatus runStatus = new RunStatus(getWesRun().getId(), State.UNKNOWN);
         CommandOutput nextflowLogCommandOutput = requestCommandOutputFromEngine(new String[] {"nextflow", "log"});
         String runLogStdout = nextflowLogCommandOutput.getStdout();
@@ -107,9 +108,14 @@ public class NextflowLanguageHandler extends AbstractLanguageHandler {
             return runStatus;
         }
         // executor error
-        if (runLogStatus.equals("ERR")) {
+        else if (runLogStatus.equals("ERR")) {
             runStatus.setState(State.EXECUTOR_ERROR);
             return runStatus;
+        } else if (runLogStatus.equals("-")) {
+            List<String> workdirContents = getEngineHandler().provideDirectoryContents("work");
+            if (workdirContents != null) {
+                runStatus.setState(State.RUNNING);
+            }
         }
         return runStatus;
     }
