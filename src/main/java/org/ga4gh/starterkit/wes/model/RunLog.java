@@ -5,148 +5,39 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * Directly from WES specification, contains complete information associated with
  * a workflow run, including supplied parameters, status, log information, and
  * outputs
  */
+@Setter
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class RunLog {
 
-    /**
-     * Run identifier
-     */
+    // Run identifier
     private String runId;
 
-    /**
-     * Initial run request parameters
-     */
+    // Initial run request parameters
     private WesRequest request;
 
-    /**
-     * Workflow state/status
-     */
+    // Workflow run state
     private State state;
 
-    /**
-     * Holistic workflow run-level log information
-     */
+    // Log info at run level
     private WesLog runLog;
 
-    /**
-     * Task-level log information
-     */
+    // Log info at individual task level
     private List<WesLog> taskLogs;
 
-    /**
-     * References to output file locations produced during the workflow run
-     */
+    // References to output file locations produced during the workflow run
     private Map<String, String> outputs;
-
-    /**
-     * Instantiates a new RunLog object
-     */
-    public RunLog() {
-
-    }
-
-    /* Setters and getters */
-
-    /**
-     * Assign runId
-     * @param runId run identifier
-     */
-    public void setRunId(String runId) {
-        this.runId = runId;
-    }
-
-    /**
-     * Retrieve runId
-     * @return run identifier
-     */
-    public String getRunId() {
-        return runId;
-    }
-
-    /**
-     * Assign request
-     * @param request workflow run request parameters
-     */
-    public void setRequest(WesRequest request) {
-        this.request = request;
-    }
-
-    /**
-     * Retrieve request
-     * @return workflow run request parameters
-     */
-    public WesRequest getRequest() {
-        return request;
-    }
-
-    /**
-     * Assign state
-     * @param state workflow run state
-     */
-    public void setState(State state) {
-        this.state = state;
-    }
-
-    /**
-     * Retrieve state
-     * @return workflow run state
-     */
-    public State getState() {
-        return state;
-    }
-
-    /**
-     * Assign runLog
-     * @param runLog workflow run-level log information
-     */
-    public void setRunLog(WesLog runLog) {
-        this.runLog = runLog;
-    }
-
-    /**
-     * Retrieve runLog
-     * @return workflow run-level log information
-     */
-    public WesLog getRunLog() {
-        return runLog;
-    }
-
-    /**
-     * Assign taskLogs
-     * @param taskLogs list of task-level log info (one task per item)
-     */
-    public void setTaskLogs(List<WesLog> taskLogs) {
-        this.taskLogs = taskLogs;
-    }
-
-    /**
-     * Retrieve taskLogs
-     * @return list of task-level log info (one task per item)
-     */
-    public List<WesLog> getTaskLogs() {
-        return taskLogs;
-    }
-
-    /**
-     * Assign outputs
-     * @param outputs map/dictionary of output file locations
-     */
-    public void setOutputs(Map<String, String> outputs) {
-        this.outputs = outputs;
-    }
-
-    /**
-     * Retrieve outputs
-     * @return map/dictionary of output file locations
-     */
-    public Map<String, String> getOutputs() {
-        return outputs;
-    }
 }
