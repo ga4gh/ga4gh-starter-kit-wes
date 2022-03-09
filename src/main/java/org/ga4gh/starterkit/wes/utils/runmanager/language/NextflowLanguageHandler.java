@@ -189,6 +189,7 @@ public class NextflowLanguageHandler extends AbstractLanguageHandler {
     private void constructNextflowTasksBackup() {
         // obtain all task subdirectories under "work/"
         List<FileMetadata> workdirsMetadata = new ArrayList<>();
+
         for (String subdirA : getEngineHandler().provideDirectoryContents("work")) {
             for (String subdirB : getEngineHandler().provideDirectoryContents("work/"+subdirA)) {
                 String workdir = "work/" + subdirA + "/" + subdirB;

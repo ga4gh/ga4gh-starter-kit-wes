@@ -2,7 +2,6 @@ package org.ga4gh.starterkit.wes.utils.runmanager;
 
 import java.util.HashMap;
 import java.util.concurrent.Callable;
-
 import org.ga4gh.starterkit.wes.model.ContainerizationType;
 import org.ga4gh.starterkit.wes.model.WorkflowEngine;
 import org.ga4gh.starterkit.wes.model.WorkflowType;
