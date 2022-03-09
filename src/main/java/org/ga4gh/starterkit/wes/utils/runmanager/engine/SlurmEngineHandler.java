@@ -59,13 +59,10 @@ public class SlurmEngineHandler extends AbstractEngineHandler {
     public FileMetadata provideFileAttributes(String filename) {
         FileMetadata fileMetadata = new FileMetadata();
         try {
-            Path jobDirectory = getJobDirectory();
-            Path filePath = Path.of(filename);
-            if (!new File(filename).isAbsolute()) {
-                filePath = Paths.get(jobDirectory.toString(), filename);
-            }
-            fileMetadata.setFilename(filePath.toString());
-            fileMetadata.setFileAttributes(Files.readAttributes(filePath, BasicFileAttributes.class));
+            Path absoluteFilePath = Paths.get(getJobDirectoryAbsolute(), filename);
+            fileMetadata.setAbsolutePath(absoluteFilePath.toString());
+            fileMetadata.setRelativePath(filename);
+            fileMetadata.setFileAttributes(Files.readAttributes(absoluteFilePath, BasicFileAttributes.class));
         } catch (Exception ex) {
             setException(ex);
         }
@@ -157,5 +154,19 @@ public class SlurmEngineHandler extends AbstractEngineHandler {
 
     public Path getJobDirectory() {
         return jobDirectory;
+    }
+
+    public Path getJobDirectoryRelative() {
+        return jobDirectory;
+    }
+
+    public String getJobDirectoryAbsolute() {
+        String dir = null;
+        try {
+            dir = getJobDirectoryRelative().toFile().getCanonicalPath();
+        } catch (Exception ex) {
+            
+        }
+        return dir;
     }
 }

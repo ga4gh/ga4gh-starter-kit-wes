@@ -12,6 +12,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FileMetadata {
-    private String filename;
+    private String absolutePath;
+    private String relativePath;
     private BasicFileAttributes fileAttributes;
 }
