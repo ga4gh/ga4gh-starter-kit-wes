@@ -53,16 +53,11 @@ jobs:
     #     limit-access-to-users: emre-f
         
     - name: Running Tests
-      # id: gradle-test
       run: |
         export PATH=~/install/nextflow:$PATH 
         ./gradlew test --tests=org.* && test --tests=e2e.*
 
-    # - name: Gradle Outcome
-    #   run: echo steps.gradle-test.outcome
-
     - name: After Success Submitting Code Coverage
-      # if: steps.gradle-test.outcome == 'success'
       run: | #jacocoTestReport is for testing code coverage, submits the last report to the link
         ./gradlew jacocoTestReport
         bash <(curl -s https://codecov.io/bash)
