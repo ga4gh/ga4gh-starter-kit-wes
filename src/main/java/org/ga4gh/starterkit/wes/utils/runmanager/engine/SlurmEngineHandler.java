@@ -4,11 +4,13 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Arrays;
 import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.ga4gh.starterkit.wes.config.engine.EngineConfig;
 import org.ga4gh.starterkit.wes.config.engine.SlurmEngineConfig;
+import org.ga4gh.starterkit.wes.utils.runmanager.language.CommandOutput;
 
 public class SlurmEngineHandler extends AbstractEngineHandler {
 
@@ -53,20 +55,39 @@ public class SlurmEngineHandler extends AbstractEngineHandler {
         return contents;
     }
 
-    public String getRequestedCommandStdout(String[] command) {
-        String stdout = null;
+    @Override
+    public FileMetadata provideFileAttributes(String filename) {
+        FileMetadata fileMetadata = new FileMetadata();
+        try {
+            Path jobDirectory = getJobDirectory();
+            Path filePath = Path.of(filename);
+            if (!new File(filename).isAbsolute()) {
+                filePath = Paths.get(jobDirectory.toString(), filename);
+            }
+            fileMetadata.setFilename(filePath.toString());
+            fileMetadata.setFileAttributes(Files.readAttributes(filePath, BasicFileAttributes.class));
+        } catch (Exception ex) {
+            setException(ex);
+        }
+        return fileMetadata;
+    }
 
+    public CommandOutput getRequestedCommandOutput(String[] command) {
+        CommandOutput commandOutput = new CommandOutput();
         try {
             Process process = new ProcessBuilder()
                 .command(command)
                 .directory(getJobDirectory().toFile())
                 .start();
-            stdout = new String (process.getInputStream().readAllBytes());
+            process.waitFor();
+            commandOutput.setExitCode(process.exitValue());
+            commandOutput.setStdout(new String (process.getInputStream().readAllBytes()));
+            commandOutput.setStderr(new String (process.getErrorStream().readAllBytes()));
         } catch (Exception ex) {
             setException(ex);
         }
 
-        return stdout;
+        return commandOutput;
     }
 
     // for launching workflow runs

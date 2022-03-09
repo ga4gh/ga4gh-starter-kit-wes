@@ -41,7 +41,7 @@ public abstract class AbstractLanguageHandler implements LanguageHandler {
         return getEngineHandler().getRequestedFileContents(filename);
     }
 
-    public String requestCommandStdoutFromEngine(String[] command) throws Exception {
-        return getEngineHandler().getRequestedCommandStdout(command);
+    public CommandOutput requestCommandOutputFromEngine(String[] command) throws Exception {
+        return getEngineHandler().getRequestedCommandOutput(command);
     }
 }

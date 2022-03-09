@@ -32,10 +32,10 @@ public interface LanguageHandler {
     /**
      * Request the stdout output from a command executed in the working directory
      * @param command the CLI command
-     * @return stdout output of the command
+     * @return exitcode, stdout, stderr of the command
      * @throws Exception a server-side error occurred
      */
-    public String requestCommandStdoutFromEngine(String[] command) throws Exception;
+    public CommandOutput requestCommandOutputFromEngine(String[] command) throws Exception;
 
     // for launching workflow runs
 

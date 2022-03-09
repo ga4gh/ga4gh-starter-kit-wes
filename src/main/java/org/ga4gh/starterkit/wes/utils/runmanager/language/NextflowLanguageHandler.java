@@ -4,15 +4,19 @@ import java.io.File;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.logging.log4j.util.Strings;
@@ -20,15 +24,22 @@ import org.ga4gh.starterkit.common.config.ServerProps;
 import org.ga4gh.starterkit.wes.config.language.LanguageConfig;
 import org.ga4gh.starterkit.wes.config.language.NextflowLanguageConfig;
 import org.ga4gh.starterkit.wes.constant.WesApiConstants;
+import org.ga4gh.starterkit.wes.exception.NextflowLogException;
 import org.ga4gh.starterkit.wes.model.RunLog;
 import org.ga4gh.starterkit.wes.model.RunStatus;
 import org.ga4gh.starterkit.wes.model.State;
 import org.ga4gh.starterkit.wes.model.WesLog;
+import org.ga4gh.starterkit.wes.utils.runmanager.engine.FileMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Faciliates access to data/information for nextflow workflow runs
  */
+@Setter
+@Getter
 public class NextflowLanguageHandler extends AbstractLanguageHandler {
 
     @Autowired
@@ -37,11 +48,8 @@ public class NextflowLanguageHandler extends AbstractLanguageHandler {
     private NextflowLanguageConfig languageConfig;
     private String workflowSignature;
     private String workflowRevision;
-    
-
     private final static DateTimeFormatter NEXTFLOW_LOG_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
-
-    private List<String> taskLogTableList;
+    private List<NextflowTask> sortedNextflowTasks;
 
     /**
      * Instantiate a new NextflowTypeDetailsHandler instance
@@ -92,7 +100,8 @@ public class NextflowLanguageHandler extends AbstractLanguageHandler {
 
     public RunStatus determineRunStatus() throws Exception {
         RunStatus runStatus = new RunStatus(getWesRun().getId(), State.UNKNOWN);
-        String runLogStdout = requestCommandStdoutFromEngine(new String[] {"nextflow", "log"});
+        CommandOutput nextflowLogCommandOutput = requestCommandOutputFromEngine(new String[] {"nextflow", "log"});
+        String runLogStdout = nextflowLogCommandOutput.getStdout();
         String[] runLog = runLogStdout.split("\n")[1].split("\t");
         String runLogStatus = runLog[3].strip();
         // complete
@@ -111,12 +120,16 @@ public class NextflowLanguageHandler extends AbstractLanguageHandler {
     // for reading workflow log
 
     public void completeRunLog(RunLog runLog) throws Exception {
-        List<WesLog> taskLogs = determineTaskLogs();
-        WesLog workflowLog = determineWorkflowLog();
-        Map<String, String> outputs = determineOutputs();
-        runLog.setTaskLogs(taskLogs);
-        runLog.setRunLog(workflowLog);
-        runLog.setOutputs(outputs);
+        // attempt to load run log via primary means, i.e. "nextflow log"
+        try {
+            constructNextflowTasksPrimary();
+        // run log load by "nextflow log" failed, using backup method
+        } catch (NextflowLogException ex) {
+            constructNextflowTasksBackup();
+        }
+        runLog.setTaskLogs(determineTaskLogs());
+        runLog.setRunLog(determineWorkflowLog());
+        runLog.setOutputs(determineOutputs());
     }
 
     private String getLogURLPrefix() {
@@ -132,37 +145,91 @@ public class NextflowLanguageHandler extends AbstractLanguageHandler {
         return sb.toString();
     }
 
+    private void constructNextflowTasksPrimary() throws Exception {
+        CommandOutput nextflowLogCommandOutput = requestCommandOutputFromEngine(new String[] {"nextflow", "log", constructNextflowRunName(), "-f", "process,start,complete,exit,workdir"});
+        if (nextflowLogCommandOutput.getExitCode() != 0) {
+            throw new NextflowLogException("nextflow log returned non-zero exit code");
+        }
+
+        List<NextflowTask> sortedNextflowTasks = new ArrayList<>();
+        String taskLogTable = nextflowLogCommandOutput.getStdout();
+        String[] taskLogTableArray = taskLogTable.split("\n");
+        for (String taskLogRow : taskLogTableArray) {
+            String[] taskLogRowArr = taskLogRow.split("\t");
+            NextflowTask nextflowTask = new NextflowTask();
+            nextflowTask.setProcess(taskLogRowArr[0]);
+            nextflowTask.setStartTime(taskLogRowArr[1]);
+            nextflowTask.setCompleteTime(taskLogRowArr[2]);
+            nextflowTask.setExitCode(taskLogRowArr[3]);
+            nextflowTask.setWorkdir(taskLogRowArr[4]);
+            sortedNextflowTasks.add(nextflowTask);
+        }
+        setSortedNextflowTasks(sortedNextflowTasks);
+    }
+
+    private void constructNextflowTasksBackup() {
+        List<FileMetadata> workdirs = new ArrayList<>();
+        for (String subdirA : getEngineHandler().provideDirectoryContents("work")) {
+            for (String subdirB : getEngineHandler().provideDirectoryContents("work/"+subdirA)) {
+                String workdir = "work/" + subdirA + "/" + subdirB;
+                FileMetadata fileMetadata = getEngineHandler().provideFileAttributes(workdir);
+                fileMetadata.setFilename(workdir);
+                workdirs.add(fileMetadata);
+            }
+        }
+
+        FileMetadata[] workdirsArray = new FileMetadata[]{};
+        workdirsArray = workdirs.toArray(workdirsArray);
+        Arrays.sort(workdirsArray, new Comparator<FileMetadata>() {
+            public int compare(FileMetadata f1, FileMetadata f2) {
+                return Long.compare(
+                    f1.getFileAttributes().creationTime().toMillis(),
+                    f2.getFileAttributes().creationTime().toMillis()
+                );
+            }
+        });
+
+        List<NextflowTask> sortedNextflowTasks = Arrays
+            .asList(workdirsArray)
+            .stream()
+            .map(workdir -> {
+                NextflowTask nextflowTask = new NextflowTask();
+                nextflowTask.setProcess("foo");
+                nextflowTask.setExitCode("1");
+                nextflowTask.setStartTime("2022-02-14 09:15:00.000");
+                nextflowTask.setCompleteTime("2022-02-14 09:15:00.000");
+                nextflowTask.setWorkdir(workdir.getFilename());
+                return nextflowTask;
+            })
+            .collect(Collectors.toList());
+        
+        setSortedNextflowTasks(sortedNextflowTasks);
+    }
+
     private List<WesLog> determineTaskLogs() throws Exception {
         List<WesLog> taskLogs = new ArrayList<>();
-        String taskLogTable = requestCommandStdoutFromEngine(new String[] {"nextflow", "log", constructNextflowRunName(), "-f", "process,start,complete,exit,workdir"});
-        String[] taskLogTableArray = taskLogTable.split("\n");
-        List<String> taskLogTableList = Arrays.asList(taskLogTableArray).subList(0, taskLogTableArray.length);
-        this.taskLogTableList = taskLogTableList;
 
-        for (String taskLogRow: taskLogTableList) {
-            // unpack the task level nextflow log row, get contents of workdir
-            String[] taskLogRowArr = taskLogRow.split("\t");
-            String process = taskLogRowArr[0];
-            String start = taskLogRowArr[1];
-            String complete = taskLogRowArr[2];
-            String exit = taskLogRowArr[3];
-            String workdir = taskLogRowArr[4];
-            String cmd = requestFileContentsFromEngine(Paths.get(workdir, ".command.sh").toString());
-
-            List<String> workdirSplit = Arrays.asList(workdir.split("/"));
+        for (NextflowTask nextflowTask : getSortedNextflowTasks()) {
+            
+            String cmd = requestFileContentsFromEngine(Paths.get(nextflowTask.getWorkdir(), ".command.sh").toString());
+            List<String> workdirSplit = Arrays.asList(nextflowTask.getWorkdir().split("/"));
             List<String> subdirsSplit = workdirSplit.subList(workdirSplit.size() - 2, workdirSplit.size());
             String subdirs = Strings.join(subdirsSplit, '/');
             String logURLPrefix = getLogURLPrefix();
             String logURLSuffix = "/" + getWesRun().getId() + "/" + subdirs;
 
-            WesLog taskLog = new WesLog();            
-            taskLog.setName(process);
-            taskLog.setStartTime(LocalDateTime.parse(start, NEXTFLOW_LOG_DATE_FORMAT));
-            taskLog.setEndTime(LocalDateTime.parse(complete, NEXTFLOW_LOG_DATE_FORMAT));
+            WesLog taskLog = new WesLog();
+            taskLog.setName(nextflowTask.getProcess());
+            taskLog.setStartTime(LocalDateTime.parse(nextflowTask.getStartTime(), NEXTFLOW_LOG_DATE_FORMAT));
+            taskLog.setEndTime(LocalDateTime.parse(nextflowTask.getCompleteTime(), NEXTFLOW_LOG_DATE_FORMAT));
             taskLog.setStdout(logURLPrefix + "/stdout" + logURLSuffix);
             taskLog.setStderr(logURLPrefix + "/stderr" + logURLSuffix);
-            taskLog.setExitCode(Integer.parseInt(exit));
-            taskLog.setCmd(Arrays.asList(cmd.split("\n")));
+            taskLog.setExitCode(Integer.parseInt(nextflowTask.getExitCode()));
+            if (cmd != null) {
+                taskLog.setCmd(Arrays.asList(cmd.split("\n")));
+            } else {
+                taskLog.setCmd(null);
+            }
             taskLogs.add(taskLog);
         }
 
@@ -178,13 +245,14 @@ public class NextflowLanguageHandler extends AbstractLanguageHandler {
         List<String> workdirs = new ArrayList<>();
         List<String> cmds = new ArrayList<>();
 
-        for (String taskLogRow: taskLogTableList) {
+        for (NextflowTask nextflowTask : getSortedNextflowTasks()) {
             // unpack the task level nextflow log row, get contents of workdir
-            String[] taskLogRowArr = taskLogRow.split("\t");
-            String workdir = taskLogRowArr[4];
+            String workdir = nextflowTask.getWorkdir();
             String cmd = requestFileContentsFromEngine(Paths.get(workdir, ".command.sh").toString());
-            for (String c : cmd.split("\n")) {
-                cmds.add(c);
+            if (cmd != null) {
+                for (String c : cmd.split("\n")) {
+                    cmds.add(c);
+                }
             }
 
             List<String> workdirSplit = Arrays.asList(workdir.split("/"));
@@ -195,12 +263,15 @@ public class NextflowLanguageHandler extends AbstractLanguageHandler {
 
         workflowLog.setCmd(cmds);
 
-        String firstStartTime = taskLogTableList.get(0).split("\t")[1];
-        String finalEndTime = taskLogTableList.get(taskLogTableList.size() - 1).split("\t")[2];
+        NextflowTask firstNextflowTask = getSortedNextflowTasks().get(0);
+        NextflowTask finalNextflowTask = getSortedNextflowTasks().get(getSortedNextflowTasks().size()-1);
+
+        String firstStartTime = firstNextflowTask.getStartTime();
+        String finalEndTime = finalNextflowTask.getCompleteTime();
         workflowLog.setStartTime(LocalDateTime.parse(firstStartTime, NEXTFLOW_LOG_DATE_FORMAT));
         workflowLog.setEndTime(LocalDateTime.parse(finalEndTime, NEXTFLOW_LOG_DATE_FORMAT));
 
-        String finalExitCode = taskLogTableList.get(taskLogTableList.size() - 1).split("\t")[3];
+        String finalExitCode = finalNextflowTask.getExitCode();
         workflowLog.setExitCode(Integer.parseInt(finalExitCode));
         
         String logURLPrefix = getLogURLPrefix();
@@ -226,13 +297,14 @@ public class NextflowLanguageHandler extends AbstractLanguageHandler {
         }};
 
         // get the location of each working directory
-        for (String testTaskLogRow: taskLogTableList) {
-            String[] testTaskLogRowArr = testTaskLogRow.split("\t");
-            String testWorkdir = testTaskLogRowArr[4];
+        for (NextflowTask nextflowTask: getSortedNextflowTasks()) {
+            String testWorkdir = nextflowTask.getWorkdir();
+
+            String fullDir = getEngineHandler().provideFileAttributes(testWorkdir).getFilename();
 
             // collect all files from the working directory
             Collection<File> files = FileUtils.listFiles(
-                Paths.get(testWorkdir).toFile(),
+                Paths.get(fullDir).toFile(),
                 TrueFileFilter.INSTANCE,
                 TrueFileFilter.INSTANCE
             );
@@ -240,7 +312,7 @@ public class NextflowLanguageHandler extends AbstractLanguageHandler {
             // place files into the outputs hashmap if they are not standard
             // nextflow files
             for (File file : files) {
-                String key = file.getPath().replaceAll(testWorkdir+"/", "");
+                String key = file.getPath().replaceAll(fullDir+"/", "");
                 String value = "file://" + file.getPath();
 
                 if (!nextflowFiles.contains(key)) {
