@@ -11,23 +11,11 @@ jobs:
       with:
         java-version: '11'
         distribution: 'adopt' #using a specific distribution of jdk12 (AdoptOpenJDK)
-    
-    # Experimental, trying to cache gradle / gradle wrapper
-    - name: Cache Gradle packages
-      id: cache-gradle
-      uses: actions/cache@v2
-      with:
-        path: |
-          ~/.gradle/caches
-          ~/.gradle/wrapper
-        key: ${{ runner.os }}-gradle
 
     - name: Setting up Gradle
-      if: steps.cache-gradle.outputs.cache-hit != 'true' # experimental
       uses: gradle/gradle-build-action@v2
 
     - name: Setting up Gradle Wrapper
-      if: steps.cache-gradle.outputs.cache-hit != 'true' # experimental
       run: "gradle wrapper"
 
     - name: Validating Wrapper
@@ -65,16 +53,16 @@ jobs:
     #     limit-access-to-users: emre-f
         
     - name: Running Tests
-      id: gradle-test
+      # id: gradle-test
       run: |
         export PATH=~/install/nextflow:$PATH 
         ./gradlew test --tests=org.* && test --tests=e2e.*
 
-    - name: Gradle Outcome
-      run: echo steps.gradle-test.outcome
+    # - name: Gradle Outcome
+    #   run: echo steps.gradle-test.outcome
 
     - name: After Success Submitting Code Coverage
-      if: steps.gradle-test.outcome == 'success'
+      # if: steps.gradle-test.outcome == 'success'
       run: | #jacocoTestReport is for testing code coverage, submits the last report to the link
         ./gradlew jacocoTestReport
         bash <(curl -s https://codecov.io/bash)
