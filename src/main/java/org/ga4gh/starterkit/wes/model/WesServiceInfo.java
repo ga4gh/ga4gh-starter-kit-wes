@@ -4,6 +4,10 @@ import org.ga4gh.starterkit.common.model.ServiceInfo;
 import org.ga4gh.starterkit.wes.config.WesServiceProps;
 import org.ga4gh.starterkit.wes.config.engine.EngineConfig;
 import org.ga4gh.starterkit.wes.config.language.LanguageConfig;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import static org.ga4gh.starterkit.wes.constant.WesServiceInfoDefaults.ID;
 import static org.ga4gh.starterkit.wes.constant.WesServiceInfoDefaults.NAME;
 import static org.ga4gh.starterkit.wes.constant.WesServiceInfoDefaults.DESCRIPTION;
@@ -30,25 +34,21 @@ import static org.ga4gh.starterkit.wes.constant.WesServiceInfoDefaults.SERVICE_T
  * Extension of the GA4GH base service info specification to include WES-specific
  * properties
  */
+@Setter
+@Getter
+@AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonNaming(PropertyNamingStrategies.LowerCamelCaseStrategy.class)
 public class WesServiceInfo extends ServiceInfo {
 
-    /**
-     * Supported workflow languages and versions
-     */
+    // Supported workflow languages and versions
     @JsonProperty("workflow_type_versions")
     private HashMap<WorkflowType, Set<String>> workflowTypeVersions;
 
-    /**
-     * Supported workflow engines and versions
-     */
+    // Supported workflow engines and versions
     @JsonProperty("workflow_engine_versions")
     private HashMap<WorkflowEngine, String> workflowEngineVersions;
 
-    /**
-     * Instantiates a new WesServiceInfo object
-     */
     public WesServiceInfo() {
         super();
         workflowTypeVersions = new HashMap<>();
@@ -56,9 +56,6 @@ public class WesServiceInfo extends ServiceInfo {
         setAllDefaults();
     }
 
-    /**
-     * Sets all default properties
-     */
     private void setAllDefaults() {
         setId(ID);
         setName(NAME);
@@ -175,39 +172,5 @@ public class WesServiceInfo extends ServiceInfo {
      */
     public void addWorkflowEngineVersion(WorkflowEngine workflowEngine, String version) {
         workflowEngineVersions.put(workflowEngine, version);
-    }
-
-    /* Setters and getters */
-
-    /**
-     * Assign workflowTypeVersions
-     * @param workflowTypeVersions supported workflow languages and versions
-     */
-    public void setWorkflowTypeVersions(HashMap<WorkflowType, Set<String>> workflowTypeVersions) {
-        this.workflowTypeVersions = workflowTypeVersions;
-    }
-
-    /**
-     * Retrieve workflowTypeVersions
-     * @return supported workflow languages and versions
-     */
-    public HashMap<WorkflowType, Set<String>> getWorkflowTypeVersions() {
-        return workflowTypeVersions;
-    }
-
-    /**
-     * Assign workflowEngineVersions
-     * @param workflowEngineVersions supported workflow engines and versions
-     */
-    public void setWorkflowEngineVersions(HashMap<WorkflowEngine, String> workflowEngineVersions) {
-        this.workflowEngineVersions = workflowEngineVersions;
-    }
-
-    /**
-     * Retrieve workflowEngineVersions
-     * @return supported workflow engines and versions
-     */
-    public HashMap<WorkflowEngine, String> getWorkflowEngineVersions() {
-        return workflowEngineVersions;
     }
 }
