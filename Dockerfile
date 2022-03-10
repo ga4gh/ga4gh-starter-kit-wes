@@ -22,7 +22,9 @@ WORKDIR /home/gradle/source
 COPY build.gradle build.gradle
 COPY gradlew gradlew
 COPY settings.gradle settings.gradle
-COPY src src
+# COPY src src
+COPY src/main src/main
+COPY src/test/resources src/test/resources
 
 RUN gradle wrapper
 RUN ./gradlew bootJar
