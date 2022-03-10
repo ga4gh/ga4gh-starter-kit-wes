@@ -25,13 +25,13 @@ public class WesLogTest {
                 LocalDateTime.now(),
                 "http://localhost:4500/ga4gh/wes/v1/logs/nextflow/stdout/2baa89d5-3ebc-4b5d-9453-e4cbf6aa4ca4",
                 "http://localhost:4500/ga4gh/wes/v1/logs/nextflow/stderr/2baa89d5-3ebc-4b5d-9453-e4cbf6aa4ca4",
-                0
+                Integer.valueOf(0)
             }
         };
     }
 
     @Test(dataProvider = "cases")
-    public void testWesLog(String name, List<String> cmd, LocalDateTime startTime, LocalDateTime endTime, String stdout, String stderr, int exitCode) {
+    public void testWesLog(String name, List<String> cmd, LocalDateTime startTime, LocalDateTime endTime, String stdout, String stderr, Integer exitCode) {
         WesLog wesLog = new WesLog();
         wesLog.setName(name);
         wesLog.setCmd(cmd);

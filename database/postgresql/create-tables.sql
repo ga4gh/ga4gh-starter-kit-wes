@@ -5,5 +5,6 @@ create table if not exists wes_run (
     workflow_url text not null,
     workflow_params text not null,
     workflow_engine text not null,
-    workflow_engine_version text
+    workflow_engine_version text,
+    final_run_log_json text
 );

@@ -5,5 +5,6 @@ CREATE TABLE wes_run (
     workflow_url TEXT NOT NULL,
     workflow_params TEXT NOT NULL,
     workflow_engine TEXT NOT NULL,
-    workflow_engine_version TEXT
+    workflow_engine_version TEXT,
+    final_run_log_json TEXT
 );

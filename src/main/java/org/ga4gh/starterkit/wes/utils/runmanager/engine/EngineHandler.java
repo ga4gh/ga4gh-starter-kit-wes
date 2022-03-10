@@ -3,6 +3,7 @@ package org.ga4gh.starterkit.wes.utils.runmanager.engine;
 import java.util.List;
 import org.ga4gh.starterkit.wes.config.engine.EngineConfig;
 import org.ga4gh.starterkit.wes.model.WesRun;
+import org.ga4gh.starterkit.wes.utils.runmanager.language.CommandOutput;
 import org.ga4gh.starterkit.wes.utils.runmanager.language.LanguageHandler;
 
 /**
@@ -43,13 +44,15 @@ public interface EngineHandler {
      */
     public String getRequestedFileContents(String filename);
 
+    public FileMetadata provideFileAttributes(String filename);
+
     /**
      * Get the stdout of a requested CLI command, when run in the run's working directory
      * @param command requested CLI command
      * @return stdout of command
      * @throws Exception a server-side error occurred
      */
-    public String getRequestedCommandStdout(String[] command);
+    public CommandOutput getRequestedCommandOutput(String[] command);
 
     // for launching workflow runs
 
