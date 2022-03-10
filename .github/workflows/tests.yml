@@ -42,6 +42,8 @@ jobs:
         nextflow -h
         ls
     
+    # ## To use this, open the current running workflow. Copy the final line starting with "ssh ..." and paste to terminal
+    # ## Note: You need to have a SSH key added to your GitHub account in the settings if limitations are present
     # - name: Setup upterm session # Using Github - SSH for debugging
     #   uses: lhotari/action-upterm@v1
     #   with:
@@ -51,61 +53,85 @@ jobs:
     #     limit-access-to-users: emre-f
         
     - name: Running Tests
-      id: gradle-test
       run: |
-        export PATH=~/install/nextflow:$PATH
-        ./gradlew test
-      # run: "./gradlew test" # shouldn't run integration tests. once added, make sure only e2e/org tests run here!
-
-    - name: Gradle Outcome
-      run: echo steps.gradle-test.outcome
+        export PATH=~/install/nextflow:$PATH 
+        ./gradlew test --tests=org.* && test --tests=e2e.*
 
     - name: After Success Submitting Code Coverage
-      if: steps.gradle-test.outcome == 'success'
       run: | #jacocoTestReport is for testing code coverage, submits the last report to the link
         ./gradlew jacocoTestReport
         bash <(curl -s https://codecov.io/bash)
 
-  # Docker-Integration-Test:
-  #   needs: Unit-Test
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - uses: actions/checkout@v2
+  Docker-Integration-Test:
+    needs: Unit-Test
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
 
-  #   - name: Setting up Gradle
-  #     uses: gradle/gradle-build-action@v2
+    - name: Setting up Gradle
+      uses: gradle/gradle-build-action@v2
 
-  #   - name: Setting Up Docker Buildx #used for caching image layers, improves performance
-  #     id: buildx
-  #     uses: docker/setup-buildx-action@v1
+    - name: Setting Up Docker Buildx #used for caching image layers, improves performance
+      id: buildx
+      uses: docker/setup-buildx-action@v1
 
-  #   - name: Login to Docker Hub
-  #     uses: docker/login-action@v1
-  #     with: 
-  #       username: ${{ secrets.DOCKER_HUB_USERNAME }}
-  #       password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+    - name: Login to Docker Hub
+      uses: docker/login-action@v1
+      with: 
+        username: ${{ secrets.DOCKER_HUB_USERNAME }}
+        password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-  #   - name: Get and Set Version
-  #     run: |
-  #       source ci/set-docker-image-version.sh
-  #       echo "version=${DOCKER_IMG_VER}" >> $GITHUB_ENV
+    - name: Get and Set Version
+      run: |
+        source ci/set-docker-image-version.sh
+        echo "version=${DOCKER_IMG_VER}" >> $GITHUB_ENV
 
-  #   - name: Build and push
-  #     uses: docker/build-push-action@v2
-  #     with:
-  #       context: .
-  #       builder: ${{ steps.buildx.outputs.name }}
-  #       file: ./Dockerfile
-  #       push: true
-  #       tags: ga4gh/ga4gh-starter-kit-wes:test
-  #       build-args: VERSION=${{ env.version }}
-  #       cache-from: type=gha #GitHub Actions Cache Exporter
-  #       cache-to: type=gha,mode=max
+    - name: Build and Push WES Builder # Image built by this command can't be seen under "docker images"
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        builder: ${{ steps.buildx.outputs.name }}
+        file: ./Dockerfile
+        push: true
+        tags: ga4gh/ga4gh-starter-kit-wesbuilder
+        build-args: VERSION=${{ env.version }}
+        cache-from: type=gha #GitHub Actions Cache Exporter
+        cache-to: type=gha,mode=max
 
-  #   - name: Running Tests
-  #     run: |
-  #       docker run --rm -d --name starter-kit-wes-test-default -p 4500:4500 -p 4501:4501 ga4gh/ga4gh-starter-kit-wes:test
-  #       docker run --rm -d --name starter-kit-wes-test-custom -p 7000:7000 -p 7001:7001 ga4gh/ga4gh-starter-kit-wes:test --config ./src/test/resources/config/demo-config.yml
+    - name: Build and Push WES Nextflow
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        builder: ${{ steps.buildx.outputs.name }}
+        file: ./Dockerfile-Nextflow
+        push: true
+        tags: ga4gh/ga4gh-starter-kit-wes:test-nextflow
+        build-args: VERSION=${{ env.version }}
+        cache-from: type=gha #GitHub Actions Cache Exporter
+        cache-to: type=gha,mode=max
+
+    - name: Make tmp Directory
+      run: mkdir -p /tmp/shared/wes_tests
+
+    - name: Pull Nextflow Docker Image
+      run: docker pull jbadams/echo-nf:0.1.0
+
+    - name: Running Docker Containers
+      run: |
+        docker run --rm -d --name starter-kit-wes-test-default \
+          -p 4500:4500 -p 4501:4501 \
+          -v /var/run/docker.sock:/var/run/docker.sock \
+          -v /tmp/shared/wes_tests:/tmp/shared/wes_tests \
+          -w /tmp/shared/wes_tests \
+          ga4gh/ga4gh-starter-kit-wes:test-nextflow \
+          --config /home/user/db/src/test/resources/config/standard-config.yml
+        docker run --rm -d --name starter-kit-wes-test-custom \
+          -p 7000:7000 -p 7001:7001 \
+          -v /var/run/docker.sock:/var/run/docker.sock \
+          -v /tmp/shared/wes_tests:/tmp/shared/wes_tests \
+          -w /tmp/shared/wes_tests \
+          ga4gh/ga4gh-starter-kit-wes:test-nextflow \
+          --config /home/user/db/src/test/resources/config/demo-config.yml
     
-  #   - name: Gradle Integration Test
-  #     run: ./gradlew test --tests=integration.*
+    - name: Gradle Integration Test
+      run: ./gradlew test --tests=integration.*

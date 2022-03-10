@@ -1,0 +1,14 @@
+wes:
+  serverProps:
+    scheme: http
+    hostname: localhost
+    publicApiPort: 7000
+    adminApiPort: 7001
+  databaseProps:
+    url: jdbc:sqlite:/home/user/db/ga4gh-starter-kit.dev.db
+  serviceInfo:
+    id: org.ga4gh.starterkit.wes.test
+    name: GA4GH Starter Kit WES server test deployment
+    organization:
+      name: GA4GH
+      url: https://ga4gh.org

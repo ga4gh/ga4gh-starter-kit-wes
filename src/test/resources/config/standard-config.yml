@@ -1,0 +1,3 @@
+wes:
+  databaseProps:
+    url: jdbc:sqlite:/home/user/db/ga4gh-starter-kit.dev.db
