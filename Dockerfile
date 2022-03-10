@@ -1,4 +1,17 @@
 ##################################################
+# DATABASE CONTAINER
+##################################################
+FROM keinos/sqlite3:latest as dbbuilder
+
+# To enable creating files [see line 9]
+USER root 
+
+WORKDIR /usr/src/db
+
+COPY database/sqlite/create-tables.sql create-tables.sql
+RUN sqlite3 ./ga4gh-starter-kit.dev.db < create-tables.sql
+
+##################################################
 # GRADLE CONTAINER
 ##################################################
 # was gradle:5.6.4-jdk12 [originally]
@@ -13,21 +26,6 @@ COPY src src
 
 RUN gradle wrapper
 RUN ./gradlew bootJar
-
-##################################################
-# DATABASE CONTAINER
-##################################################
-FROM keinos/sqlite3:latest as dbbuilder
-
-# To enable creating files [see line 9]
-USER root 
-
-WORKDIR /usr/src/db
-
-COPY database/sqlite/create-tables.sql create-tables.sql
-RUN sqlite3 ./ga4gh-starter-kit.dev.db < create-tables.sql
-
-##
 
 ##################################################
 # FINAL CONTAINER
