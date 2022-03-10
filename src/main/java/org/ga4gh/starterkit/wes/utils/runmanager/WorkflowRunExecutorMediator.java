@@ -27,9 +27,11 @@ public class WorkflowRunExecutorMediator {
         method.call();
     }
 
+    /*
     private Void doNothing() {
         return null;
     }
+    */
 
     /* Language-Engine specific steps */
 

@@ -27,7 +27,6 @@ import org.ga4gh.starterkit.wes.utils.requesthandler.logs.NextflowTaskLogsReques
 import org.ga4gh.starterkit.wes.utils.requesthandler.logs.NextflowWorkflowLogsRequestHandler;
 import org.ga4gh.starterkit.wes.utils.runmanager.RunManager;
 import org.ga4gh.starterkit.wes.utils.runmanager.RunManagerFactory;
-import org.ga4gh.starterkit.wes.utils.runmanager.engine.FileSystemEngineHandler;
 import org.ga4gh.starterkit.wes.utils.runmanager.engine.NativeEngineHandler;
 import org.ga4gh.starterkit.wes.utils.runmanager.engine.SlurmEngineHandler;
 import org.ga4gh.starterkit.wes.utils.runmanager.language.NextflowLanguageHandler;

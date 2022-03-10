@@ -7,7 +7,6 @@ import org.ga4gh.starterkit.wes.config.language.LanguageConfig;
 import org.ga4gh.starterkit.wes.model.WesRun;
 import org.ga4gh.starterkit.wes.model.WorkflowEngine;
 import org.ga4gh.starterkit.wes.model.WorkflowType;
-import org.ga4gh.starterkit.wes.utils.runmanager.engine.FileSystemEngineHandler;
 import org.ga4gh.starterkit.wes.utils.runmanager.engine.NativeEngineHandler;
 import org.ga4gh.starterkit.wes.utils.runmanager.engine.SlurmEngineHandler;
 import org.ga4gh.starterkit.wes.utils.runmanager.engine.EngineHandler;
