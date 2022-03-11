@@ -75,6 +75,7 @@ public class WesServiceInfo extends ServiceInfo {
 
     public void updateServiceInfoFromWesServiceProps(WesServiceProps wesServiceProps) {
         updateServiceInfoFromLanguageConfig(wesServiceProps, WorkflowType.NEXTFLOW);
+        updateServiceInfoFromLanguageConfig(wesServiceProps, WorkflowType.WDL);
     }
 
     private void updateServiceInfoFromLanguageConfig(WesServiceProps wesServiceProps, WorkflowType workflowType) {
@@ -92,7 +93,6 @@ public class WesServiceInfo extends ServiceInfo {
 
         // add engine type
         addWorkflowEngineVersion(engineConfig.getType(), engineConfig.getVersion());
-        
     }
 
     // Convenience API methods for workflowTypeVersions

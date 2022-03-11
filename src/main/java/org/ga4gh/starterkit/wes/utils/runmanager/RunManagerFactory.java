@@ -11,6 +11,7 @@ import org.ga4gh.starterkit.wes.utils.runmanager.engine.NativeEngineHandler;
 import org.ga4gh.starterkit.wes.utils.runmanager.engine.SlurmEngineHandler;
 import org.ga4gh.starterkit.wes.utils.runmanager.engine.EngineHandler;
 import org.ga4gh.starterkit.wes.utils.runmanager.language.NextflowLanguageHandler;
+import org.ga4gh.starterkit.wes.utils.runmanager.language.WdlLanguageHandler;
 import org.ga4gh.starterkit.wes.utils.runmanager.language.LanguageHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -29,6 +30,7 @@ public class RunManagerFactory implements ApplicationContextAware {
 
     private static HashMap<WorkflowType, Class<? extends LanguageHandler>> typeSetupClasses = new HashMap<>(){{
         put(WorkflowType.NEXTFLOW, NextflowLanguageHandler.class);
+        put(WorkflowType.WDL, WdlLanguageHandler.class);
     }};
 
     private static HashMap<WorkflowEngine, Class<? extends EngineHandler>> engineSetupClasses = new HashMap<>(){{

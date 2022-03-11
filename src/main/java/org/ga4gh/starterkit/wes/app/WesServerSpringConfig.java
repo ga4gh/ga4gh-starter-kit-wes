@@ -15,6 +15,7 @@ import org.ga4gh.starterkit.wes.config.WesServiceProps;
 import org.ga4gh.starterkit.wes.config.engine.NativeEngineConfig;
 import org.ga4gh.starterkit.wes.config.engine.SlurmEngineConfig;
 import org.ga4gh.starterkit.wes.config.language.NextflowLanguageConfig;
+import org.ga4gh.starterkit.wes.config.language.WdlLanguageConfig;
 import org.ga4gh.starterkit.wes.exception.WesCustomExceptionHandling;
 import org.ga4gh.starterkit.wes.model.WesServiceInfo;
 import org.ga4gh.starterkit.wes.model.WorkflowEngine;
@@ -25,11 +26,14 @@ import org.ga4gh.starterkit.wes.utils.requesthandler.GetRunStatusRequestHandler;
 import org.ga4gh.starterkit.wes.utils.requesthandler.SubmitRunRequestHandler;
 import org.ga4gh.starterkit.wes.utils.requesthandler.logs.NextflowTaskLogsRequestHandler;
 import org.ga4gh.starterkit.wes.utils.requesthandler.logs.NextflowWorkflowLogsRequestHandler;
+import org.ga4gh.starterkit.wes.utils.requesthandler.logs.WdlTaskLogsRequestHandler;
+import org.ga4gh.starterkit.wes.utils.requesthandler.logs.WdlWorkflowLogsRequestHandler;
 import org.ga4gh.starterkit.wes.utils.runmanager.RunManager;
 import org.ga4gh.starterkit.wes.utils.runmanager.RunManagerFactory;
 import org.ga4gh.starterkit.wes.utils.runmanager.engine.NativeEngineHandler;
 import org.ga4gh.starterkit.wes.utils.runmanager.engine.SlurmEngineHandler;
 import org.ga4gh.starterkit.wes.utils.runmanager.language.NextflowLanguageHandler;
+import org.ga4gh.starterkit.wes.utils.runmanager.language.WdlLanguageHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -159,6 +163,7 @@ public class WesServerSpringConfig implements WebMvcConfigurer {
         merger.addAtomicClass(WorkflowType.class);
         merger.addAtomicClass(WorkflowEngine.class);
         merger.addAtomicClass(NextflowLanguageConfig.class);
+        merger.addAtomicClass(WdlLanguageConfig.class);
         merger.addAtomicClass(NativeEngineConfig.class);
         merger.addAtomicClass(SlurmEngineConfig.class);
         merger.merge(userContainer, defaultContainer);
@@ -272,6 +277,8 @@ public class WesServerSpringConfig implements WebMvcConfigurer {
         return new GetRunStatusRequestHandler();
     }
 
+    // NEXTFLOW
+
     /**
      * Get new request handler providing access to nextflow stdout/stderr logs for a single task
      * @return nextflow task log retrieval request handler
@@ -290,6 +297,20 @@ public class WesServerSpringConfig implements WebMvcConfigurer {
     @RequestScope
     public NextflowWorkflowLogsRequestHandler nextflowWorkflowLogsRequestHandler() {
         return new NextflowWorkflowLogsRequestHandler();
+    }
+
+    // WDL
+
+    @Bean
+    @RequestScope
+    public WdlTaskLogsRequestHandler wdlTaskLogsRequestHandler() {
+        return new WdlTaskLogsRequestHandler();
+    }
+
+    @Bean
+    @RequestScope
+    public WdlWorkflowLogsRequestHandler wdlWorkflowLogsRequestHandler() {
+        return new WdlWorkflowLogsRequestHandler();
     }
 
     /* ******************************
@@ -321,8 +342,14 @@ public class WesServerSpringConfig implements WebMvcConfigurer {
      */
     @Bean
     @Scope("prototype")
-    public NextflowLanguageHandler nextflowTypeDetailsHandler() {
+    public NextflowLanguageHandler nextflowLanguageHandler() {
         return new NextflowLanguageHandler();
+    }
+
+    @Bean
+    @Scope("prototype")
+    public WdlLanguageHandler wdlLanguageHandler() {
+        return new WdlLanguageHandler();
     }
 
     /**
