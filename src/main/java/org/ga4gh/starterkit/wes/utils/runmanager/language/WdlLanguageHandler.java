@@ -25,6 +25,7 @@ import org.ga4gh.starterkit.wes.model.State;
 import org.ga4gh.starterkit.wes.model.WesLog;
 import org.ga4gh.starterkit.wes.model.WesRun;
 import org.ga4gh.starterkit.wes.utils.hibernate.WesHibernateUtil;
+import org.ga4gh.starterkit.wes.utils.runmanager.language.wdl.CromwellOutputs;
 import org.ga4gh.starterkit.wes.utils.runmanager.language.wdl.CromwellRunStatus;
 import org.ga4gh.starterkit.wes.utils.runmanager.language.wdl.CromwellStatus;
 import org.ga4gh.starterkit.wes.utils.runmanager.language.wdl.CromwellTaskMetadata;
@@ -142,7 +143,9 @@ public class WdlLanguageHandler extends AbstractLanguageHandler {
                     WesLog wesTaskLog = new WesLog();
                     String name = callKey + ".step-" + i;
                     wesTaskLog.setName(name);
-                    // wesTaskLog.setCmd(cmd);
+                    wesTaskLog.setCmd(new ArrayList<>() {{
+                        add(cromwellTask.getCommandLine());
+                    }});
                     
                     wesTaskLog.setStartTime(LocalDateTime.parse(cromwellTask.getStart(), DateTimeFormatter.ofPattern(CROMWELL_DATE_FORMAT)));
                     wesTaskLog.setEndTime(LocalDateTime.parse(cromwellTask.getEnd(), DateTimeFormatter.ofPattern(CROMWELL_DATE_FORMAT)));
@@ -156,13 +159,46 @@ public class WdlLanguageHandler extends AbstractLanguageHandler {
             runLog.setTaskLogs(wesTaskLogs);
 
             // parse workflow logs
+            WesLog wesWorkflowLog = new WesLog();
+            // name
+            wesWorkflowLog.setName(cromwellWorkflowMetadata.getWorkflowName());
+
+            // cmd
+            List<String> workflowLogCmd = new ArrayList<>();
+            for (WesLog task : wesTaskLogs) {
+                for (String taskCmd : task.getCmd()) {
+                    workflowLogCmd.add(taskCmd);
+                }
+            }
+            wesWorkflowLog.setCmd(workflowLogCmd);
+            
+            // start and end times
+            wesWorkflowLog.setStartTime(wesTaskLogs.get(0).getStartTime());
+            wesWorkflowLog.setEndTime(wesTaskLogs.get(wesTaskLogs.size()-1).getEndTime());
+
+            // stdout and stderr
+            // wesWorkflowLog.setStdout(stdout);
+            // wesWorkflowLog.setStderr(stderr);
+
+            // exit code
+            wesWorkflowLog.setExitCode(wesTaskLogs.get(wesTaskLogs.size()-1).getExitCode());
+            runLog.setRunLog(wesWorkflowLog);
 
             // make outputs request
-            // parse outputs
+            String cromwellOutputsUrl = getLanguageConfig().getCromwellBaseUrl()
+                + "api/workflows/v1/"
+                + getWesRun().getCromwellRunId()
+                + "/outputs";
             
+            getRequest = new HttpGet(cromwellOutputsUrl);
+            response = httpClient.execute(getRequest);
+            responseBodyBytes = response.getEntity().getContent().readAllBytes();
+            responseBodyString = new String(responseBodyBytes, StandardCharsets.UTF_8);
+            CromwellOutputs cromwellOutputs = mapper.readValue(responseBodyString, CromwellOutputs.class);
+            runLog.setOutputs(cromwellOutputs.getOutputs());
             
         } catch (Exception ex) {
-            
+
         }
     }
 
