@@ -55,7 +55,7 @@ jobs:
     - name: Running Tests
       run: |
         export PATH=~/install/nextflow:$PATH 
-        ./gradlew test --tests=org.* && test --tests=e2e.*
+        ./gradlew test --tests=org.* --tests=e2e.*
 
     - name: After Success Submitting Code Coverage
       run: | #jacocoTestReport is for testing code coverage, submits the last report to the link
