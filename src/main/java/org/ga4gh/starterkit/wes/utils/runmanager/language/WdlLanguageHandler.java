@@ -46,6 +46,8 @@ public class WdlLanguageHandler extends AbstractLanguageHandler {
     private static final Map<CromwellStatus, State> CROMWELL_STATE_MAP = new HashMap<>() {{
         put(CromwellStatus.Submitted, State.INITIALIZING);
         put(CromwellStatus.Succeeded, State.COMPLETE);
+        put(CromwellStatus.Fail, State.EXECUTOR_ERROR);
+        put(CromwellStatus.fail, State.EXECUTOR_ERROR);
     }};
 
     private static final String CROMWELL_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
@@ -70,11 +72,13 @@ public class WdlLanguageHandler extends AbstractLanguageHandler {
         CloseableHttpClient httpClient = HttpClients.createDefault();
         String cromwellSubmitUrl = getLanguageConfig().getCromwellBaseUrl() + "api/workflows/v1";
         String workflowUrl = getWesRun().getWorkflowUrl();
+        String workflowParams = getWesRun().getWorkflowParams();
 
         HttpPost postRequest = new HttpPost(cromwellSubmitUrl);
         HttpEntity httpEntity = MultipartEntityBuilder
             .create()
             .addTextBody("workflowUrl", workflowUrl)
+            .addBinaryBody("workflowInputs", workflowParams.getBytes())
             .build();
         postRequest.setEntity(httpEntity);
         CloseableHttpResponse response = httpClient.execute(postRequest);
@@ -143,14 +147,20 @@ public class WdlLanguageHandler extends AbstractLanguageHandler {
                     WesLog wesTaskLog = new WesLog();
                     String name = callKey + ".step-" + i;
                     wesTaskLog.setName(name);
-                    wesTaskLog.setCmd(new ArrayList<>() {{
-                        add(cromwellTask.getCommandLine());
-                    }});
+
+                    List<String> cmds = new ArrayList<>();
+                    for (String cmd : cromwellTask.getCommandLine().split("\n")) {
+                        cmds.add(cmd);
+                    }
+                    wesTaskLog.setCmd(cmds);
                     
                     wesTaskLog.setStartTime(LocalDateTime.parse(cromwellTask.getStart(), DateTimeFormatter.ofPattern(CROMWELL_DATE_FORMAT)));
                     wesTaskLog.setEndTime(LocalDateTime.parse(cromwellTask.getEnd(), DateTimeFormatter.ofPattern(CROMWELL_DATE_FORMAT)));
-                    // wesTaskLog.setStdout(stdout);
-                    // wesTaskLog.setStderr(stderr);
+
+                    // Cromwell only provides file paths to task level stdout/stderr files
+                    wesTaskLog.setStdout("file://" + cromwellTask.getStdout());
+                    wesTaskLog.setStderr("file://" + cromwellTask.getStderr());
+
                     wesTaskLog.setExitCode(cromwellTask.getReturnCode());
                     wesTaskLogs.add(wesTaskLog);
                 }
@@ -177,6 +187,7 @@ public class WdlLanguageHandler extends AbstractLanguageHandler {
             wesWorkflowLog.setEndTime(wesTaskLogs.get(wesTaskLogs.size()-1).getEndTime());
 
             // stdout and stderr
+            // currently no way to get workflow level logs via Cromwell API
             // wesWorkflowLog.setStdout(stdout);
             // wesWorkflowLog.setStderr(stderr);
 

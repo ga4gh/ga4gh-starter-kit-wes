@@ -21,5 +21,7 @@ public class CromwellTaskMetadata {
     private String commandLine;
     private String start;
     private String end;
+    private String stdout;
+    private String stderr;
     private Integer returnCode;
 }
