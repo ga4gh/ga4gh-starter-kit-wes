@@ -47,6 +47,8 @@ jobs:
         make docker-cromwell-docker-build
         mkdir -p /tmp/shared/cromwell/runs
         docker run \
+          --rm \
+          -d \
           -p 8000:8000 \
           -v /var/run/docker.sock:/var/run/docker.sock \
           -v /tmp/shared/cromwell/runs:/tmp/shared/cromwell/runs \
