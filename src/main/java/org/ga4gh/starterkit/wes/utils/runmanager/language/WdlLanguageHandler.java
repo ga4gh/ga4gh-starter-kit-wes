@@ -1,5 +1,6 @@
 package org.ga4gh.starterkit.wes.utils.runmanager.language;
 
+import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -33,6 +34,7 @@ import org.ga4gh.starterkit.wes.utils.runmanager.language.wdl.CromwellWorkflowMe
 import org.springframework.beans.factory.annotation.Autowired;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.val;
 
 @Setter
 @Getter
@@ -210,7 +212,23 @@ public class WdlLanguageHandler extends AbstractLanguageHandler {
             responseBodyBytes = response.getEntity().getContent().readAllBytes();
             responseBodyString = new String(responseBodyBytes, StandardCharsets.UTF_8);
             CromwellOutputs cromwellOutputs = mapper.readValue(responseBodyString, CromwellOutputs.class);
-            runLog.setOutputs(cromwellOutputs.getOutputs());
+            Map<String, String> modifiedCromwellOutputs = new HashMap<>();
+            
+            for (String key : cromwellOutputs.getOutputs().keySet()) {
+                String value = cromwellOutputs.getOutputs().get(key);
+                File outputFile = new File(value);
+                
+                if (outputFile.exists() && outputFile.isAbsolute()) {
+                    System.out.println("Exists and is absolute file path!");
+                    System.out.println(value);
+                    modifiedCromwellOutputs.put(key, "file://" + value);
+                } else {
+                    modifiedCromwellOutputs.put(key, value);
+                }
+
+            }
+            // runLog.setOutputs(cromwellOutputs.getOutputs());
+            runLog.setOutputs(modifiedCromwellOutputs);
             
         } catch (Exception ex) {
 
