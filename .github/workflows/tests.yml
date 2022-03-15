@@ -42,6 +42,18 @@ jobs:
         nextflow -h
         ls
     
+    - name: Build and Run Cromwell-Docker
+      run: |
+        make docker-cromwell-docker-build
+        mkdir -p /tmp/shared/cromwell/runs
+        docker run \
+          -p 8000:8000 \
+          -v /var/run/docker.sock:/var/run/docker.sock \
+          -v /tmp/shared/cromwell/runs:/tmp/shared/cromwell/runs \
+          -w /tmp/shared/cromwell/runs \
+          ga4gh/cromwell-docker:test \
+          server
+    
     # ## To use this, open the current running workflow. Copy the final line starting with "ssh ..." and paste to terminal
     # ## Note: You need to have a SSH key added to your GitHub account in the settings if limitations are present
     # - name: Setup upterm session # Using Github - SSH for debugging

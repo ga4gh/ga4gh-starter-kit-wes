@@ -60,6 +60,10 @@ docker-wes-builder-build:
 # docker-wes-nextflow-build:
 # 	docker build -t ${DOCKER_ORG}/${DOCKER_REPO}:${TAG}-nextflow --build-arg VERSION=${TAG} dockerfiles/nextflow
 
+.PHONY: docker-cromwell-docker-build
+docker-cromwell-docker-build:
+	docker build -t ga4gh/cromwell-docker:test --build-arg VERSION=${TAG} -f Dockerfile-Cromwell-Docker .
+
 .PHONY: docker-wes-nextflow-build
 docker-wes-nextflow-build:
 	docker build -t ${DOCKER_ORG}/${DOCKER_REPO}:${TAG}-nextflow --build-arg VERSION=${TAG} -f Dockerfile-Nextflow .

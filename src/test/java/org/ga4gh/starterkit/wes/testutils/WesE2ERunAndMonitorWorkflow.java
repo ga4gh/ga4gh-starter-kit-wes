@@ -30,9 +30,14 @@ import static org.ga4gh.starterkit.wes.constant.WesApiConstants.WES_API_V1;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import java.io.File;
+import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -204,20 +209,28 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
     }
 
     private String getLogOutput(String logURL) throws Exception {
+        
         URI logURI = URI.create(logURL);
-        String logURLPath = logURI.getPath();
-        String logURLQuery = logURI.getQuery();
 
-        MockHttpServletRequestBuilder requestBuilder = get(logURLPath);
-        if (logURLQuery != null) {
-            requestBuilder.params(parseQueryString(logURLQuery));
+        if (logURI.getScheme().equals("file")) {
+            String filePath = logURI.getRawPath();
+            byte[] fileBytes = Files.readAllBytes(Paths.get(filePath));
+            return new String(fileBytes);
+        } else {
+            String logURLPath = logURI.getPath();
+            String logURLQuery = logURI.getQuery();
+
+            MockHttpServletRequestBuilder requestBuilder = get(logURLPath);
+            if (logURLQuery != null) {
+                requestBuilder.params(parseQueryString(logURLQuery));
+            }
+
+            MvcResult result = mockMvc.perform(requestBuilder)
+                .andExpect(status().isOk())
+                .andReturn();
+
+            return result.getResponse().getContentAsString();
         }
-
-        MvcResult result = mockMvc.perform(requestBuilder)
-            .andExpect(status().isOk())
-            .andReturn();
-
-        return result.getResponse().getContentAsString();
     }
 
     private LinkedMultiValueMap<String, String> parseQueryString(String queryString) throws Exception {
@@ -235,18 +248,31 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
         Assert.assertEquals(wesLog.getCmd(), expLogValues.getExpCmd());
         Assert.assertEquals(wesLog.getExitCode(), expLogValues.getExpExitCode());
 
-        // assert md5 sums match expected for stdout and stderr
-        String stdout = getLogOutput(wesLog.getStdout());
-        String stderr = getLogOutput(wesLog.getStderr());
-        String stdoutMd5 = DigestUtils.md5DigestAsHex(stdout.getBytes());
-        String stderrMd5 = DigestUtils.md5DigestAsHex(stderr.getBytes());
-        Assert.assertEquals(stdoutMd5, expLogValues.getExpStdoutMd5());
-        Assert.assertEquals(stderrMd5, expLogValues.getExpStderrMd5());
+        // assert md5 sums match expected for stdout
+        if (expLogValues.getExpStdoutMd5() != null) {
+            String stdout = getLogOutput(wesLog.getStdout());
+            String stdoutMd5 = DigestUtils.md5DigestAsHex(stdout.getBytes());
+            Assert.assertEquals(stdoutMd5, expLogValues.getExpStdoutMd5());
+        }
+
+        // assert md5 sums match expected for stderr
+        if (expLogValues.getExpStderrMd5() != null) {
+            String stderr = getLogOutput(wesLog.getStderr());
+            String stderrMd5 = DigestUtils.md5DigestAsHex(stderr.getBytes());
+            Assert.assertEquals(stderrMd5, expLogValues.getExpStderrMd5());
+        }
     }
 
-    private void assertOutputEquivalence(String outputURL, String expMd5) throws Exception {
-        URL url = new URL(outputURL);
-        String md5 = DigestUtils.md5DigestAsHex(url.openStream().readAllBytes());
+    private void assertOutputEquivalence(String outputURLOrContent, String expMd5) throws Exception {
+        String md5;
+
+        try {
+            URL outputURL = new URL(outputURLOrContent);
+            md5 = DigestUtils.md5DigestAsHex(outputURL.openStream().readAllBytes());
+        } catch (MalformedURLException ex) {
+            md5 = DigestUtils.md5DigestAsHex(outputURLOrContent.getBytes()) ;
+        }
+
         Assert.assertEquals(md5, expMd5);
     }
 }

@@ -45,9 +45,13 @@ public class WdlLanguageHandler extends AbstractLanguageHandler {
 
     private static final Map<CromwellStatus, State> CROMWELL_STATE_MAP = new HashMap<>() {{
         put(CromwellStatus.Submitted, State.INITIALIZING);
+        put(CromwellStatus.submitted, State.INITIALIZING);
         put(CromwellStatus.Succeeded, State.COMPLETE);
+        put(CromwellStatus.succeeded, State.COMPLETE);
         put(CromwellStatus.Fail, State.EXECUTOR_ERROR);
         put(CromwellStatus.fail, State.EXECUTOR_ERROR);
+        put(CromwellStatus.Running, State.RUNNING);
+        put(CromwellStatus.running, State.RUNNING);
     }};
 
     private static final String CROMWELL_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";

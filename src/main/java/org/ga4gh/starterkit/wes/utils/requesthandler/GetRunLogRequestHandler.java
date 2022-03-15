@@ -60,8 +60,6 @@ public class GetRunLogRequestHandler implements RequestHandler<RunLog> {
 
         // if the run log JSON has been previously generated, load from db
         // and return
-        // TODO uncomment
-        /*
         if (wesRun.getFinalRunLogJson() != null) {
             ObjectMapper mapper = new ObjectMapper();
             try {
@@ -70,7 +68,6 @@ public class GetRunLogRequestHandler implements RequestHandler<RunLog> {
                 System.out.println("Could not load RunLog from pre-existing JSON, attempting to load directly");
             }
         }
-        */
 
         // load the RunLog directly by custom API methods for Nextflow, WDL, etc.
         RunLog runLog = new RunLog();
