@@ -1,4 +1,4 @@
-# Cromwell with Docker
+# CROMWELL DOCKER - CROMWELL BUNDLED WITH DOCKER CLI APP
 
 FROM docker:20.10.8-dind-alpine3.13 as dockerbuilder
 

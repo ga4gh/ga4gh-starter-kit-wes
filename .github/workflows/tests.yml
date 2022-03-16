@@ -2,7 +2,6 @@ name: Standard Tests
 on: [push, pull_request, workflow_dispatch] #workflow_dispatch works only if its active in the main branch
 jobs:
   Unit-Test:
-
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -45,7 +44,7 @@ jobs:
     
     - name: Build and Run Cromwell-Docker
       run: |
-        make docker-cromwell-docker-build
+        make docker-build-cromwell-docker
         mkdir -p /tmp/shared/cromwell/runs
         docker run \
           --rm \
@@ -55,7 +54,7 @@ jobs:
           -v /var/run/docker.sock:/var/run/docker.sock \
           -v /tmp/shared/cromwell/runs:/tmp/shared/cromwell/runs \
           -w /tmp/shared/cromwell/runs \
-          ga4gh/cromwell-docker:test \
+          ga4gh/cromwell-docker:latest \
           server
     
     # ## To use this, open the current running workflow. Copy the final line starting with "ssh ..." and paste to terminal
@@ -83,7 +82,7 @@ jobs:
         docker stop cromwell-docker
 
   Docker-Integration-Test:
-    needs: Unit-Test
+    # needs: Unit-Test
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -111,7 +110,7 @@ jobs:
       with:
         context: .
         builder: ${{ steps.buildx.outputs.name }}
-        file: ./Dockerfile
+        file: ./docker/dockerfiles/Dockerfile-Wes-Builder
         push: true
         tags: ga4gh/ga4gh-starter-kit-wesbuilder
         build-args: VERSION=${{ env.version }}
@@ -135,7 +134,7 @@ jobs:
       with:
         context: .
         builder: ${{ steps.buildx.outputs.name }}
-        file: ./Dockerfile-Nextflow
+        file: ./docker/dockerfiles/Dockerfile-Wes-Nextflow
         push: true
         tags: ga4gh/ga4gh-starter-kit-wes:test-nextflow
         build-args: VERSION=${{ env.version }}
@@ -178,6 +177,40 @@ jobs:
           ga4gh/ga4gh-starter-kit-wes:test-nextflow \
           --config /home/user/db/src/test/resources/config/demo-config.yml
         docker-compose -f docker/compose/wdl-integration-tests.yml up -d
+    
+    # service health checks
+    - name: health check - wes nextflow defaults
+      uses: jtalk/url-health-check-action@v2
+      with:
+        url: http://localhost:4500/ga4gh/wes/v1/service-info
+        follow-redirect: false
+        max-attempts: 6
+        retry-delay: 10s
+        retry-all: true
+    - name: health check - wes nextflow custom
+      uses: jtalk/url-health-check-action@v2
+      with:
+        url: http://localhost:7000/ga4gh/wes/v1/service-info
+        follow-redirect: false
+        max-attempts: 6
+        retry-delay: 10s
+        retry-all: true
+    - name: health check - wes wdl
+      uses: jtalk/url-health-check-action@v2
+      with:
+        url: http://localhost:4545/ga4gh/wes/v1/service-info
+        follow-redirect: false
+        max-attempts: 6
+        retry-delay: 10s
+        retry-all: true
+
+    # - name: Setup upterm session # Using Github - SSH for debugging
+    #   uses: lhotari/action-upterm@v1
+    #   with:
+    #     ## limits ssh access and adds the ssh public key for the user which triggered the workflow
+    #     limit-access-to-actor: true
+    #     ## limits ssh access and adds the ssh public keys of the listed GitHub users
+    #     limit-access-to-users: jb-adams
     
     - name: Gradle Integration Test
       run: ./gradlew test --tests=integration.*
