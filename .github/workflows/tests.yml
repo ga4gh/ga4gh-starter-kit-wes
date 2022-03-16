@@ -163,6 +163,7 @@ jobs:
 
     - name: Running Docker Containers
       run: |
+        docker-compose -f docker/compose/wdl-integration-tests.yml up -d
         docker run --rm -d --name starter-kit-wes-test-default \
           -p 4500:4500 -p 4501:4501 \
           -v /var/run/docker.sock:/var/run/docker.sock \
@@ -177,7 +178,6 @@ jobs:
           -w /tmp/shared/wes_tests \
           ga4gh/ga4gh-starter-kit-wes:test-nextflow \
           --config /home/user/db/src/test/resources/config/demo-config.yml
-        docker-compose -f docker/compose/wdl-integration-tests.yml up -d
     
     - name: Gradle Integration Test
       run: ./gradlew test --tests=integration.*
