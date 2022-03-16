@@ -195,7 +195,7 @@ jobs:
         max-attempts: 6
         retry-delay: 10s
         retry-all: true
-    - name: health check - wes nextflow defaults
+    - name: health check - wes wdl
       uses: jtalk/url-health-check-action@v2
       with:
         url: http://localhost:4545/ga4gh/wes/v1/service-info
