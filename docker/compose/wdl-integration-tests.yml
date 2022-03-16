@@ -8,6 +8,7 @@ services:
       - "4546:4546"
     volumes:
       - ../../src/test/resources/config:/config
+      - "/tmp/shared/cromwell/runs:/tmp/shared/cromwell/runs"
     command: -c /config/wdl-integration-tests-config.yml
   cromwell-docker:
     image: ga4gh/cromwell-docker:test
