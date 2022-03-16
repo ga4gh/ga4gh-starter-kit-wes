@@ -8,7 +8,7 @@ public class ExpectedLogValues {
     private List<String> expCmd;
     private String expStdoutMd5;
     private String expStderrMd5;
-    private int expExitCode;
+    private Integer expExitCode;
 
     public ExpectedLogValues() {
 
@@ -46,11 +46,11 @@ public class ExpectedLogValues {
         return expStderrMd5;
     }
 
-    public void setExpExitCode(int expExitCode) {
+    public void setExpExitCode(Integer expExitCode) {
         this.expExitCode = expExitCode;
     }
 
-    public int getExpExitCode() {
+    public Integer getExpExitCode() {
         return expExitCode;
     }
 }

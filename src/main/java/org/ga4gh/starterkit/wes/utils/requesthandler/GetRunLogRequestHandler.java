@@ -1,5 +1,7 @@
 package org.ga4gh.starterkit.wes.utils.requesthandler;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.ga4gh.starterkit.common.exception.BadRequestException;
 import org.ga4gh.starterkit.common.exception.ResourceNotFoundException;
 import org.ga4gh.starterkit.common.requesthandler.RequestHandler;
@@ -51,13 +53,26 @@ public class GetRunLogRequestHandler implements RequestHandler<RunLog> {
     public RunLog handleRequest() {
         // load the persisten WesRun by its id to obtain workflow language,
         // engine associated with the run
-        RunLog runLog = new RunLog();
-        runLog.setRunId(runId);
-        runLog.setState(State.UNKNOWN);
         WesRun wesRun = hibernateUtil.readEntityObject(WesRun.class, runId, true);
         if (wesRun == null) {
             throw new ResourceNotFoundException("No WES Run by the id: " + runId);
         }
+
+        // if the run log JSON has been previously generated, load from db
+        // and return
+        if (wesRun.getFinalRunLogJson() != null) {
+            ObjectMapper mapper = new ObjectMapper();
+            try {
+                return mapper.readValue(wesRun.getFinalRunLogJson(), RunLog.class);
+            } catch (JsonProcessingException ex) {
+                System.out.println("Could not load RunLog from pre-existing JSON, attempting to load directly");
+            }
+        }
+
+        // load the RunLog directly by custom API methods for Nextflow, WDL, etc.
+        RunLog runLog = new RunLog();
+        runLog.setRunId(runId);
+        runLog.setState(State.UNKNOWN);
         runLog.setRequest(wesRun.toWesRequest());
 
         // allow the low-level RunManager to perform language/engine-dependent
@@ -65,8 +80,17 @@ public class GetRunLogRequestHandler implements RequestHandler<RunLog> {
         try {
             RunManager runManager = runManagerFactory.createRunManager(wesRun);
             LanguageHandler runTypeDetailsHandler = runManager.getLanguageHandler();
-            runLog.setState(runTypeDetailsHandler.determineRunStatus().getState());
+            runLog.setState(runTypeDetailsHandler.determineRunStatus().getState()); 
             runTypeDetailsHandler.completeRunLog(runLog);
+
+            // if the run is in a final state (e.g. complete, then write the
+            // JSON to the DB to be loaded later
+            if (runLog.getState() == State.COMPLETE) {
+                ObjectMapper mapper = new ObjectMapper();
+                String finalRunLogJson = mapper.writeValueAsString(runLog);
+                wesRun.setFinalRunLogJson(finalRunLogJson);
+                hibernateUtil.updateEntityObject(WesRun.class, wesRun.getId(), wesRun);
+            }
         } catch (Exception ex) {
             throw new BadRequestException("Could not load WES run log");
         }

@@ -1,0 +1,216 @@
+name: Standard Tests
+on: [push, pull_request, workflow_dispatch] #workflow_dispatch works only if its active in the main branch
+jobs:
+  Unit-Test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setting up JDK 11
+      uses: actions/setup-java@v2
+      with:
+        java-version: '11'
+        distribution: 'adopt' #using a specific distribution of jdk12 (AdoptOpenJDK)
+
+    - name: Setting up Gradle
+      uses: gradle/gradle-build-action@v2
+
+    - name: Setting up Gradle Wrapper
+      run: "gradle wrapper"
+
+    - name: Validating Wrapper
+      uses: gradle/wrapper-validation-action@v1
+
+    - name: Install Docker Images for Nextflow Workflows
+      run: docker pull jbadams/echo-nf:0.1.0 
+
+    - name: Install SQLite and Setup Dev Database
+      run: | 
+        sqlite3 -version
+        make -version
+        make clean-all
+        make sqlite-db-build
+    
+    - name: Install Nextflow
+      run: |
+        export WORKING_DIR=`pwd`
+        mkdir -p ~/install/nextflow
+        cd ~/install/nextflow
+        curl -fsSL https://get.nextflow.io | bash
+        export PATH=~/install/nextflow:$PATH
+        cd $WORKING_DIR
+        nextflow -h
+        ls
+    
+    - name: Build and Run Cromwell-Docker
+      run: |
+        make docker-build-cromwell-docker
+        mkdir -p /tmp/shared/cromwell/runs
+        docker run \
+          --rm \
+          -d \
+          --name cromwell-docker \
+          -p 8000:8000 \
+          -v /var/run/docker.sock:/var/run/docker.sock \
+          -v /tmp/shared/cromwell/runs:/tmp/shared/cromwell/runs \
+          -w /tmp/shared/cromwell/runs \
+          ga4gh/cromwell-docker:latest \
+          server
+    
+    # ## To use this, open the current running workflow. Copy the final line starting with "ssh ..." and paste to terminal
+    # ## Note: You need to have a SSH key added to your GitHub account in the settings if limitations are present
+    # - name: Setup upterm session # Using Github - SSH for debugging
+    #   uses: lhotari/action-upterm@v1
+    #   with:
+    #     ## limits ssh access and adds the ssh public key for the user which triggered the workflow
+    #     limit-access-to-actor: true
+    #     ## limits ssh access and adds the ssh public keys of the listed GitHub users
+    #     limit-access-to-users: emre-f
+        
+    - name: Running Tests
+      run: |
+        export PATH=~/install/nextflow:$PATH 
+        ./gradlew test --tests=org.* --tests=e2e.*
+
+    - name: After Success Submitting Code Coverage
+      run: | #jacocoTestReport is for testing code coverage, submits the last report to the link
+        ./gradlew jacocoTestReport
+        bash <(curl -s https://codecov.io/bash)
+    
+    - name: Clean Up
+      run: |
+        docker stop cromwell-docker
+
+  Docker-Integration-Test:
+    # needs: Unit-Test
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setting up Gradle
+      uses: gradle/gradle-build-action@v2
+
+    - name: Setting Up Docker Buildx #used for caching image layers, improves performance
+      id: buildx
+      uses: docker/setup-buildx-action@v1
+
+    - name: Login to Docker Hub
+      uses: docker/login-action@v1
+      with: 
+        username: ${{ secrets.DOCKER_HUB_USERNAME }}
+        password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+    - name: Get and Set Version
+      run: |
+        source ci/set-docker-image-version.sh
+        echo "version=${DOCKER_IMG_VER}" >> $GITHUB_ENV
+
+    - name: Build and Push WES Builder # Image built by this command can't be seen under "docker images"
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        builder: ${{ steps.buildx.outputs.name }}
+        file: ./docker/dockerfiles/Dockerfile-Wes-Builder
+        push: true
+        tags: ga4gh/ga4gh-starter-kit-wesbuilder
+        build-args: VERSION=${{ env.version }}
+        cache-from: type=gha #GitHub Actions Cache Exporter
+        cache-to: type=gha,mode=max
+    
+    - name: Build and Push WES Standalone
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        builder: ${{ steps.buildx.outputs.name}}
+        file: ./docker/dockerfiles/Dockerfile-Wes-Standalone
+        push: true
+        tags: ga4gh/ga4gh-starter-kit-wes:test-standalone
+        build-args: VERSION=${{ env.version }}
+        cache-from: type=gha #GitHub Actions Cache Exporter
+        cache-to: type=gha,mode=max
+
+    - name: Build and Push WES Nextflow
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        builder: ${{ steps.buildx.outputs.name }}
+        file: ./docker/dockerfiles/Dockerfile-Wes-Nextflow
+        push: true
+        tags: ga4gh/ga4gh-starter-kit-wes:test-nextflow
+        build-args: VERSION=${{ env.version }}
+        cache-from: type=gha #GitHub Actions Cache Exporter
+        cache-to: type=gha,mode=max
+
+    - name: Build and Push Cromwell Docker
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        builder: ${{ steps.buildx.outputs.name}}
+        file: ./docker/dockerfiles/Dockerfile-Cromwell-Docker
+        push: true
+        tags: ga4gh/cromwell-docker:test
+        cache-from: type=gha #GitHub Actions Cache Exporter
+        cache-to: type=gha,mode=max
+
+    - name: Make Temp Directories
+      run: |
+        mkdir -p /tmp/shared/wes_tests
+        mkdir -p /tmp/shared/cromwell/runs
+
+    - name: Pull Nextflow Docker Image
+      run: docker pull jbadams/echo-nf:0.1.0
+
+    - name: Running Docker Containers
+      run: |
+        docker run --rm -d --name starter-kit-wes-test-default \
+          -p 4500:4500 -p 4501:4501 \
+          -v /var/run/docker.sock:/var/run/docker.sock \
+          -v /tmp/shared/wes_tests:/tmp/shared/wes_tests \
+          -w /tmp/shared/wes_tests \
+          ga4gh/ga4gh-starter-kit-wes:test-nextflow \
+          --config /home/user/db/src/test/resources/config/standard-config.yml
+        docker run --rm -d --name starter-kit-wes-test-custom \
+          -p 7000:7000 -p 7001:7001 \
+          -v /var/run/docker.sock:/var/run/docker.sock \
+          -v /tmp/shared/wes_tests:/tmp/shared/wes_tests \
+          -w /tmp/shared/wes_tests \
+          ga4gh/ga4gh-starter-kit-wes:test-nextflow \
+          --config /home/user/db/src/test/resources/config/demo-config.yml
+        docker-compose -f docker/compose/wdl-integration-tests.yml up -d
+    
+    # service health checks
+    - name: health check - wes nextflow defaults
+      uses: jtalk/url-health-check-action@v2
+      with:
+        url: http://localhost:4500/ga4gh/wes/v1/service-info
+        follow-redirect: false
+        max-attempts: 6
+        retry-delay: 10s
+        retry-all: true
+    - name: health check - wes nextflow custom
+      uses: jtalk/url-health-check-action@v2
+      with:
+        url: http://localhost:7000/ga4gh/wes/v1/service-info
+        follow-redirect: false
+        max-attempts: 6
+        retry-delay: 10s
+        retry-all: true
+    - name: health check - wes wdl
+      uses: jtalk/url-health-check-action@v2
+      with:
+        url: http://localhost:4545/ga4gh/wes/v1/service-info
+        follow-redirect: false
+        max-attempts: 6
+        retry-delay: 10s
+        retry-all: true
+
+    # - name: Setup upterm session # Using Github - SSH for debugging
+    #   uses: lhotari/action-upterm@v1
+    #   with:
+    #     ## limits ssh access and adds the ssh public key for the user which triggered the workflow
+    #     limit-access-to-actor: true
+    #     ## limits ssh access and adds the ssh public keys of the listed GitHub users
+    #     limit-access-to-users: jb-adams
+    
+    - name: Gradle Integration Test
+      run: ./gradlew test --tests=integration.*

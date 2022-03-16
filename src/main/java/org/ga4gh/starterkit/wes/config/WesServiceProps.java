@@ -22,6 +22,9 @@ public class WesServiceProps {
             case NEXTFLOW:
                 languageConfig = getLanguages().getNextflow();
                 break;
+            case WDL:
+                languageConfig = getLanguages().getWdl();
+                break;
             default:
                 languageConfig = null;
                 break;

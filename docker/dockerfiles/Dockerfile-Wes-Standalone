@@ -1,0 +1,22 @@
+# WES STANDALONE - STARTER KIT WES WITHOUT ANY BUNDLED DEPENDENCY APPS (NEXTFLOW, CROMWELL)
+
+FROM ga4gh/ga4gh-starter-kit-wesbuilder as wesbuilder
+FROM docker:20.10.8-dind-alpine3.13 as dockerbuilder
+
+FROM adoptopenjdk/openjdk12:jre-12.0.2_10-debian
+
+ARG VERSION
+
+# Get docker
+COPY --from=dockerbuilder /usr/local/bin/docker /usr/local/bin/docker
+
+# Get database
+WORKDIR /db
+COPY --from=wesbuilder /usr/src/db/ga4gh-starter-kit.dev.db ga4gh-starter-kit.dev.db
+COPY src/test/resources src/test/resources
+
+# Get java app
+WORKDIR /app
+COPY --from=wesbuilder /usr/src/app/ga4gh-starter-kit-wes-${VERSION}.jar ga4gh-starter-kit-wes.jar
+
+ENTRYPOINT [ "java", "-jar", "/app/ga4gh-starter-kit-wes.jar" ]

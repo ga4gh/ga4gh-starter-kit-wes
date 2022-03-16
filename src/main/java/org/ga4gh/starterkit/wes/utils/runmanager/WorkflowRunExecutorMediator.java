@@ -2,7 +2,6 @@ package org.ga4gh.starterkit.wes.utils.runmanager;
 
 import java.util.HashMap;
 import java.util.concurrent.Callable;
-
 import org.ga4gh.starterkit.wes.model.ContainerizationType;
 import org.ga4gh.starterkit.wes.model.WorkflowEngine;
 import org.ga4gh.starterkit.wes.model.WorkflowType;
@@ -17,6 +16,13 @@ public class WorkflowRunExecutorMediator {
             new HashMap<WorkflowEngine, Callable<Void>>() {{
                 put(WorkflowEngine.NATIVE, () -> nextflowNative());
                 put(WorkflowEngine.SLURM, () -> nextflowSlurm());
+            }}
+        );
+        put(
+            WorkflowType.WDL,
+            new HashMap<WorkflowEngine, Callable<Void>>() {{
+                put(WorkflowEngine.NATIVE, () -> doNothing());
+                put(WorkflowEngine.SLURM, () -> doNothing());
             }}
         );
     }};

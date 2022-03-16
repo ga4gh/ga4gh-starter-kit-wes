@@ -1,0 +1,16 @@
+wes:
+  serverProps:
+    scheme: http
+    hostname: localhost
+    publicApiPort: 4545
+    adminApiPort: 4546
+  databaseProps:
+    url: jdbc:sqlite:/db/ga4gh-starter-kit.dev.db
+  serviceInfo:
+    id: org.ga4gh.wes.wdl.integration.tests
+    name: WES WDL integration test instance
+    description: WES instance to test WDL/Cromwell integration in a docker service cluster
+  wesServiceProps:
+    languages:
+      wdl:
+        cromwellBaseUrl: http://cromwell-docker.ga4gh.org:8000/

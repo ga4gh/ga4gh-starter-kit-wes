@@ -12,13 +12,45 @@ import org.ga4gh.starterkit.wes.utils.runmanager.engine.EngineHandler;
  */
 public interface LanguageHandler {
 
-    // common operations
+    /**
+     * Set up instance attributes after being set with basic properties 
+     */
     public void setup();
+
+    /**
+     * Set the wesRun instance associated with the workflow run
+     * @param wesRun represents the workflow run database record
+     */
     public void setWesRun(WesRun wesRun);
+
+    /**
+     * Get the wesRun instance associated with the workflow run
+     * @return workflow run database record
+     */
     public WesRun getWesRun();
+
+    /**
+     * Set the user-specified config parameters (from YAML) for this workflow language
+     * @param languageConfig user-specified config parameters
+     */
     public void setLanguageConfig(LanguageConfig languageConfig);
+
+    /**
+     * Get the user-specified config parameters for this workflow language
+     * @return user-specified config parameters
+     */
     public LanguageConfig getLanguageConfig();
+
+    /**
+     * Set the workflow engine that workflows of this language are be launched through
+     * @param engineHandler workflow engine for jobs of this language
+     */
     public void setEngineHandler(EngineHandler engineHandler);
+
+    /**
+     * Get the workflow engine that workflows of this language are launched through
+     * @return workflow engine for jobs of this language
+     */
     public EngineHandler getEngineHandler();
 
     /**
@@ -32,10 +64,10 @@ public interface LanguageHandler {
     /**
      * Request the stdout output from a command executed in the working directory
      * @param command the CLI command
-     * @return stdout output of the command
+     * @return exitcode, stdout, stderr of the command
      * @throws Exception a server-side error occurred
      */
-    public String requestCommandStdoutFromEngine(String[] command) throws Exception;
+    public CommandOutput requestCommandOutputFromEngine(String[] command) throws Exception;
 
     // for launching workflow runs
 

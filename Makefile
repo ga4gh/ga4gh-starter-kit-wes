@@ -52,14 +52,34 @@ jar-build:
 jar-run:
 	java -jar ${JAR}
 
-.PHONY: docker-wes-builder-build
-docker-wes-builder-build:
-	docker build -t ${DOCKER_ORG}/ga4gh-starter-kit-wesbuilder .
+# Docker Build
 
-.PHONY: docker-wes-nextflow-build
-docker-wes-nextflow-build:
-	docker build -t ${DOCKER_ORG}/${DOCKER_REPO}:${TAG}-nextflow --build-arg VERSION=${TAG} dockerfiles/nextflow
+.PHONY: docker-build-wes-builder
+docker-build-wes-builder:
+	docker build -t ga4gh/ga4gh-starter-kit-wesbuilder --build-arg VERSION=${TAG} -f docker/dockerfiles/Dockerfile-Wes-Builder .
 
-.PHONY: docker-wes-nextflow-publish
-docker-wes-nextflow-publish:
-	docker image push ${DOCKER_ORG}/${DOCKER_REPO}:${TAG}-nextflow
+.PHONY: docker-build-wes-standalone
+docker-build-wes-standalone:
+	docker build -t ga4gh/ga4gh-starter-kit-wes:${TAG} --build-arg VERSION=${TAG} -f docker/dockerfiles/Dockerfile-Wes-Standalone .
+
+.PHONY: docker-build-wes-nextflow
+docker-build-wes-nextflow:
+	docker build -t ga4gh/ga4gh-starter-kit-wes:${TAG}-nextflow --build-arg VERSION=${TAG} -f docker/dockerfiles/Dockerfile-Wes-Nextflow .
+
+.PHONY: docker-build-cromwell-docker
+docker-build-cromwell-docker:
+	docker build -t ga4gh/cromwell-docker:latest --build-arg VERSION=${TAG} -f docker/dockerfiles/Dockerfile-Cromwell-Docker .
+
+# Docker Push
+
+.PHONY: docker-push-wes-standalone
+docker-push-wes-standalone:
+	docker image push ga4gh/ga4gh-starter-kit-wes:${TAG}
+
+.PHONY: docker-push-wes-nextflow
+docker-push-wes-nextflow:
+	docker image push ga4gh/ga4gh-starter-kit-wes:${TAG}-nextflow
+
+.PHONY: docker-push-cromwell-docker
+docker-push-cromwell-docker:
+	docker image push ga4gh/cromwell-docker:latest
