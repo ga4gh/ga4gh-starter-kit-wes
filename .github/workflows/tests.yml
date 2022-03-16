@@ -111,7 +111,7 @@ jobs:
       with:
         context: .
         builder: ${{ steps.buildx.outputs.name }}
-        file: ./Dockerfile
+        file: ./docker/dockerfiles/Dockerfile-Wes-Builder
         push: true
         tags: ga4gh/ga4gh-starter-kit-wesbuilder
         build-args: VERSION=${{ env.version }}
@@ -135,7 +135,7 @@ jobs:
       with:
         context: .
         builder: ${{ steps.buildx.outputs.name }}
-        file: ./Dockerfile-Nextflow
+        file: ./docker/dockerfiles/Dockerfile-Wes-Nextflow
         push: true
         tags: ga4gh/ga4gh-starter-kit-wes:test-nextflow
         build-args: VERSION=${{ env.version }}
