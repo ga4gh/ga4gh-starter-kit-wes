@@ -6,5 +6,6 @@ create table if not exists wes_run (
     workflow_params text not null,
     workflow_engine text not null,
     workflow_engine_version text,
+    cromwell_run_id text,
     final_run_log_json text
 );

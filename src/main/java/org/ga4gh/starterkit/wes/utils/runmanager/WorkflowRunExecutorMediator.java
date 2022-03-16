@@ -18,6 +18,13 @@ public class WorkflowRunExecutorMediator {
                 put(WorkflowEngine.SLURM, () -> nextflowSlurm());
             }}
         );
+        put(
+            WorkflowType.WDL,
+            new HashMap<WorkflowEngine, Callable<Void>>() {{
+                put(WorkflowEngine.NATIVE, () -> doNothing());
+                put(WorkflowEngine.SLURM, () -> doNothing());
+            }}
+        );
     }};
 
     public void mediateWorkflowRun() throws Exception {
@@ -27,11 +34,9 @@ public class WorkflowRunExecutorMediator {
         method.call();
     }
 
-    /*
     private Void doNothing() {
         return null;
     }
-    */
 
     /* Language-Engine specific steps */
 

@@ -91,9 +91,11 @@ public class FileSystemEngineOperator {
     }
 
     public void launchWorkflowRunCommand(String[] workflowRunCommand) throws IOException {
-        new ProcessBuilder()
-            .command(workflowRunCommand)
-            .directory(getAbsoluteJobDirectory().toFile())
-            .start();
+        if (workflowRunCommand != null) {
+            new ProcessBuilder()
+                .command(workflowRunCommand)
+                .directory(getAbsoluteJobDirectory().toFile())
+                .start();
+        }
     }
 }

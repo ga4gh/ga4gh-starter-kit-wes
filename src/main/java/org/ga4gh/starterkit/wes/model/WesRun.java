@@ -44,6 +44,9 @@ public class WesRun implements HibernateEntity<String> {
     @Column(name = "workflow_engine_version")
     private String workflowEngineVersion;
 
+    @Column(name = "cromwell_run_id")
+    private String cromwellRunId;
+
     @Column(name = "final_run_log_json")
     private String finalRunLogJson;
 

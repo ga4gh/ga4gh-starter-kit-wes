@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import static org.ga4gh.starterkit.wes.constant.WesServiceInfoDefaults.ORGANIZATION_NAME;
@@ -43,10 +44,12 @@ public class WesServiceInfo extends ServiceInfo {
 
     // Supported workflow languages and versions
     @JsonProperty("workflow_type_versions")
+    @JsonPropertyOrder(alphabetic = true)
     private HashMap<WorkflowType, Set<String>> workflowTypeVersions;
 
     // Supported workflow engines and versions
     @JsonProperty("workflow_engine_versions")
+    @JsonPropertyOrder(alphabetic = true)
     private HashMap<WorkflowEngine, String> workflowEngineVersions;
 
     public WesServiceInfo() {
@@ -75,6 +78,7 @@ public class WesServiceInfo extends ServiceInfo {
 
     public void updateServiceInfoFromWesServiceProps(WesServiceProps wesServiceProps) {
         updateServiceInfoFromLanguageConfig(wesServiceProps, WorkflowType.NEXTFLOW);
+        updateServiceInfoFromLanguageConfig(wesServiceProps, WorkflowType.WDL);
     }
 
     private void updateServiceInfoFromLanguageConfig(WesServiceProps wesServiceProps, WorkflowType workflowType) {
@@ -92,7 +96,6 @@ public class WesServiceInfo extends ServiceInfo {
 
         // add engine type
         addWorkflowEngineVersion(engineConfig.getType(), engineConfig.getVersion());
-        
     }
 
     // Convenience API methods for workflowTypeVersions

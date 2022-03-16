@@ -6,5 +6,6 @@ CREATE TABLE wes_run (
     workflow_params TEXT NOT NULL,
     workflow_engine TEXT NOT NULL,
     workflow_engine_version TEXT,
+    cromwell_run_id TEXT,
     final_run_log_json TEXT
 );
