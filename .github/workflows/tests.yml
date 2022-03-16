@@ -142,6 +142,17 @@ jobs:
         cache-from: type=gha #GitHub Actions Cache Exporter
         cache-to: type=gha,mode=max
 
+    - name: Build and Push Cromwell Docker
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        builder: ${{ steps.buildx.outputs.name}}
+        file: ./docker/dockerfiles/Dockerfile-Cromwell-Docker
+        push: true
+        tags: ga4gh/cromwell-docker:test
+        cache-from: type=gha #GitHub Actions Cache Exporter
+        cache-to: type=gha,mode=max
+
     - name: Make Temp Directories
       run: |
         mkdir -p /tmp/shared/wes_tests

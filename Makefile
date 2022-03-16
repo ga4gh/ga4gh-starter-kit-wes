@@ -62,7 +62,7 @@ docker-wes-builder-build:
 
 .PHONY: docker-cromwell-docker-build
 docker-cromwell-docker-build:
-	docker build -t ga4gh/cromwell-docker:test --build-arg VERSION=${TAG} -f Dockerfile-Cromwell-Docker .
+	docker build -t ga4gh/cromwell-docker:test --build-arg VERSION=${TAG} -f docker/dockerfiles/Dockerfile-Cromwell-Docker .
 
 .PHONY: docker-wes-nextflow-build
 docker-wes-nextflow-build:
