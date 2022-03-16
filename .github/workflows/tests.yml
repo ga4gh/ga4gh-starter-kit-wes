@@ -45,7 +45,7 @@ jobs:
     
     - name: Build and Run Cromwell-Docker
       run: |
-        make docker-cromwell-docker-build
+        make docker-build-cromwell-docker
         mkdir -p /tmp/shared/cromwell/runs
         docker run \
           --rm \
@@ -55,7 +55,7 @@ jobs:
           -v /var/run/docker.sock:/var/run/docker.sock \
           -v /tmp/shared/cromwell/runs:/tmp/shared/cromwell/runs \
           -w /tmp/shared/cromwell/runs \
-          ga4gh/cromwell-docker:test \
+          ga4gh/cromwell-docker:latest \
           server
     
     # ## To use this, open the current running workflow. Copy the final line starting with "ssh ..." and paste to terminal

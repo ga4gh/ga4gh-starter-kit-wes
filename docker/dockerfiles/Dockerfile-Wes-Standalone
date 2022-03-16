@@ -1,3 +1,5 @@
+# WES STANDALONE - STARTER KIT WES WITHOUT ANY BUNDLED DEPENDENCY APPS (NEXTFLOW, CROMWELL)
+
 FROM ga4gh/ga4gh-starter-kit-wesbuilder as wesbuilder
 FROM docker:20.10.8-dind-alpine3.13 as dockerbuilder
 
