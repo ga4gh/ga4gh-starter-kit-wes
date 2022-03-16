@@ -50,6 +50,7 @@ jobs:
         docker run \
           --rm \
           -d \
+          --name cromwell-docker \
           -p 8000:8000 \
           -v /var/run/docker.sock:/var/run/docker.sock \
           -v /tmp/shared/cromwell/runs:/tmp/shared/cromwell/runs \
@@ -76,6 +77,10 @@ jobs:
       run: | #jacocoTestReport is for testing code coverage, submits the last report to the link
         ./gradlew jacocoTestReport
         bash <(curl -s https://codecov.io/bash)
+    
+    - name: Clean Up
+      run: |
+        docker stop cromwell-docker
 
   Docker-Integration-Test:
     needs: Unit-Test
@@ -112,6 +117,18 @@ jobs:
         build-args: VERSION=${{ env.version }}
         cache-from: type=gha #GitHub Actions Cache Exporter
         cache-to: type=gha,mode=max
+    
+    - name: Build and Push WES Standalone
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        builder: ${{ steps.buildx.outputs.name}}
+        file: ./docker/dockerfiles/Dockerfile-Wes-Standalone
+        push: true
+        tags: ga4gh/ga4gh-starter-kit-wes:test-standalone
+        build-args: VERSION=${{ env.version }}
+        cache-from: type=gha #GitHub Actions Cache Exporter
+        cache-to: type=gha,mode=max
 
     - name: Build and Push WES Nextflow
       uses: docker/build-push-action@v2
@@ -125,8 +142,10 @@ jobs:
         cache-from: type=gha #GitHub Actions Cache Exporter
         cache-to: type=gha,mode=max
 
-    - name: Make tmp Directory
-      run: mkdir -p /tmp/shared/wes_tests
+    - name: Make Temp Directories
+      run: |
+        mkdir -p /tmp/shared/wes_tests
+        mkdir -p /tmp/shared/cromwell/runs
 
     - name: Pull Nextflow Docker Image
       run: docker pull jbadams/echo-nf:0.1.0
@@ -147,6 +166,7 @@ jobs:
           -w /tmp/shared/wes_tests \
           ga4gh/ga4gh-starter-kit-wes:test-nextflow \
           --config /home/user/db/src/test/resources/config/demo-config.yml
+        docker-compose -f docker/compose/wdl-integration-tests.yml up
     
     - name: Gradle Integration Test
       run: ./gradlew test --tests=integration.*

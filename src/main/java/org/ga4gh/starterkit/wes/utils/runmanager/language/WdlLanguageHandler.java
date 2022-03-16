@@ -219,8 +219,6 @@ public class WdlLanguageHandler extends AbstractLanguageHandler {
                 File outputFile = new File(value);
                 
                 if (outputFile.exists() && outputFile.isAbsolute()) {
-                    System.out.println("Exists and is absolute file path!");
-                    System.out.println(value);
                     modifiedCromwellOutputs.put(key, "file://" + value);
                 } else {
                     modifiedCromwellOutputs.put(key, value);
