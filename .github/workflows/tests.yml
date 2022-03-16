@@ -83,7 +83,7 @@ jobs:
     #     docker stop cromwell-docker
 
   Docker-Integration-Test:
-    needs: Unit-Test
+    # needs: Unit-Test
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
