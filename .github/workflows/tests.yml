@@ -1,8 +1,7 @@
 name: Standard Tests
 on: [push, pull_request, workflow_dispatch] #workflow_dispatch works only if its active in the main branch
 jobs:
-  # Unit-Test:
-
+  Unit-Test:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -179,6 +178,32 @@ jobs:
           --config /home/user/db/src/test/resources/config/demo-config.yml
         docker-compose -f docker/compose/wdl-integration-tests.yml up -d
     
+    # service health checks
+    - name: health check - wes nextflow defaults
+      uses: jtalk/url-health-check-action@v2
+      with:
+        url: http://localhost:4500/ga4gh/wes/v1/service-info
+        follow-redirect: false
+        max-attempts: 6
+        retry-delay: 10s
+        retry-all: true
+    - name: health check - wes nextflow custom
+      uses: jtalk/url-health-check-action@v2
+      with:
+        url: http://localhost:7000/ga4gh/wes/v1/service-info
+        follow-redirect: false
+        max-attempts: 6
+        retry-delay: 10s
+        retry-all: true
+    - name: health check - wes nextflow defaults
+      uses: jtalk/url-health-check-action@v2
+      with:
+        url: http://localhost:4545/ga4gh/wes/v1/service-info
+        follow-redirect: false
+        max-attempts: 6
+        retry-delay: 10s
+        retry-all: true
+
     # - name: Setup upterm session # Using Github - SSH for debugging
     #   uses: lhotari/action-upterm@v1
     #   with:
