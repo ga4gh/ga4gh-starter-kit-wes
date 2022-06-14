@@ -20,11 +20,18 @@ ARG VERSION
 # Get docker
 COPY --from=dockerbuilder /usr/local/bin/docker /usr/local/bin/docker
 
-# INSTALL NEXTFLOW (this step could also be cached probably)
-WORKDIR /home/user/nextflow
-RUN curl -s https://get.nextflow.io | bash
+# INSTALL NEXTFLOW v21.04.0(this step could also be cached probably)
+# TODO: the version of nextflow should be configurable
+WORKDIR /home/user
+RUN bash
+RUN apt-get update
+RUN apt-get install -y wget
+RUN wget https://github.com/nextflow-io/nextflow/releases/download/v21.04.0/nextflow
 RUN chmod -R 777 .
-ENV PATH="/home/user/nextflow:${PATH}"
+ENV PATH="/home/user:${PATH}"
+
+# When nextflow -v is run the first time, it takes about 15 sec. This step breaks if nextflow is not installed
+RUN echo $(nextflow -v)
 
 # Get java app
 WORKDIR /home/user/app
