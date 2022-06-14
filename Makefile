@@ -64,7 +64,7 @@ docker-build-wes-standalone:
 
 .PHONY: docker-build-wes-nextflow
 docker-build-wes-nextflow:
-	docker build -t ga4gh/ga4gh-starter-kit-wes:${TAG}-nextflow --build-arg VERSION=${TAG} -f docker/dockerfiles/Dockerfile-Wes-Nextflow .
+	docker build --no-cache -t ga4gh/ga4gh-starter-kit-wes:${TAG}-nextflow --build-arg VERSION=${TAG} -f docker/dockerfiles/Dockerfile-Wes-Nextflow .
 
 .PHONY: docker-build-cromwell-docker
 docker-build-cromwell-docker:
