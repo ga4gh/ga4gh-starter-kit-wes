@@ -8,6 +8,9 @@ Starter Kit server implementation of the GA4GH Workflow Execution Service (WES) 
 
 ## Changelog
 
+### v0.3.1
+* Bug Fix - Correct the version of nextflow that is installed in the Docker-Wes-Nextflow image
+
 ### v0.3.0
 * Can execute WDL-based workflows via WES. Starter Kit WES acts as a relay server between the client and a running Cromwell server. Starter Kit WES passes workflow run requests to Cromwell, and pulls data from Cromwell to report on workflow run status
 
