@@ -23,7 +23,7 @@ public class DrsUrlResolverTest {
 
     @Test(dataProvider = "cases")
     public void testDrsUrlResolver(Object object, String expResult) {
-        String result = DrsUrlResolver.resolveAccessPathOrUrl(object);
+        String result = DrsUrlResolver.resolveAccessPathOrUrl(object, false);
         Assert.assertEquals(result, expResult);
     }
 }

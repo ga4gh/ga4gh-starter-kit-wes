@@ -25,11 +25,11 @@ public class DrsUrlResolver {
      * @param object workflow run input parameter
      * @return the resolved access URL, or null if one could not be determined
      */
-    public static String resolveAccessPathOrUrl(Object object) {
+    public static String resolveAccessPathOrUrl(Object object, boolean drsDockerContainer) {
         String resolved = null;
         URI drsUri = toURI(object);
         if (isValidDrsURI(drsUri)) {
-            String httpURL = constructHttpUrl(drsUri);
+            String httpURL = constructHttpUrl(drsUri, drsDockerContainer);
             DrsObject drsObject = loadDrsObject(httpURL);
             if (drsObject != null) {
                 return renderAccessPathOrUrl(drsObject);
@@ -72,10 +72,18 @@ public class DrsUrlResolver {
      * @param drsUri the DRS URI
      * @return http(s) URL to access DRSObject endpoint for the given ID
      */
-    private static String constructHttpUrl(URI drsUri) {
+    private static String constructHttpUrl(URI drsUri, boolean drsDockerContainer) {
         StringBuffer httpURLBuffer = new StringBuffer();
         httpURLBuffer.append("http://"); //TODO make https
-        httpURLBuffer.append(drsUri.getHost());
+
+        if (drsDockerContainer){
+            // If wes and drs are both docker containers then localhost in drs object id would refer to wes container.
+            // drsDockerContainer flag is used to set localhost to "host.docker.internal" which refers to the actual host machine.
+            httpURLBuffer.append("host.docker.internal");
+        } else {
+            httpURLBuffer.append(drsUri.getHost());
+        }
+        // check if docker_host_name is provided, if yes, then use docker_host_name
         if (drsUri.getPort() != -1) {
             httpURLBuffer.append(":" + String.valueOf(drsUri.getPort()));
         }
