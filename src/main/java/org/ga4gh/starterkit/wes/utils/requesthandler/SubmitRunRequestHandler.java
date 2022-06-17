@@ -9,6 +9,7 @@ import org.ga4gh.starterkit.common.exception.BadRequestException;
 import org.ga4gh.starterkit.common.exception.ConflictException;
 import org.ga4gh.starterkit.common.hibernate.exception.EntityExistsException;
 import org.ga4gh.starterkit.common.requesthandler.RequestHandler;
+import org.ga4gh.starterkit.wes.config.WesServiceProps;
 import org.ga4gh.starterkit.wes.model.WesServiceInfo;
 import org.ga4gh.starterkit.wes.model.WorkflowEngine;
 import org.ga4gh.starterkit.wes.model.RunId;
@@ -29,6 +30,9 @@ public class SubmitRunRequestHandler implements RequestHandler<RunId> {
 
     @Autowired
     private WesServiceInfo serviceInfo;
+
+    @Autowired
+    private WesServiceProps serviceProps;
 
     @Autowired
     private WesHibernateUtil hibernateUtil;
@@ -200,7 +204,7 @@ public class SubmitRunRequestHandler implements RequestHandler<RunId> {
             for (Object key : workflowParamsMap.keySet()) {
                 // if the value is found to have been a DRS URL, then resolve it
                 // and override the DRS URL with the raw path
-                String resolvedPathOrUrl = DrsUrlResolver.resolveAccessPathOrUrl(workflowParamsMap.get(key));
+                String resolvedPathOrUrl = DrsUrlResolver.resolveAccessPathOrUrl(workflowParamsMap.get(key), serviceProps.getDrsDockerContainer());
                 if (resolvedPathOrUrl != null) {
                     workflowParamsMap.put(key, resolvedPathOrUrl);
                 }
