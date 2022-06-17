@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.ga4gh.starterkit.wes.model.RunId;
 import org.ga4gh.starterkit.wes.model.RunLog;
 import org.ga4gh.starterkit.wes.model.RunStatus;
+import org.ga4gh.starterkit.wes.model.RunsListResponse;
 import org.ga4gh.starterkit.wes.model.State;
 import org.ga4gh.starterkit.wes.model.WorkflowType;
 import org.ga4gh.starterkit.wes.utils.hibernate.WesHibernateUtil;
@@ -50,7 +51,7 @@ public class Runs {
      * @return run list
      */
     @GetMapping
-    public List<RunStatus> getRuns() throws JsonProcessingException {
+    public RunsListResponse getRuns() throws JsonProcessingException {
 
         // get run logs from wes_run table
         Session session = hibernateUtil.newTransaction();
@@ -71,7 +72,8 @@ public class Runs {
                                 State.valueOf((String) map.get("state"))));
             }
         }
-        return runStatusArrayList;
+        RunsListResponse runsListResponse = new RunsListResponse(runStatusArrayList);
+        return runsListResponse;
     }
 
     /**
