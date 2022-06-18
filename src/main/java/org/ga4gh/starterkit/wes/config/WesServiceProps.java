@@ -10,10 +10,14 @@ public class WesServiceProps {
 
     private WesServicePropsLanguages languages;
     private WesServicePropsEngines engines;
+    private boolean drsDockerContainer;
 
     public WesServiceProps() {
         languages = new WesServicePropsLanguages();
         engines = new WesServicePropsEngines();
+        // If wes and drs are both docker containers then localhost in drs object id would refer to wes container.
+        // drsDockerContainer flag is used to set localhost to "host.docker.internal" which refers to the actual host machine.
+        drsDockerContainer = false;
     }
 
     public LanguageConfig getLanguageConfig(WorkflowType workflowType) {
@@ -48,6 +52,14 @@ public class WesServiceProps {
                 break;
         }
         return engineConfig;
+    }
+
+    public boolean getDrsDockerContainer() {
+        return drsDockerContainer;
+    }
+
+    public void setDrsDockerContainer(boolean drsDockerContainer) {
+        this.drsDockerContainer = drsDockerContainer;
     }
 
     public void setLanguages(WesServicePropsLanguages languages) {
