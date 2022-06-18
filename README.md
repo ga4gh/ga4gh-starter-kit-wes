@@ -8,6 +8,10 @@ Starter Kit server implementation of the GA4GH Workflow Execution Service (WES) 
 
 ## Changelog
 
+### v0.3.2
+* Bug Fix - /runs endpoints returns list of completed runs
+* Bug Fix - resolve drs uri when wes and drs are running as docker containers
+
 ### v0.3.1
 * Bug Fix - Correct the version of nextflow that is installed in the Docker-Wes-Nextflow image
 
