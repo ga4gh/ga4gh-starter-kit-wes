@@ -48,10 +48,10 @@ Under `wes`, the following configuration objects can be provided:
 A valid `serverProps` configuration may look like the following:
 
 ```
-dataConnectConfig:
+wes:
   serverProps:
     scheme: https
-    hostname: data-connect.genomics.com
+    hostname: wes.genomics.com
     port: 80
 ```
 
@@ -78,7 +78,7 @@ dataConnectConfig:
 A valid `databaseProps` configuration may look like the following:
 
 ```
-dataConnectConfig:
+wes:
   databaseProps:
     url: jdbc:sqlite:./ga4gh-starter-kit.dev.db
     username: ga4ghuser
