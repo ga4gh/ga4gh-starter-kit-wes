@@ -178,6 +178,59 @@ Response:
 
 Please see the [Configuration page](./CONFIGURATION.md) for instructions on how to configure the WES service with custom properties.
 
+## CWL/WDL Implementation
+
+A Cromwell server container must be running on Docker alongside the WES server. A sample configuration YAML file could look like this:
+
+```
+version: "3.9"
+services:
+  wes:
+    image: ga4gh/ga4gh-starter-kit-wes:test-standalone
+    hostname: wes.ga4gh.org
+    ports:
+      - "4545:4545"
+      - "4546:4546"
+    volumes:
+      - ../../src/test/resources/config:/config
+      - "/tmp/shared/cromwell/runs:/tmp/shared/cromwell/runs"
+    command: -c /config/wdl-integration-tests-config.yml
+  cromwell-docker:
+    image: ga4gh/cromwell-docker:test
+    hostname: cromwell-docker.ga4gh.org
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "/tmp/shared/cromwell/runs:/tmp/shared/cromwell/runs"
+    working_dir: /tmp/shared/cromwell/runs
+    command: server
+```
+
+The Cromwell will run in server mode on `port 8000`. Once the server is running, access `localhost:8000` in your browser and click open `POST /api/workflows/{version}` and click **Try it out**
+
+Fill in the API version and upload the .wdl file, scroll down to the bottom and click **Execute**
+
+A sample `test.wdl` file can look like this:
+
+```
+workflow test {
+    call myTask
+}
+
+task myTask {
+    command {
+        echo "hello world"
+    }
+    output {
+        String out = read_string(stdout())
+    }
+}
+
+```
+
+It is possible to view a list of current runs by accessing the runs endpoint:
+GET http://localhost:4545/ga4gh/wes/v1/runs
+
+
 
 ## Changelog
 
