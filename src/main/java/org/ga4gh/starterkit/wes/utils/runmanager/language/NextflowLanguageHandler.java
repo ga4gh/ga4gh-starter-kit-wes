@@ -76,7 +76,9 @@ public class NextflowLanguageHandler extends AbstractLanguageHandler {
 
     public String[] constructWorkflowRunCommand() throws Exception {
         if (!validWorkflowFound()) {
-            throw new Exception("A valid workflow could not be determined from the workflow URL");
+            Exception e = new Exception("A valid workflow could not be determined from the workflow URL");
+            e.getMessage();
+            throw e;
         }
         return new String[] {
             "nextflow",

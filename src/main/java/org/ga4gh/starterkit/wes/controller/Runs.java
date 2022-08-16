@@ -17,6 +17,7 @@ import org.ga4gh.starterkit.wes.utils.hibernate.WesHibernateUtil;
 import org.ga4gh.starterkit.wes.utils.requesthandler.GetRunLogRequestHandler;
 import org.ga4gh.starterkit.wes.utils.requesthandler.GetRunStatusRequestHandler;
 import org.ga4gh.starterkit.wes.utils.requesthandler.SubmitRunRequestHandler;
+import org.ga4gh.starterkit.common.util.logging.LoggingUtil;
 import org.hibernate.Session;
 import org.hibernate.query.NativeQuery;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +47,9 @@ public class Runs {
     @Autowired
     private WesHibernateUtil hibernateUtil;
 
+    @Autowired
+    private LoggingUtil loggingUtil;
+
     /**
      * Display run list
      * @return run list
@@ -73,6 +77,7 @@ public class Runs {
             }
         }
         RunsListResponse runsListResponse = new RunsListResponse(runStatusArrayList);
+        loggingUtil.debug(listRunsQuery);
         return runsListResponse;
     }
 
@@ -96,6 +101,7 @@ public class Runs {
         @RequestParam(name = "workflow_engine_parameters", required = false) String workflowEngineParameters
         // @RequestParam("workflow_attachment") List<String> workflowAttachment
     ) {
+        loggingUtil.debug("Create run");
         return submitRunRequest.prepare(workflowType, workflowTypeVersion, workflowUrl, workflowParams, tags, null).handleRequest();
     }
 
@@ -108,6 +114,7 @@ public class Runs {
     public RunLog getRunLog(
         @PathVariable(name = "run_id") String runId
     ) {
+        loggingUtil.debug("Get run log");
         return getRunLog.prepare(runId).handleRequest();
     }
 
@@ -120,6 +127,7 @@ public class Runs {
     public RunId cancelRun(
         @PathVariable(name = "run_id") String runId
     ) {
+        loggingUtil.debug("Cancel run");
         return null;
     }
 
@@ -132,6 +140,7 @@ public class Runs {
     public RunStatus runStatus(
         @PathVariable(name = "run_id") String runId
     ) {
+        loggingUtil.debug("Get run status");
         return getRunStatus.prepare(runId).handleRequest();
     }
 }

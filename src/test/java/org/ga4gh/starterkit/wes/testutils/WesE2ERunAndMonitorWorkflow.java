@@ -110,7 +110,9 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
             } 
             else if (runStatus.getState().equals(State.EXECUTOR_ERROR)) 
             {
-                throw new Exception("workflow run errored unexpectedly");
+                Exception e = new Exception("workflow run errored unexpectedly");
+                e.getMessage();
+                throw e;
             }
 
             Thread.sleep(5000);
@@ -119,7 +121,9 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
 
         // throw an error if the run hasn't completed in 1 min
         if (runIncomplete) {
-            throw new Exception("workflow run has not completed in expected time frame");
+            Exception e = new Exception("workflow run has not completed in expected time frame");
+            e.getMessage();
+            throw e;
         }
    
         Assert.assertEquals(runStatus.getRunId(), runId.getRunId());

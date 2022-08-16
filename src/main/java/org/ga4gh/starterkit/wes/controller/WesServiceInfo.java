@@ -1,5 +1,6 @@
 package org.ga4gh.starterkit.wes.controller;
 
+import org.ga4gh.starterkit.common.util.logging.LoggingUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,12 +18,16 @@ public class WesServiceInfo {
     @Autowired
     org.ga4gh.starterkit.wes.model.WesServiceInfo wesServiceInfo;
 
+    @Autowired
+    private LoggingUtil loggingUtil;
+
     /**
      * Display service info
      * @return WES service info
      */
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public org.ga4gh.starterkit.wes.model.WesServiceInfo getServiceInfo() {
+        loggingUtil.debug("Service info");
         return wesServiceInfo;
     }
 }
