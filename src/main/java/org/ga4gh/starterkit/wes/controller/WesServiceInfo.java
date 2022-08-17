@@ -27,7 +27,7 @@ public class WesServiceInfo {
      */
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public org.ga4gh.starterkit.wes.model.WesServiceInfo getServiceInfo() {
-        loggingUtil.debug("Service info");
+        loggingUtil.debug("Recieved GET request for service info");
         return wesServiceInfo;
     }
 }

@@ -46,7 +46,7 @@ public class Logs {
         @PathVariable(name = "subdir_a") String subdirA,
         @PathVariable(name = "subdir_b") String subdirB
     ) {
-        loggingUtil.debug("Request for Nextflow task logs");
+        loggingUtil.debug(String.format("Recieved a GET request for Nextflow task logs with params channel = %s, run_id = %s, subdir_a = %s, subdir_b = %s", channel, runId, subdirA, subdirB));
         return nextflowTaskLogs.prepare(channel, runId, subdirA, subdirB).handleRequest();
     }
 
@@ -63,7 +63,7 @@ public class Logs {
         @PathVariable(name = "run_id") String runId,
         @RequestParam(name = "workdirs") String workdirs
     ) {
-        loggingUtil.debug("Request for Nextflow workflow logs");
+        loggingUtil.debug(String.format("Recieved a GET request for Nextflow workflow logs with params channel = %s, run_id = %s, workdirs = %s", channel, runId, workdirs));
         return nextflowWorkflowLogs.prepare(channel, runId, workdirs).handleRequest();
     }
 }

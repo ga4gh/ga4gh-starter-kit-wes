@@ -23,7 +23,7 @@ public class TempController {
 
     @GetMapping(path = "/inspect/wes-service-props")
     public WesServiceProps inspectWesServiceProps() {
-        loggingUtil.debug("Inspect Wes Service Props");
+        loggingUtil.debug("Recieved a GET request to inspect Wes Service Props");
         return configContainer.getWes().getWesServiceProps();
     }
 }
