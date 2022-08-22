@@ -20,6 +20,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.logging.log4j.util.Strings;
 import org.ga4gh.starterkit.common.config.ServerProps;
+import org.ga4gh.starterkit.common.util.logging.LoggingUtil;
 import org.ga4gh.starterkit.wes.config.language.LanguageConfig;
 import org.ga4gh.starterkit.wes.config.language.NextflowLanguageConfig;
 import org.ga4gh.starterkit.wes.constant.WesApiConstants;
@@ -42,6 +43,9 @@ public class NextflowLanguageHandler extends AbstractLanguageHandler {
 
     @Autowired
     private ServerProps serverProps;
+
+    @Autowired
+    private LoggingUtil loggingUtil;
 
     private NextflowLanguageConfig languageConfig;
     private String workflowSignature;
@@ -77,7 +81,7 @@ public class NextflowLanguageHandler extends AbstractLanguageHandler {
     public String[] constructWorkflowRunCommand() throws Exception {
         if (!validWorkflowFound()) {
             Exception e = new Exception("A valid workflow could not be determined from the workflow URL");
-            e.getMessage();
+            loggingUtil.error("Exception occurred: Could not load WES run log. Original Exception message: " + e.getMessage());
             throw e;
         }
         return new String[] {

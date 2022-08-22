@@ -1,5 +1,6 @@
 package org.ga4gh.starterkit.wes.testutils;
 
+import org.ga4gh.starterkit.common.util.logging.LoggingUtil;
 import org.ga4gh.starterkit.wes.app.WesServer;
 import org.ga4gh.starterkit.wes.app.WesServerSpringConfig;
 import org.ga4gh.starterkit.wes.controller.Logs;
@@ -73,6 +74,9 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private LoggingUtil loggingUtil;
+
     private MockMvc mockMvc;
 
     @BeforeMethod
@@ -111,7 +115,7 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
             else if (runStatus.getState().equals(State.EXECUTOR_ERROR)) 
             {
                 Exception e = new Exception("workflow run errored unexpectedly");
-                e.getMessage();
+                loggingUtil.error("Exception occurred. Message: " + e.getMessage());
                 throw e;
             }
 
@@ -122,7 +126,7 @@ public abstract class WesE2ERunAndMonitorWorkflow extends AbstractTestNGSpringCo
         // throw an error if the run hasn't completed in 1 min
         if (runIncomplete) {
             Exception e = new Exception("workflow run has not completed in expected time frame");
-            e.getMessage();
+            loggingUtil.error("Exception occurred. Message: " + e.getMessage());
             throw e;
         }
    
