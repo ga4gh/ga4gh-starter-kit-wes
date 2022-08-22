@@ -3,6 +3,7 @@ package org.ga4gh.starterkit.wes.utils.requesthandler;
 import org.ga4gh.starterkit.common.exception.BadRequestException;
 import org.ga4gh.starterkit.common.exception.ResourceNotFoundException;
 import org.ga4gh.starterkit.common.requesthandler.RequestHandler;
+import org.ga4gh.starterkit.common.util.logging.LoggingUtil;
 import org.ga4gh.starterkit.wes.model.RunStatus;
 import org.ga4gh.starterkit.wes.model.State;
 import org.ga4gh.starterkit.wes.model.WesRun;
@@ -25,6 +26,9 @@ public class GetRunStatusRequestHandler implements RequestHandler<RunStatus> {
     private WesHibernateUtil hibernateUtil;
 
     private String runId;
+
+    @Autowired
+    private LoggingUtil loggingUtil;
 
     /**
      * Instantiates a new GetRunStatusRequestHandler object
@@ -63,6 +67,7 @@ public class GetRunStatusRequestHandler implements RequestHandler<RunStatus> {
             RunManager runManager = runManagerFactory.createRunManager(wesRun);
             return runManager.getRunStatus();
         } catch (Exception ex) {
+            loggingUtil.error("Exception occurred: Could not load WES run status. Original Exception message: " + ex.getMessage());
             throw new BadRequestException("Could not load WES run status");
         }
     }
