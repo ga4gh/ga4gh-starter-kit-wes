@@ -69,7 +69,7 @@ public class GetRunLogRequestHandler implements RequestHandler<RunLog> {
             try {
                 return mapper.readValue(wesRun.getFinalRunLogJson(), RunLog.class);
             } catch (JsonProcessingException ex) {
-                System.out.println("Could not load RunLog from pre-existing JSON, attempting to load directly");
+                loggingUtil.error("Could not load RunLog from pre-existing JSON, attempting to load directly");
             }
         }
 

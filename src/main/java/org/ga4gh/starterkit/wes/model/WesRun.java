@@ -10,6 +10,8 @@ import org.ga4gh.starterkit.common.hibernate.HibernateEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.ga4gh.starterkit.common.util.logging.LoggingUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Database entity not directly associated with WES specification, stores workflow
@@ -50,6 +52,9 @@ public class WesRun implements HibernateEntity<String> {
     @Column(name = "final_run_log_json")
     private String finalRunLogJson;
 
+    @Autowired
+    private LoggingUtil loggingUtil;
+
     /**
      * Loads any related entities that are not fetched eagerly (ie lazy fetching)
      */
@@ -82,6 +87,7 @@ public class WesRun implements HibernateEntity<String> {
             wesRequest.setWorkflowParams(workflowParams);
         } catch (Exception ex) {
             // TODO better exception handling of malformed JSON
+            loggingUtil.error("Exception occurred: " + ex.getMessage());
         }
 
         return wesRequest;

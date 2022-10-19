@@ -95,6 +95,7 @@ public class SubmitRunRequestHandler implements RequestHandler<RunId> {
             launchRun(wesRun);
             return wesRun.toRunId();
         } catch (Exception ex) {
+            loggingUtil.error("Exception occurred: Could not register new WorkflowRun");
             throw new ConflictException("Could not register new WorkflowRun");
         }
     }

@@ -12,6 +12,8 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.ga4gh.starterkit.drs.model.AccessMethod;
 import org.ga4gh.starterkit.drs.model.AccessURL;
 import org.ga4gh.starterkit.drs.model.DrsObject;
+import org.ga4gh.starterkit.common.util.logging.LoggingUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Resolves a supplied Data Repository Service (DRS) URL. The WES service is 
@@ -25,6 +27,10 @@ public class DrsUrlResolver {
      * @param object workflow run input parameter
      * @return the resolved access URL, or null if one could not be determined
      */
+
+    @Autowired
+    private static LoggingUtil loggingUtil;
+
     public static String resolveAccessPathOrUrl(Object object, boolean drsDockerContainer) {
         String resolved = null;
         URI drsUri = toURI(object);
@@ -107,6 +113,7 @@ public class DrsUrlResolver {
             ObjectMapper mapper = new ObjectMapper();
             return mapper.readValue(responseBody, DrsObject.class);
         } catch (IOException ex) {
+            loggingUtil.error("Exception occurred: " + ex.getMessage());
             return null;
         }
     }

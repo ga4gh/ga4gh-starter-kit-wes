@@ -61,7 +61,9 @@ public class NextflowLanguageHandler extends AbstractLanguageHandler {
     public void setup() {
         try {
             determineWorkflowSignatureAndRevision();
-        } catch (Exception ex) {}
+        } catch (Exception ex) {
+            loggingUtil.error("Exception occurred: " + ex.getMessage());
+        }
     }
 
     @Override
@@ -136,6 +138,7 @@ public class NextflowLanguageHandler extends AbstractLanguageHandler {
             constructNextflowTasksPrimary();
         // run log load by "nextflow log" failed, using backup method
         } catch (NextflowLogException ex) {
+            loggingUtil.error("Exception occurred: " + ex.getMessage());
             constructNextflowTasksBackup();
         }
         runLog.setTaskLogs(determineTaskLogs());
@@ -229,13 +232,17 @@ public class NextflowLanguageHandler extends AbstractLanguageHandler {
                     String fileContent = requestFileContentsFromEngine(workdirMetadata.getRelativePath() + "/.command.run");
                     String taskLine = fileContent.split("\n")[1];
                     process = taskLine.replace("# NEXTFLOW TASK: ", "");
-                } catch (Exception ex) {}
+                } catch (Exception ex) {
+                    loggingUtil.error("Exception occurred: " + ex.getMessage());
+                }
 
                 // get task exit code from .exitcode
                 String exitCode = null;
                 try {
                     exitCode = requestFileContentsFromEngine(workdirMetadata.getRelativePath() + "/.exitcode");
-                } catch (Exception ex) {}
+                } catch (Exception ex) {
+                    loggingUtil.error("Exception occurred: " + ex.getMessage());
+                }
 
                 // get task start time from work dir creation
                 LocalDateTime startTimeDate = LocalDateTime.ofInstant(
@@ -253,7 +260,9 @@ public class NextflowLanguageHandler extends AbstractLanguageHandler {
                         ZoneId.systemDefault()
                     );
                     completeTime = completeTimeDate.format(NEXTFLOW_LOG_DATE_FORMAT);
-                } catch (Exception ex) {}
+                } catch (Exception ex) {
+                    loggingUtil.error("Exception occurred: " + ex.getMessage());
+                }
 
                 // set all properties of the NextflowTask instance
                 NextflowTask nextflowTask = new NextflowTask();

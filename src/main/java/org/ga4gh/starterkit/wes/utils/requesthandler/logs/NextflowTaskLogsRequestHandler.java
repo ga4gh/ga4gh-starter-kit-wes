@@ -9,6 +9,7 @@ import org.ga4gh.starterkit.wes.utils.hibernate.WesHibernateUtil;
 import org.ga4gh.starterkit.wes.utils.runmanager.RunManager;
 import org.ga4gh.starterkit.wes.utils.runmanager.RunManagerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.ga4gh.starterkit.common.util.logging.LoggingUtil;
 
 /**
  * Request handling logic for getting task-level logs from a single task of a
@@ -21,6 +22,9 @@ public class NextflowTaskLogsRequestHandler implements RequestHandler<String> {
 
     @Autowired
     private WesHibernateUtil hibernateUtil;
+
+    @Autowired
+    private LoggingUtil loggingUtil;
 
     private String channel;
     private String runId;
@@ -63,6 +67,7 @@ public class NextflowTaskLogsRequestHandler implements RequestHandler<String> {
         try {
             return runManager.getEngineHandler().getRequestedFileContents(filePath.toString());
         } catch (Exception ex) {
+            loggingUtil.error("Exception occurred: " + ex.getMessage());
             return null;
         }
     }
