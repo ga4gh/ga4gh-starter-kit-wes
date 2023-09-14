@@ -14,6 +14,8 @@ jobs:
 
     - name: Setting up Gradle
       uses: gradle/gradle-build-action@v2
+      with:
+        gradle-version: 7.3.2
 
     - name: Setting up Gradle Wrapper
       run: "gradle wrapper"
