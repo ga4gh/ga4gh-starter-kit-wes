@@ -90,7 +90,7 @@ jobs:
     - name: Setting up Gradle
       uses: gradle/gradle-build-action@v2
       with:
-          gradle-version: 7.3.2
+        gradle-version: 7.3.2
 
     - name: Setting Up Docker Buildx #used for caching image layers, improves performance
       id: buildx
