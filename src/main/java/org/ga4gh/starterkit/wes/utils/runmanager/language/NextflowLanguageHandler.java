@@ -20,6 +20,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.logging.log4j.util.Strings;
 import org.ga4gh.starterkit.common.config.ServerProps;
+import org.ga4gh.starterkit.common.util.logging.LoggingUtil;
 import org.ga4gh.starterkit.wes.config.language.LanguageConfig;
 import org.ga4gh.starterkit.wes.config.language.NextflowLanguageConfig;
 import org.ga4gh.starterkit.wes.constant.WesApiConstants;
@@ -43,6 +44,9 @@ public class NextflowLanguageHandler extends AbstractLanguageHandler {
     @Autowired
     private ServerProps serverProps;
 
+    @Autowired
+    private LoggingUtil loggingUtil;
+
     private NextflowLanguageConfig languageConfig;
     private String workflowSignature;
     private String workflowRevision;
@@ -57,7 +61,9 @@ public class NextflowLanguageHandler extends AbstractLanguageHandler {
     public void setup() {
         try {
             determineWorkflowSignatureAndRevision();
-        } catch (Exception ex) {}
+        } catch (Exception ex) {
+            loggingUtil.error("Exception occurred: " + ex.getMessage());
+        }
     }
 
     @Override
@@ -76,7 +82,9 @@ public class NextflowLanguageHandler extends AbstractLanguageHandler {
 
     public String[] constructWorkflowRunCommand() throws Exception {
         if (!validWorkflowFound()) {
-            throw new Exception("A valid workflow could not be determined from the workflow URL");
+            Exception e = new Exception("A valid workflow could not be determined from the workflow URL");
+            loggingUtil.error("Exception occurred: Could not load WES run log. Original Exception message: " + e.getMessage());
+            throw e;
         }
         return new String[] {
             "nextflow",
@@ -130,6 +138,7 @@ public class NextflowLanguageHandler extends AbstractLanguageHandler {
             constructNextflowTasksPrimary();
         // run log load by "nextflow log" failed, using backup method
         } catch (NextflowLogException ex) {
+            loggingUtil.error("Exception occurred: " + ex.getMessage());
             constructNextflowTasksBackup();
         }
         runLog.setTaskLogs(determineTaskLogs());
@@ -223,13 +232,17 @@ public class NextflowLanguageHandler extends AbstractLanguageHandler {
                     String fileContent = requestFileContentsFromEngine(workdirMetadata.getRelativePath() + "/.command.run");
                     String taskLine = fileContent.split("\n")[1];
                     process = taskLine.replace("# NEXTFLOW TASK: ", "");
-                } catch (Exception ex) {}
+                } catch (Exception ex) {
+                    loggingUtil.error("Exception occurred: " + ex.getMessage());
+                }
 
                 // get task exit code from .exitcode
                 String exitCode = null;
                 try {
                     exitCode = requestFileContentsFromEngine(workdirMetadata.getRelativePath() + "/.exitcode");
-                } catch (Exception ex) {}
+                } catch (Exception ex) {
+                    loggingUtil.error("Exception occurred: " + ex.getMessage());
+                }
 
                 // get task start time from work dir creation
                 LocalDateTime startTimeDate = LocalDateTime.ofInstant(
@@ -247,7 +260,9 @@ public class NextflowLanguageHandler extends AbstractLanguageHandler {
                         ZoneId.systemDefault()
                     );
                     completeTime = completeTimeDate.format(NEXTFLOW_LOG_DATE_FORMAT);
-                } catch (Exception ex) {}
+                } catch (Exception ex) {
+                    loggingUtil.error("Exception occurred: " + ex.getMessage());
+                }
 
                 // set all properties of the NextflowTask instance
                 NextflowTask nextflowTask = new NextflowTask();

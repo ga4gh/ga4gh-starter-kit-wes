@@ -17,6 +17,7 @@ import org.ga4gh.starterkit.wes.utils.hibernate.WesHibernateUtil;
 import org.ga4gh.starterkit.wes.utils.requesthandler.GetRunLogRequestHandler;
 import org.ga4gh.starterkit.wes.utils.requesthandler.GetRunStatusRequestHandler;
 import org.ga4gh.starterkit.wes.utils.requesthandler.SubmitRunRequestHandler;
+import org.ga4gh.starterkit.common.util.logging.LoggingUtil;
 import org.hibernate.Session;
 import org.hibernate.query.NativeQuery;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +47,9 @@ public class Runs {
     @Autowired
     private WesHibernateUtil hibernateUtil;
 
+    @Autowired
+    private LoggingUtil loggingUtil;
+
     /**
      * Display run list
      * @return run list
@@ -56,6 +60,7 @@ public class Runs {
         // get run logs from wes_run table
         Session session = hibernateUtil.newTransaction();
         String listRunsQuery = "select final_run_log_json from wes_run;";
+        loggingUtil.debug("querying for list of runs. SQL query: " + listRunsQuery);
         NativeQuery<String> query = session.createSQLQuery(listRunsQuery);
         List<String> rawRecords = query.getResultList();
         hibernateUtil.endTransaction(session);
@@ -73,6 +78,8 @@ public class Runs {
             }
         }
         RunsListResponse runsListResponse = new RunsListResponse(runStatusArrayList);
+        
+        loggingUtil.debug("Returning response for getRuns endpoint");
         return runsListResponse;
     }
 
@@ -96,6 +103,7 @@ public class Runs {
         @RequestParam(name = "workflow_engine_parameters", required = false) String workflowEngineParameters
         // @RequestParam("workflow_attachment") List<String> workflowAttachment
     ) {
+        loggingUtil.debug(String.format("Recieved POST request to create a run with params workflow_type = %s, workflow_type_version = %s, workflow_url = %s, workflow_params = %s", workflowType, workflowTypeVersion, workflowUrl, workflowParams));
         return submitRunRequest.prepare(workflowType, workflowTypeVersion, workflowUrl, workflowParams, tags, null).handleRequest();
     }
 
@@ -108,6 +116,7 @@ public class Runs {
     public RunLog getRunLog(
         @PathVariable(name = "run_id") String runId
     ) {
+        loggingUtil.debug(String.format("Recieved GET request for run log of run ID %s", runId));
         return getRunLog.prepare(runId).handleRequest();
     }
 
@@ -120,6 +129,7 @@ public class Runs {
     public RunId cancelRun(
         @PathVariable(name = "run_id") String runId
     ) {
+        loggingUtil.debug(String.format("Recieved POST request to cancel run with run ID %s", runId));
         return null;
     }
 
@@ -132,6 +142,7 @@ public class Runs {
     public RunStatus runStatus(
         @PathVariable(name = "run_id") String runId
     ) {
+        loggingUtil.debug(String.format("Recieved GET request for run status of run ID %s", runId));
         return getRunStatus.prepare(runId).handleRequest();
     }
 }

@@ -9,6 +9,7 @@ import org.ga4gh.starterkit.common.exception.BadRequestException;
 import org.ga4gh.starterkit.common.exception.ConflictException;
 import org.ga4gh.starterkit.common.hibernate.exception.EntityExistsException;
 import org.ga4gh.starterkit.common.requesthandler.RequestHandler;
+import org.ga4gh.starterkit.common.util.logging.LoggingUtil;
 import org.ga4gh.starterkit.wes.config.WesServiceProps;
 import org.ga4gh.starterkit.wes.model.WesServiceInfo;
 import org.ga4gh.starterkit.wes.model.WorkflowEngine;
@@ -39,6 +40,9 @@ public class SubmitRunRequestHandler implements RequestHandler<RunId> {
 
     @Autowired
     private RunManagerFactory runLauncherFactory;
+
+    @Autowired
+    private LoggingUtil loggingUtil;
 
     private WorkflowType workflowType;
     private String workflowTypeVersion;
@@ -91,6 +95,7 @@ public class SubmitRunRequestHandler implements RequestHandler<RunId> {
             launchRun(wesRun);
             return wesRun.toRunId();
         } catch (Exception ex) {
+            loggingUtil.error("Exception occurred: Could not register new WorkflowRun");
             throw new ConflictException("Could not register new WorkflowRun");
         }
     }
@@ -103,21 +108,25 @@ public class SubmitRunRequestHandler implements RequestHandler<RunId> {
         // Validate workflowType
         // - assert requested workflowType is supported according to ServiceInfo
         if (!serviceInfo.isWorkflowTypeSupported(workflowType)) {
-            throw new BadRequestException(
+            BadRequestException ex = new BadRequestException(
                 "Unsupported workflow_type: '" + workflowType
                 + "'. Supported workflow types: " + serviceInfo.getWorkflowTypeVersions().keySet()
             );
+            loggingUtil.error("Exception occurred: Could not validate run request. Original Exception message: " + ex.getMessage());
+
         }
         
         // Validate workflowTypeVersion
         // - assert requested version is supported according to ServiceInfo
         if (!serviceInfo.isWorkflowTypeVersionSupported(workflowType, workflowTypeVersion)) {
-            throw new BadRequestException(
+            BadRequestException ex = new BadRequestException(
                 "Unsupported workflow_type_version: '"
                 + workflowTypeVersion
                 + "'. Supported workflow type versions: "
                 + serviceInfo.getWorkflowTypeVersions().get(workflowType)
             );
+            loggingUtil.error("Exception occurred: Could not validate run request. Original Exception message: " + ex.getMessage());
+
         }
 
         // Validate workflowParams
@@ -126,6 +135,7 @@ public class SubmitRunRequestHandler implements RequestHandler<RunId> {
             ObjectMapper mapper = new ObjectMapper();
             mapper.readTree(workflowParams);
         } catch (IOException e) {
+            loggingUtil.error("Exception occurred: Could not validate run request. Original Exception message: " + e.getMessage());
             throw new BadRequestException("Supplied workflow_params not valid JSON");
         }
 
@@ -211,6 +221,7 @@ public class SubmitRunRequestHandler implements RequestHandler<RunId> {
             }
             return mapper.writeValueAsString(workflowParamsMap);
         } catch (IOException ex) {
+            loggingUtil.error("Exception occurred: Could not resolve workflow params. Original Exception message: " + ex.getMessage());
             throw new BadRequestException("Supplied workflow_params not valid JSON");
         }
     }

@@ -4,6 +4,8 @@ import static org.ga4gh.starterkit.wes.constant.WesApiConstants.WES_API_V1;
 import javax.annotation.Resource;
 import org.ga4gh.starterkit.wes.utils.requesthandler.logs.NextflowTaskLogsRequestHandler;
 import org.ga4gh.starterkit.wes.utils.requesthandler.logs.NextflowWorkflowLogsRequestHandler;
+import org.ga4gh.starterkit.common.util.logging.LoggingUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +26,9 @@ public class Logs {
     @Resource
     private NextflowWorkflowLogsRequestHandler nextflowWorkflowLogs;
 
+    @Autowired
+    private LoggingUtil loggingUtil;
+
     /* NEXTFLOW LOGS */
 
     /**
@@ -41,6 +46,7 @@ public class Logs {
         @PathVariable(name = "subdir_a") String subdirA,
         @PathVariable(name = "subdir_b") String subdirB
     ) {
+        loggingUtil.debug(String.format("Recieved a GET request for Nextflow task logs with params channel = %s, run_id = %s, subdir_a = %s, subdir_b = %s", channel, runId, subdirA, subdirB));
         return nextflowTaskLogs.prepare(channel, runId, subdirA, subdirB).handleRequest();
     }
 
@@ -57,6 +63,7 @@ public class Logs {
         @PathVariable(name = "run_id") String runId,
         @RequestParam(name = "workdirs") String workdirs
     ) {
+        loggingUtil.debug(String.format("Recieved a GET request for Nextflow workflow logs with params channel = %s, run_id = %s, workdirs = %s", channel, runId, workdirs));
         return nextflowWorkflowLogs.prepare(channel, runId, workdirs).handleRequest();
     }
 }

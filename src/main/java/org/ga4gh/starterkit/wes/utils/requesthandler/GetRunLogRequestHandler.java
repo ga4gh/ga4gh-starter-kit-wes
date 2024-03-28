@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.ga4gh.starterkit.common.exception.BadRequestException;
 import org.ga4gh.starterkit.common.exception.ResourceNotFoundException;
 import org.ga4gh.starterkit.common.requesthandler.RequestHandler;
+import org.ga4gh.starterkit.common.util.logging.LoggingUtil;
 import org.ga4gh.starterkit.wes.model.RunLog;
 import org.ga4gh.starterkit.wes.model.State;
 import org.ga4gh.starterkit.wes.model.WesRun;
@@ -29,6 +30,9 @@ public class GetRunLogRequestHandler implements RequestHandler<RunLog> {
     private WesHibernateUtil hibernateUtil;
 
     private String runId;
+
+    @Autowired
+    private LoggingUtil loggingUtil;
 
     /**
      * Instantiates a new GetRunLogRequestHandler
@@ -65,7 +69,7 @@ public class GetRunLogRequestHandler implements RequestHandler<RunLog> {
             try {
                 return mapper.readValue(wesRun.getFinalRunLogJson(), RunLog.class);
             } catch (JsonProcessingException ex) {
-                System.out.println("Could not load RunLog from pre-existing JSON, attempting to load directly");
+                loggingUtil.error("Could not load RunLog from pre-existing JSON, attempting to load directly");
             }
         }
 
@@ -92,6 +96,7 @@ public class GetRunLogRequestHandler implements RequestHandler<RunLog> {
                 hibernateUtil.updateEntityObject(WesRun.class, wesRun.getId(), wesRun);
             }
         } catch (Exception ex) {
+            loggingUtil.error("Exception occurred: Could not load WES run log. Original Exception message: " + ex.getMessage());
             throw new BadRequestException("Could not load WES run log");
         }
         return runLog;

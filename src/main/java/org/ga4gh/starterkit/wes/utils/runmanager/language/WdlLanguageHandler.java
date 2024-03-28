@@ -32,6 +32,7 @@ import org.ga4gh.starterkit.wes.utils.runmanager.language.wdl.CromwellStatus;
 import org.ga4gh.starterkit.wes.utils.runmanager.language.wdl.CromwellTaskMetadata;
 import org.ga4gh.starterkit.wes.utils.runmanager.language.wdl.CromwellWorkflowMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.ga4gh.starterkit.common.util.logging.LoggingUtil;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
@@ -42,6 +43,9 @@ public class WdlLanguageHandler extends AbstractLanguageHandler {
 
     @Autowired
     private WesHibernateUtil hibernateUtil;
+
+    @Autowired
+    private LoggingUtil loggingUtil;
 
     private WdlLanguageConfig languageConfig;
 
@@ -229,7 +233,7 @@ public class WdlLanguageHandler extends AbstractLanguageHandler {
             runLog.setOutputs(modifiedCromwellOutputs);
             
         } catch (Exception ex) {
-
+            loggingUtil.error("Exception occurred: " + ex.getMessage());
         }
     }
 
